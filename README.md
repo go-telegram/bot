@@ -1,5 +1,8 @@
 # Golang Telegram Bot
 
+> The project is under development. API may be changed before v1.0.0 version.
+> Not all methods are implemented yet.
+
 It's a Go zero-dependencies telegram bot framework
 
 An `echo-bot` simple example:
