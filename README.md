@@ -74,8 +74,6 @@ You can find these methods in the `methods` package. All methods have name like 
 
 `methods.SendMessage`, `methods.GetMe`, `methods.SendPhoto`, etc
 
-If the method 
-
 ## Options
 
 You can use options to customize the bot.
