@@ -77,7 +77,7 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 		return fmt.Errorf("error response from telegram for method %s, %s", method, r.Description)
 	}
 
-	if len(r.Result) > 0 {
+	if !bytes.Equal(r.Result, []byte("[]")) {
 		b.debug("response from '%s' with payload '%s'", u, body)
 	}
 
