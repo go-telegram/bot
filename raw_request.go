@@ -39,7 +39,7 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 
 	u := b.url + "/bot" + b.token + "/" + method
 
-	if b.isDebug {
+	if b.isDebug && strings.ToLower(method) != "getupdates" {
 		requestDebugData, _ := json.Marshal(params)
 		b.debug("request url: %s, payload: %s", u, requestDebugData)
 	}
@@ -62,8 +62,6 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 		return fmt.Errorf("error read response body for method %s, %w", method, errReadBody)
 	}
 
-	b.debug("response from '%s' with payload '%s'", u, body)
-
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected response statusCode %d for method %s, %s", resp.StatusCode, method, body)
 	}
@@ -72,11 +70,15 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 
 	errDecode := json.Unmarshal(body, &r)
 	if errDecode != nil {
-		return fmt.Errorf("error decode response body for method %s, %w", method, errDecode)
+		return fmt.Errorf("error decode response body for method %s, %s, %w", method, body, errDecode)
 	}
 
 	if !r.OK {
 		return fmt.Errorf("error response from telegram for method %s, %s", method, r.Description)
+	}
+
+	if len(r.Result) > 0 {
+		b.debug("response from '%s' with payload '%s'", u, body)
 	}
 
 	if dest != nil {
