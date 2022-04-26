@@ -39,8 +39,10 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 
 	u := b.url + "/bot" + b.token + "/" + method
 
-	requestDebugData, _ := json.Marshal(params)
-	b.debug("request url: %s, payload: %s", u, requestDebugData)
+	if b.isDebug {
+		requestDebugData, _ := json.Marshal(params)
+		b.debug("request url: %s, payload: %s", u, requestDebugData)
+	}
 
 	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, formData)
 	if errRequest != nil {
