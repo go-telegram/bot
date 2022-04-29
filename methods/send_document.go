@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#senddocument
-
 type SendDocumentParams struct {
-	ChatID                      string                 `json:"chat_id"`
-	Document                    string                 `json:"document"`
+	ChatID                      any                    `json:"chat_id" rules:"required,type:string|int"`
+	Document                    string                 `json:"document" rules:"required"`
 	Thumb                       string                 `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`
@@ -24,16 +22,7 @@ type SendDocumentParams struct {
 	ReplyMarkup                 models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p SendDocumentParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Document == "" {
-		return bot.ErrEmptyDocument
-	}
-	return nil
-}
-
+// SendDocument https://core.telegram.org/bots/api#senddocument
 func SendDocument(ctx context.Context, b *bot.Bot, params *SendDocumentParams) (*models.Message, error) {
 	result := &models.Message{}
 

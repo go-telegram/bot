@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendphoto
-
 type SendPhotoParams struct {
-	ChatID                   string                 `json:"chat_id"`
-	Photo                    models.InputFile       `json:"photo"`
+	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	Photo                    models.InputFile       `json:"photo" rules:"required"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -22,16 +20,7 @@ type SendPhotoParams struct {
 	ReplyMarkup              models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p SendPhotoParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Photo == nil {
-		return bot.ErrEmptyPhoto
-	}
-	return nil
-}
-
+// SendPhoto https://core.telegram.org/bots/api#sendphoto
 func SendPhoto(ctx context.Context, b *bot.Bot, params *SendPhotoParams) (*models.Message, error) {
 	mes := &models.Message{}
 

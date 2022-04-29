@@ -1,16 +1,19 @@
 package models
 
+// PollAnswer https://core.telegram.org/bots/api#pollanswer
 type PollAnswer struct {
 	PollID    string `json:"poll_id"`
 	User      *User  `json:"user"`
 	OptionIDs []int  `json:"option_ids,omitempty"`
 }
 
+// PollOption https://core.telegram.org/bots/api#polloption
 type PollOption struct {
 	Text       string `json:"text"`
 	VoterCount int    `json:"voter_count"`
 }
 
+// Poll https://core.telegram.org/bots/api#poll
 type Poll struct {
 	ID                    string          `json:"id"`
 	Question              string          `json:"question"`

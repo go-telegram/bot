@@ -14,22 +14,16 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-type RequestParams interface {
-	Validate() error
-}
-
 type apiResponse struct {
 	OK          bool            `json:"ok"`
 	Result      json.RawMessage `json:"result,omitempty"`
 	Description string          `json:"description,omitempty"`
 }
 
-func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams, dest any) error {
-	if params != nil {
-		errValidate := params.Validate()
-		if errValidate != nil {
-			return fmt.Errorf("error params validate for method %s, %w", method, errValidate)
-		}
+func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any) error {
+	errValidate := paramsValidate(params)
+	if errValidate != nil {
+		return fmt.Errorf("error params validate for method %s, %w", method, errValidate)
 	}
 
 	contentType, formData, errFormData := buildRequestForm(params)
@@ -94,7 +88,7 @@ func RawRequest(ctx context.Context, b *Bot, method string, params RequestParams
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file
 // It returns content-type and form-data. And error if occurred
-func buildRequestForm(params RequestParams) (string, io.Reader, error) {
+func buildRequestForm(params any) (string, io.Reader, error) {
 	if params == nil {
 		return "application/json", http.NoBody, nil
 	}

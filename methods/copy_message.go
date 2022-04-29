@@ -7,12 +7,10 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#copymessage
-
 type CopyMessageParams struct {
-	ChatID                   string                 `json:"chat_id"`
-	FromChatID               string                 `json:"from_chat_id"`
-	MessageID                int                    `json:"message_id"`
+	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	FromChatID               string                 `json:"from_chat_id" rules:"required"`
+	MessageID                int                    `json:"message_id" rules:"required"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -23,19 +21,7 @@ type CopyMessageParams struct {
 	ReplyMarkup              models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p CopyMessageParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.FromChatID == "" {
-		return bot.ErrEmptyFromChatID
-	}
-	if p.MessageID == 0 {
-		return bot.ErrEmptyMessageID
-	}
-	return nil
-}
-
+// CopyMessage https://core.telegram.org/bots/api#copymessage
 func CopyMessage(ctx context.Context, b *bot.Bot, params *CopyMessageParams) (*models.MessageID, error) {
 	result := &models.MessageID{}
 

@@ -7,33 +7,15 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#forwardmessage
-
 type ForwardMessageParams struct {
-	ChatID              string `json:"chat_id"`
-	FromChatID          string `json:"from_chat_id"`
+	ChatID              any    `json:"chat_id" rules:"required,type:string|int"`
+	FromChatID          string `json:"from_chat_id" rules:"required"`
 	DisableNotification bool   `json:"disable_notification,omitempty"`
 	ProtectContent      bool   `json:"protect_content,omitempty"`
-	MessageID           int    `json:"message_id"`
+	MessageID           int    `json:"message_id" rules:"required"`
 }
 
-func (p ForwardMessageParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.FromChatID == "" {
-		return bot.ErrEmptyFromChatID
-	}
-	if p.MessageID == 0 {
-		return bot.ErrEmptyMessageID
-	}
-	return nil
-}
-
-func (ForwardMessageParams) GetReplyMarkup() models.ReplyMarkup {
-	return nil
-}
-
+// ForwardMessage https://core.telegram.org/bots/api#forwardmessage
 func ForwardMessage(ctx context.Context, b *bot.Bot, params *ForwardMessageParams) (*models.Message, error) {
 	result := &models.Message{}
 

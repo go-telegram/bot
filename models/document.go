@@ -1,5 +1,6 @@
 package models
 
+// Document https://core.telegram.org/bots/api#document
 type Document struct {
 	FileID       string     `json:"file_id"`
 	FileUniqueID string     `json:"file_unique_id"`

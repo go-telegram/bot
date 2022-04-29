@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendanimation
-
 type SendAnimationParams struct {
-	ChatID                   string                 `json:"chat_id"`
-	Animation                string                 `json:"animation"`
+	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	Animation                models.InputFile       `json:"animation" rules:"required"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
@@ -26,16 +24,7 @@ type SendAnimationParams struct {
 	ReplyMarkup              models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p SendAnimationParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Animation == "" {
-		return bot.ErrEmptyAnimation
-	}
-	return nil
-}
-
+// SendAnimation https://core.telegram.org/bots/api#sendanimation
 func SendAnimation(ctx context.Context, b *bot.Bot, params *SendAnimationParams) (*models.Message, error) {
 	result := &models.Message{}
 

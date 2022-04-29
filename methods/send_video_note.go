@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendvideonote
-
 type SendVideoNoteParams struct {
-	ChatID                   string             `json:"chat_id"`
-	VideoNote                string             `json:"video_note"`
+	ChatID                   any                `json:"chat_id" rules:"required,type:string|int"`
+	VideoNote                models.InputFile   `json:"video_note" rules:"required"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
 	Thumb                    string             `json:"thumb,omitempty"`
@@ -22,20 +20,7 @@ type SendVideoNoteParams struct {
 	ReplyMarkup              models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-func (p SendVideoNoteParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.VideoNote == "" {
-		return bot.ErrEmptyVideoNote
-	}
-	return nil
-}
-
-func (p SendVideoNoteParams) GetReplyMarkup() models.ReplyMarkup {
-	return p.ReplyMarkup
-}
-
+// SendVideoNote https://core.telegram.org/bots/api#sendvideonote
 func SendVideoNote(ctx context.Context, b *bot.Bot, params *SendVideoNoteParams) (*models.Message, error) {
 	result := &models.Message{}
 

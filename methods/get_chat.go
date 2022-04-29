@@ -8,16 +8,10 @@ import (
 )
 
 type GetChatParams struct {
-	ChatID string `json:"chat_id"`
+	ChatID any `json:"chat_id" rules:"required,type:string|int"`
 }
 
-func (p *GetChatParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	return nil
-}
-
+// GetChat https://core.telegram.org/bots/api#getchat
 func GetChat(ctx context.Context, b *bot.Bot, params *GetChatParams) (*models.Chat, error) {
 	var res *models.Chat
 

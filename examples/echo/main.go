@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"strconv"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/methods"
@@ -28,7 +27,7 @@ func main() {
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	methods.SendMessage(ctx, b, &methods.SendMessageParams{
-		ChatID: strconv.Itoa(update.Message.Chat.ID),
+		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})
 }

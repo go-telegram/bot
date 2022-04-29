@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendaudio
-
 type SendAudioParams struct {
-	ChatID                   string                 `json:"chat_id"`
-	Audio                    models.InputFile       `json:"audio"`
+	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	Audio                    models.InputFile       `json:"audio" rules:"required"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -26,16 +24,7 @@ type SendAudioParams struct {
 	ReplyMarkup              models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p SendAudioParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Audio == nil {
-		return bot.ErrEmptyAudio
-	}
-	return nil
-}
-
+// SendAudio https://core.telegram.org/bots/api#sendaudio
 func SendAudio(ctx context.Context, b *bot.Bot, params *SendAudioParams) (*models.Message, error) {
 	result := &models.Message{}
 

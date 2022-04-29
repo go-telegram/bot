@@ -7,12 +7,10 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendlocation
-
 type SendLocationParams struct {
-	ChatID                   string             `json:"chat_id"`
-	Latitude                 float64            `json:"latitude"`
-	Longitude                float64            `json:"longitude"`
+	ChatID                   any                `json:"chat_id" rules:"required,type:string|int"`
+	Latitude                 float64            `json:"latitude" rules:"required"`
+	Longitude                float64            `json:"longitude" rules:"required"`
 	HorizontalAccuracy       float64            `json:"horizontal_accuracy,omitempty"`
 	LivePeriod               int                `json:"live_period,omitempty"`
 	Heading                  int                `json:"heading,omitempty"`
@@ -24,23 +22,7 @@ type SendLocationParams struct {
 	ReplyMarkup              models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-func (p SendLocationParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Latitude == 0 {
-		return bot.ErrEmptyLatitude
-	}
-	if p.Longitude == 0 {
-		return bot.ErrEmptyLongitude
-	}
-	return nil
-}
-
-func (p SendLocationParams) GetReplyMarkup() models.ReplyMarkup {
-	return p.ReplyMarkup
-}
-
+// SendLocation https://core.telegram.org/bots/api#sendlocation
 func SendLocation(ctx context.Context, b *bot.Bot, params *SendLocationParams) (*models.Message, error) {
 	mes := &models.Message{}
 

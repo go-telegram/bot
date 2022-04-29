@@ -6,8 +6,7 @@ import (
 	"github.com/go-telegram/bot"
 )
 
-// https://core.telegram.org/bots/api#logout
-
+// Logout https://core.telegram.org/bots/api#logout
 func Logout(ctx context.Context, b *bot.Bot) (bool, error) {
 	var result bool
 

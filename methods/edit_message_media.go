@@ -8,20 +8,14 @@ import (
 )
 
 type EditMessageMediaParams struct {
-	ChatID          string             `json:"chat_id,omitempty"`
-	MessageID       int                `json:"message_id,omitempty"`
-	InlineMessageID int                `json:"inline_message_id,omitempty"`
-	Media           InputMedia         `json:"media"`
+	ChatID          any                `json:"chat_id" rules:"required_if_empty:InlineMessageID,type:string|int"`
+	MessageID       int                `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
+	InlineMessageID string             `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID,MessageID"`
+	Media           InputMedia         `json:"media" rules:"required"`
 	ReplyMarkup     models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-func (p EditMessageMediaParams) Validate() error {
-	if p.Media == nil {
-		return bot.ErrEmptyMedia
-	}
-	return nil
-}
-
+// EditMessageMedia https://core.telegram.org/bots/api#editmessagemedia
 func EditMessageMedia(ctx context.Context, b *bot.Bot, params *EditMessageMediaParams) (*models.Message, error) {
 	result := &models.Message{}
 

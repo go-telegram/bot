@@ -8,21 +8,13 @@ import (
 )
 
 type EditMessageReplyMarkupParams struct {
-	ChatID          string             `json:"chat_id,omitempty"`
-	MessageID       int                `json:"message_id,omitempty"`
-	InlineMessageID string             `json:"inline_message_id,omitempty"`
+	ChatID          any                `json:"chat_id" rules:"required_if_empty:InlineMessageID,type:string|int"`
+	MessageID       int                `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
+	InlineMessageID string             `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID,MessageID"`
 	ReplyMarkup     models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-func (p EditMessageReplyMarkupParams) Validate() error {
-	if p.InlineMessageID == "" {
-		if p.ChatID == "" || p.MessageID == 0 {
-			return bot.ErrEmptyChatID
-		}
-	}
-	return nil
-}
-
+// EditMessageReplyMarkup https://core.telegram.org/bots/api#editmessagereplymarkup
 func EditMessageReplyMarkup(ctx context.Context, b *bot.Bot, params *EditMessageReplyMarkupParams) (*models.Message, error) {
 	mes := &models.Message{}
 

@@ -7,29 +7,18 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#editmessagetext
-
 type EditMessageTextParams struct {
-	ChatID                string                 `json:"chat_id"`
-	MessageID             int                    `json:"message_id,omitempty"`
-	InlineMessageID       string                 `json:"inline_message_id,omitempty"`
-	Text                  string                 `json:"text"`
+	ChatID                any                    `json:"chat_id" rules:"required_if_empty:InlineMessageID,type:string|int"`
+	MessageID             int                    `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
+	InlineMessageID       string                 `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID,MessageID"`
+	Text                  string                 `json:"text" rules:"required"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
-	Entities              []models.MessageEntity `json:"entities,omitempty"`
+	Entities              []models.MessageEntity `json:"caption_entities,omitempty"`
 	DisableWebPagePreview bool                   `json:"disable_web_page_preview,omitempty"`
 	ReplyMarkup           models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p EditMessageTextParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Text == "" {
-		return bot.ErrEmptyText
-	}
-	return nil
-}
-
+// EditMessageText https://core.telegram.org/bots/api#editmessagetext
 func EditMessageText(ctx context.Context, b *bot.Bot, params *EditMessageTextParams) (*models.Message, error) {
 	result := &models.Message{}
 

@@ -7,20 +7,11 @@ import (
 )
 
 type DeleteMessageParams struct {
-	ChatID    string `json:"chat_id"`
-	MessageID int    `json:"message_id"`
+	ChatID    any `json:"chat_id" rules:"required,type:string|int"`
+	MessageID int `json:"message_id" rules:"required"`
 }
 
-func (p *DeleteMessageParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.MessageID == 0 {
-		return bot.ErrEmptyMessageID
-	}
-	return nil
-}
-
+// DeleteMessage https://core.telegram.org/bots/api#deletemessage
 func DeleteMessage(ctx context.Context, b *bot.Bot, params *DeleteMessageParams) (bool, error) {
 	var result bool
 

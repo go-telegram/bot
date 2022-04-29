@@ -11,6 +11,7 @@ const (
 	InputFileTypeString
 )
 
+// InputFile https://core.telegram.org/bots/api#inputfile
 type InputFile interface {
 	inputFileTag()
 

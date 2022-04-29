@@ -7,11 +7,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#sendvideo
-
 type SendVideoParams struct {
-	ChatID                   string                 `json:"chat_id"`
-	Video                    string                 `json:"video"`
+	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	Video                    models.InputFile       `json:"video" rules:"required"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
@@ -27,16 +25,7 @@ type SendVideoParams struct {
 	ReplyMarkup              models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
 
-func (p SendVideoParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	if p.Video == "" {
-		return bot.ErrEmptyVideo
-	}
-	return nil
-}
-
+// SendVideo https://core.telegram.org/bots/api#sendvideo
 func SendVideo(ctx context.Context, b *bot.Bot, params *SendVideoParams) (*models.Message, error) {
 	result := &models.Message{}
 

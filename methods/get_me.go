@@ -7,8 +7,7 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// https://core.telegram.org/bots/api#getme
-
+// GetMe https://core.telegram.org/bots/api#getme
 func GetMe(ctx context.Context, b *bot.Bot) (*models.User, error) {
 	result := &models.User{}
 

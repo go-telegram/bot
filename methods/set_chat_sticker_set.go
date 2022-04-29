@@ -1,0 +1,21 @@
+package methods
+
+import (
+	"context"
+
+	"github.com/go-telegram/bot"
+)
+
+type SetChatStickerSetParams struct {
+	ChatID         any    `json:"chat_id" rules:"required,type:string|int"`
+	StickerSetName string `json:"sticker_set_name" rules:"required"`
+}
+
+// SetChatStickerSet https://core.telegram.org/bots/api#setchatstickerset
+func SetChatStickerSet(ctx context.Context, b *bot.Bot, params *SetChatStickerSetParams) (bool, error) {
+	var res bool
+
+	err := bot.RawRequest(ctx, b, "setChatStickerSet", params, &res)
+
+	return res, err
+}

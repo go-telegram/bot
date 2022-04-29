@@ -7,18 +7,12 @@ import (
 )
 
 type PinChatMessageParams struct {
-	ChatID              string `json:"chat_id"`
-	MessageID           int    `json:"message_id"`
-	DisableNotification bool   `json:"disable_notification,omitempty"`
+	ChatID              any  `json:"chat_id" rules:"required,type:string|int"`
+	MessageID           int  `json:"message_id" rules:"required"`
+	DisableNotification bool `json:"disable_notification,omitempty"`
 }
 
-func (p PinChatMessageParams) Validate() error {
-	if p.ChatID == "" {
-		return bot.ErrEmptyChatID
-	}
-	return nil
-}
-
+// PinChatMessage https://core.telegram.org/bots/api#pinchatmessage
 func PinChatMessage(ctx context.Context, b *bot.Bot, params *PinChatMessageParams) (bool, error) {
 	var result bool
 

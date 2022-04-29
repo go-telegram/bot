@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"strconv"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/methods"
@@ -29,7 +28,7 @@ func main() {
 
 func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	methods.SendMessage(ctx, b, &methods.SendMessageParams{
-		ChatID: strconv.Itoa(update.CallbackQuery.Message.Chat.ID),
+		ChatID: update.CallbackQuery.Message.Chat.ID,
 		Text:   "You selected the button: " + update.CallbackQuery.Data,
 	})
 }
@@ -47,8 +46,8 @@ func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	methods.SendMessage(ctx, b, &methods.SendMessageParams{
-		ChatID:      strconv.Itoa(update.Message.Chat.ID),
-		Text:        "Say /hello",
+		ChatID:      update.Message.Chat.ID,
+		Text:        "Click by button",
 		ReplyMarkup: kb,
 	})
 }
