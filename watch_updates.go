@@ -23,14 +23,6 @@ type getUpdatesParams struct {
 	AllowedUpdates []string `json:"allowed_updates,omitempty"`
 }
 
-func (p getUpdatesParams) Validate() error {
-	return nil
-}
-
-func (getUpdatesParams) GetReplyMarkup() models.ReplyMarkup {
-	return nil
-}
-
 func (b *Bot) watchUpdates(ctx context.Context, wg *sync.WaitGroup, updatesChan chan<- *models.Update) {
 	defer wg.Done()
 

@@ -1,5 +1,6 @@
 package models
 
+// InlineQuery https://core.telegram.org/bots/api#inlinequery
 type InlineQuery struct {
 	ID       string    `json:"id"`
 	From     *User     `json:"from"`
@@ -9,6 +10,7 @@ type InlineQuery struct {
 	Location *Location `json:"location,omitempty"`
 }
 
+// InlineQueryResult https://core.telegram.org/bots/api#inlinequeryresult
 type InlineQueryResult interface {
 	isInlineQueryResult()
 }
@@ -75,6 +77,7 @@ type InlineQueryResultDocument struct {
 
 func (InlineQueryResultDocument) isInlineQueryResult() {}
 
+// AnswerInlineQuery https://core.telegram.org/bots/api#answerinlinequery
 type AnswerInlineQuery struct {
 	InlineQueryID     string              `json:"inline_query_id"`
 	Results           []InlineQueryResult `json:"results"`
@@ -85,10 +88,4 @@ type AnswerInlineQuery struct {
 	SwitchPmParameter string              `json:"switch_pm_parameter,omitempty"`
 }
 
-func (AnswerInlineQuery) Validate() error {
-	return nil
-}
-
-func (AnswerInlineQuery) GetReplyMarkup() ReplyMarkup {
-	return nil
-}
+// todo:
