@@ -7,7 +7,7 @@ import (
 )
 
 type GetChatMemberCountParams struct {
-	ChatID any `json:"chat_id" rules:"required,type:string|int"`
+	ChatID any `json:"chat_id" rules:"required,chat_id"`
 }
 
 // GetChatMemberCount https://core.telegram.org/bots/api#getchatmembercount

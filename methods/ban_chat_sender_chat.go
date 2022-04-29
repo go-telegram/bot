@@ -7,7 +7,7 @@ import (
 )
 
 type BanChatSenderChatParams struct {
-	ChatID       any `json:"chat_id" rules:"required,type:string|int"`
+	ChatID       any `json:"chat_id" rules:"required,chat_id"`
 	SenderChatID int `json:"sender_chat_id" rules:"required"`
 }
 

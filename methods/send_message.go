@@ -8,7 +8,7 @@ import (
 )
 
 type SendMessageParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
 	Text                     string                 `json:"text" rules:"required"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities                 []models.MessageEntity `json:"entities,omitempty"`

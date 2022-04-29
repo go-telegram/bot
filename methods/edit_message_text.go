@@ -8,9 +8,9 @@ import (
 )
 
 type EditMessageTextParams struct {
-	ChatID                any                    `json:"chat_id" rules:"required_if_empty:InlineMessageID,type:string|int"`
+	ChatID                any                    `json:"chat_id" rules:"required_if_empty:InlineMessageID,chat_id"`
 	MessageID             int                    `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
-	InlineMessageID       string                 `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID,MessageID"`
+	InlineMessageID       string                 `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID|MessageID"`
 	Text                  string                 `json:"text" rules:"required"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities              []models.MessageEntity `json:"caption_entities,omitempty"`

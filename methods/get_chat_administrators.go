@@ -8,7 +8,7 @@ import (
 )
 
 type GetChatAdministratorsParams struct {
-	ChatID any `json:"chat_id" rules:"required,type:string|int"`
+	ChatID any `json:"chat_id" rules:"required,chat_id"`
 }
 
 // GetChatAdministrators https://core.telegram.org/bots/api#getchatadministrators

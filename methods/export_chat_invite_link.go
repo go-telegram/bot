@@ -7,7 +7,7 @@ import (
 )
 
 type ExportChatInviteLinkParams struct {
-	ChatID any `json:"chat_id" rules:"required,type:string|int"`
+	ChatID any `json:"chat_id" rules:"required,chat_id"`
 }
 
 // ExportChatInviteLink https://core.telegram.org/bots/api#exportchatinvitelink

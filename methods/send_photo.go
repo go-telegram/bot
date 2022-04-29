@@ -8,7 +8,7 @@ import (
 )
 
 type SendPhotoParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
 	Photo                    models.InputFile       `json:"photo" rules:"required"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`

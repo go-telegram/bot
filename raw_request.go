@@ -6,12 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
-	"reflect"
 	"strings"
-
-	"github.com/go-telegram/bot/models"
 )
 
 type apiResponse struct {
@@ -83,77 +79,4 @@ func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any
 	}
 
 	return nil
-}
-
-// buildRequestForm builds form-data for request
-// if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file
-// It returns content-type and form-data. And error if occurred
-func buildRequestForm(params any) (string, io.Reader, error) {
-	if params == nil {
-		return "application/json", http.NoBody, nil
-	}
-
-	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	v := reflect.ValueOf(params).Elem()
-
-	var fieldsCount int
-
-	for i := 0; i < v.NumField(); i++ {
-		jsonTag := v.Type().Field(i).Tag.Get("json")
-		if jsonTag == "-" || jsonTag == "" {
-			continue
-		}
-		fieldName := strings.Split(jsonTag, ",")[0]
-		omitempty := strings.Contains(jsonTag, ",omitempty")
-
-		if omitempty && v.Field(i).IsZero() {
-			continue
-		}
-
-		var w io.Writer
-		var errCreateField error
-		var data io.Reader
-
-		switch vv := v.Field(i).Interface().(type) {
-		case string:
-			data = strings.NewReader(vv)
-			w, errCreateField = form.CreateFormField(fieldName)
-		case *models.InputFileUpload:
-			data = vv.Data
-			w, errCreateField = form.CreateFormFile(fieldName, vv.Filename)
-		case *models.InputFileString:
-			data = strings.NewReader(vv.Data)
-			w, errCreateField = form.CreateFormField(fieldName)
-		default:
-			d, errMarshal := json.Marshal(v.Field(i).Interface())
-			if errMarshal != nil {
-				return "", nil, errMarshal
-			}
-			d = bytes.Trim(d, "\"")
-			data = bytes.NewReader(d)
-			w, errCreateField = form.CreateFormField(fieldName)
-		}
-
-		if errCreateField != nil {
-			return "", nil, errCreateField
-		}
-
-		_, errCopy := io.Copy(w, data)
-		if errCopy != nil {
-			return "", nil, errCopy
-		}
-		fieldsCount++
-	}
-
-	errClose := form.Close()
-	if errClose != nil {
-		return "", nil, errClose
-	}
-
-	if fieldsCount == 0 {
-		return "application/json", http.NoBody, nil
-	}
-
-	return form.FormDataContentType(), buf, nil
 }

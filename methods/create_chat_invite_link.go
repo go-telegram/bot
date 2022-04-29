@@ -8,7 +8,7 @@ import (
 )
 
 type CreateChatInviteLinkParams struct {
-	ChatID             any    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID             any    `json:"chat_id" rules:"required,chat_id"`
 	Name               string `json:"name,omitempty"`
 	ExpireDate         int    `json:"expire_date,omitempty"`
 	MemberLimit        int    `json:"member_limit,omitempty"`

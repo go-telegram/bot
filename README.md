@@ -1,11 +1,10 @@
 # Golang Telegram Bot
 
 > The project is under development. API may be changed before v1.0.0 version.
-> Not all methods are implemented yet.
 
 It's a Go zero-dependencies telegram bot framework
 
-An `echo-bot` simple example:
+A simple example `echo-bot`:
 
 ```go
 package main
@@ -38,13 +37,13 @@ func main() {
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	methods.SendMessage(ctx, b, &methods.SendMessageParams{
-		ChatID: strconv.Itoa(update.Message.Chat.ID),
+		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})
 }
 ```
 
-You can find more examples in the examples folder.
+You can find more examples in the [examples](examples) folder.
 
 For test examples, you should set environment variable `EXAMPLE_TELEGRAM_BOT_TOKEN` to your bot token.
 
@@ -87,7 +86,6 @@ For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handle
 An example:
 
 ```go
-
 b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
 b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, myStartHandler)
@@ -101,13 +99,99 @@ Handler Types:
 - `HandlerTypeMessageText` - for Update.Message.Text field
 - `HandlerTypeCallbackQueryData` - for Update.CallbackQuery.Data field
 
+RegisterHandler returns a handler ID string. You can use it to remove the handler later.
+
+```
+b.UnregisterHandler(handlerID)
+```
+
 Match Types:
 - `MatchTypeExact` 
 - `MatchTypePrefix` 
 - `MatchTypeContains`
-- `MatchTypeRegexp`
 
-## UI
+Also, you can use `RegisterHandlerRegexp` to match by regular expression.
+
+```go
+re := regexp.MustCompile(`^/start`)
+
+b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, re, myStartHandler)
+```
+
+## InputFile
+
+For some methods, like `SendPhoto`, `SendAudio` etc, you can send file by file path or file contents.
+
+For send file by URL or FileID, you can use `&models.InputFileString{Data: string}`:
+
+```go
+// file id of uploaded image 
+inputFileData := "AgACAgIAAxkDAAIBOWJimnCJHQJiJ4P3aasQCPNyo6mlAALDuzEbcD0YSxzjB-vmkZ6BAQADAgADbQADJAQ"
+// or URL image path
+// inputFileData := "https://example.com/image.png"
+
+params := &methods.SendPhotoParams{
+    ChatID:  chatID,
+    Photo:   &models.InputFileString{Data: inputFileData},
+}
+
+methods.SendPhoto(ctx, b, params)
+```
+
+[Demo in examples](examples/send_photo)
+
+For send image file by file contents, you can use `&models.InputFileUpload{Filename: string, Data: io.Reader}`:
+
+```go
+fileContent, _ := os.ReadFile("/path/to/image.png")
+
+params := &methods.SendPhotoParams{
+    ChatID:  chatID,
+    Photo:   &models.InputFileUpload{Filename: "image.png", Data: bytes.NewReader(fileContent)},
+}
+
+methods.SendPhoto(ctx, b, params)
+```
+
+[Demo in examples](examples/send_photo_upload)
+
+## InputMedia
+
+For methods like `SendMediaGroup` or `EditMessageMedia` you can send media by file path or file contents.
+
+[Official documentation InputMedia](https://core.telegram.org/bots/api#inputmedia)
+
+> field `media`: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name.
+
+If you want to use `attach://` format, you should to define `MediaAttachment` field with file content reader.
+
+```go
+fileConetent, _ := os.ReadFile("/path/to/image.png")
+
+media1 := &models.InputMediaPhoto{
+	Media: "https://telegram.org/img/t_logo.png",
+}
+
+media2 := &models.InputMediaPhoto{
+	Media: "attach://image.png", 
+	Caption: "2",
+	MediaAttachment: bytes.NewReader(fileConetent),
+}
+
+params := &methods.SendMediaGroupParams{
+    ChatID: update.Message.Chat.ID,
+    Media: []models.InputMedia{
+        media1,
+        media2,
+    },
+}
+
+methods.SendMediaGroup(ctx, b, params)
+```
+
+[Demo in examples](examples/send_media_group)
+
+## UI Components
 
 In the repo https://github.com/go-telegram/ui you can find a some UI elements for your bot.
 
@@ -118,4 +202,4 @@ In the repo https://github.com/go-telegram/ui you can find a some UI elements fo
 
 and more...
 
-Please, check the repo for more information.
+Please, check the repo for more information and live demo.

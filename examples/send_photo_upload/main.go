@@ -16,7 +16,6 @@ import (
 
 func main() {
 	opts := []bot.Option{
-		bot.WithDebug(),
 		bot.WithDefaultHandler(handler),
 	}
 

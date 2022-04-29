@@ -8,8 +8,8 @@ import (
 )
 
 type SetChatMenuButtonParams struct {
-	ChatID     any               `json:"chat_id" rules:"type:string|int"`
-	MenuButton models.MenuButton `json:"menu_button"`
+	ChatID     any                    `json:"chat_id" rules:"type:string|int"`
+	MenuButton models.InputMenuButton `json:"menu_button"`
 }
 
 // SetChatMenuButton https://core.telegram.org/bots/api#setchatmenubutton

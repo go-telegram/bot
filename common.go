@@ -14,7 +14,7 @@ var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
 func EscapeMarkdown(s string) string {
 	var result []rune
 	for _, r := range s {
-		if strings.IndexRune(shouldBeEscaped, r) != -1 {
+		if strings.ContainsRune(shouldBeEscaped, r) {
 			result = append(result, '\\')
 		}
 		result = append(result, r)

@@ -7,7 +7,7 @@ import (
 )
 
 type BanChatMemberParams struct {
-	ChatID         any  `json:"chat_id" rules:"required,type:string|int"`
+	ChatID         any  `json:"chat_id" rules:"required,chat_id"`
 	UserID         int  `json:"user_id" rules:"required"`
 	UntilDate      int  `json:"until_date,omitempty"`
 	RevokeMessages bool `json:"revoke_messages,omitempty"`

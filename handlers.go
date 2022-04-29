@@ -18,7 +18,8 @@ const (
 	MatchTypeExact MatchType = iota
 	MatchTypePrefix
 	MatchTypeContains
-	MatchTypeRegexp
+
+	matchTypeRegexp
 )
 
 type handler struct {
@@ -39,13 +40,31 @@ func (h handler) match(data string) bool {
 	if h.matchType == MatchTypeContains {
 		return strings.Contains(data, h.pattern)
 	}
-	if h.matchType == MatchTypeRegexp {
+	if h.matchType == matchTypeRegexp {
 		return h.re.Match([]byte(data))
 	}
 	return false
 }
 
-func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc) (string, error) {
+func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc) string {
+	b.handlersMx.Lock()
+	defer b.handlersMx.Unlock()
+
+	id := RandomString(16)
+
+	h := handler{
+		handlerType: handlerType,
+		matchType:   matchTypeRegexp,
+		re:          re,
+		handler:     f,
+	}
+
+	b.handlers[id] = h
+
+	return id
+}
+
+func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
@@ -58,18 +77,9 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 		handler:     f,
 	}
 
-	var err error
-
-	if matchType == MatchTypeRegexp {
-		h.re, err = regexp.Compile(pattern)
-		if err != nil {
-			return "", err
-		}
-	}
-
 	b.handlers[id] = h
 
-	return id, nil
+	return id
 }
 
 func (b *Bot) UnregisterHandler(id string) {

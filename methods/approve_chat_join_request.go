@@ -7,7 +7,7 @@ import (
 )
 
 type ApproveChatJoinRequestParams struct {
-	ChatID any `json:"chat_id" rules:"required,type:string|int"`
+	ChatID any `json:"chat_id" rules:"required,chat_id"`
 	UserID int `json:"user_id" rules:"required"`
 }
 

@@ -8,7 +8,7 @@ import (
 )
 
 type SendPollParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
 	Question                 string                 `json:"question" rules:"required"`
 	Options                  []string               `json:"options" rules:"required,min:2,max:10"`
 	IsAnonymous              bool                   `json:"is_anonymous,omitempty"`

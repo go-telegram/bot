@@ -3,35 +3,48 @@ package bot
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
+/*
+Validation rules describes in struct tag 'rules'
+format: <rule_name>[:<rule_value>[|<rule_value>|...]]
+
+allowed validation rules:
+
+- chat_id								must be string or int
+- required								must be present and not empty
+- required_if_empty:<field_name>,...	must be present and not empty if params fields is empty
+- min:<value>							support: int, slice, string
+- max:<value>							support: int, slice, string
+- equals:<value>|<value>|...			support: string
+
+An example:
+
+type User struct {
+	Name 	string `json"name" rules:"required,min:3,max:10"`
+	Type 	string `json"name" rules:"equals:foo|bar|other"`
+}
+
+*/
+
 func paramsValidate(params any) error {
-	// todo: check nil params
+	if params == nil {
+		return nil
+	}
+
 	v := reflect.ValueOf(params).Elem()
 
 	var errors []string
 
 	for i := 0; i < v.NumField(); i++ {
-		jsonTag := v.Type().Field(i).Tag.Get("json")
-		if jsonTag == "-" || jsonTag == "" {
-			continue
-		}
-		omitempty := strings.Contains(jsonTag, ",omitempty")
-
-		if omitempty && v.Field(i).IsZero() {
-			continue
-		}
-
 		rulesTag := v.Type().Field(i).Tag.Get("rules")
 		if rulesTag == "" {
 			continue
 		}
 
 		rules := strings.Split(rulesTag, ",")
-
-		fieldName := v.Type().Field(i).Name
-		value := v.Field(i)
 
 		var fieldErrors []string
 
@@ -45,10 +58,10 @@ func paramsValidate(params any) error {
 
 			ruleFunc, ok := validationRules[ruleName]
 			if !ok {
-				return fmt.Errorf("rule %s not found", ruleName)
+				return fmt.Errorf("%s: validation rule '%s' is not found", v.Type().Field(i).Name, ruleName)
 			}
 
-			fieldErrors = append(fieldErrors, ruleFunc(value, ruleParams))
+			fieldErrors = append(fieldErrors, ruleFunc(v, v.Field(i), ruleParams))
 		}
 
 		var errorsStrings []string
@@ -60,7 +73,7 @@ func paramsValidate(params any) error {
 		}
 
 		if len(errorsStrings) > 0 {
-			errors = append(errors, fmt.Sprintf("%s: %s", fieldName, strings.Join(errorsStrings, ", ")))
+			errors = append(errors, fmt.Sprintf("%s: %s", v.Type().Field(i).Name, strings.Join(errorsStrings, ", ")))
 		}
 	}
 
@@ -71,39 +84,126 @@ func paramsValidate(params any) error {
 	return nil
 }
 
-type validationRuleFunc func(value reflect.Value, ruleParams []string) string
+type validationRuleFunc func(value, field reflect.Value, ruleParams []string) string
 
 var validationRules = map[string]validationRuleFunc{
+	"chat_id":           paramsValidateChatID,
 	"required":          paramsValidateRequired,
-	"type":              paramsValidateType,
 	"required_if_empty": paramsValidateRequiredIfEmpty,
+	"min":               paramsValidateMin,
+	"max":               paramsValidateMax,
+	"equals":            paramsValidateEquals,
 }
 
-// todo: check slice len
-// todo: child struct
-// todo: equals
-// todo: min,max
+// paramsValidateMin validates that value is greater than min
+func paramsValidateMin(_, field reflect.Value, params []string) string {
+	if len(params) != 1 {
+		return "validation rule 'min' must have one parameter"
+	}
 
-func paramsValidateRequiredIfEmpty(value reflect.Value, params []string) string {
-	// todo:
-	return "not implemented"
+	min, err := strconv.Atoi(params[0])
+	if err != nil {
+		return "validation rule 'min' parameter must be a number"
+	}
+
+	if field.Kind() == reflect.String {
+		if field.Len() < min {
+			return fmt.Sprintf("string length must be greater than %d", min)
+		}
+	} else if field.Kind() == reflect.Int {
+		if field.Int() < int64(min) {
+			return fmt.Sprintf("value must be greater than %d", min)
+		}
+	} else if field.Kind() == reflect.Slice {
+		if field.Len() < min {
+			return fmt.Sprintf("slice length must be greater than %d", min)
+		}
+	} else {
+		return fmt.Sprintf("validation rule 'min' is not supported for type '%s'", field.Kind().String())
+	}
+
+	return ""
 }
 
-func paramsValidateType(value reflect.Value, ruleParams []string) string {
-	if value.IsNil() {
+// paramsValidateMax validates that value is less than max
+func paramsValidateMax(_, field reflect.Value, params []string) string {
+	if len(params) != 1 {
+		return "validation rule 'max' must have one parameter"
+	}
+
+	max, err := strconv.Atoi(params[0])
+	if err != nil {
+		return "validation rule 'max' parameter must be a number"
+	}
+
+	if field.Kind() == reflect.String {
+		if field.Len() > max {
+			return fmt.Sprintf("string length must be less than %d", max)
+		}
+	} else if field.Kind() == reflect.Int {
+		if field.Int() > int64(max) {
+			return fmt.Sprintf("value must be less than %d", max)
+		}
+	} else if field.Kind() == reflect.Slice {
+		if field.Len() > max {
+			return fmt.Sprintf("slice length must be less than %d", max)
+		}
+	} else {
+		return fmt.Sprintf("validation rule 'max' is not supported for type '%s'", field.Kind().String())
+	}
+
+	return ""
+}
+
+// paramsValidateEquals validates that value is equals to one of the params
+func paramsValidateEquals(_, field reflect.Value, params []string) string {
+	if len(params) == 0 {
+		return "validation rule 'equals' must have at least one parameter"
+	}
+
+	for _, param := range params {
+		if field.String() == param {
+			return ""
+		}
+	}
+
+	return fmt.Sprintf("value must be one of: %s", strings.Join(params, ", "))
+}
+
+// paramsValidateRequiredIfEmpty validates that field is required if params fields is empty
+func paramsValidateRequiredIfEmpty(value, field reflect.Value, params []string) string {
+	if len(params) < 1 {
+		return "validation rule 'required_if_empty' must have at least one parameter"
+	}
+
+	fieldIsEmpty := field.IsZero()
+
+	for _, param := range params {
+		if value.FieldByName(param).IsZero() && fieldIsEmpty {
+			return fmt.Sprintf("field is required, because '%s' is empty", param)
+		}
+	}
+
+	return ""
+}
+
+// paramsValidateChatID validates that field is a string or int
+func paramsValidateChatID(_, field reflect.Value, _ []string) string {
+	if field.IsNil() || field.IsZero() {
 		return ""
 	}
-	typeName := reflect.TypeOf(value.Interface()).Kind().String()
-	for _, t := range ruleParams {
+	typeName := reflect.TypeOf(field.Interface()).Kind().String()
+	for _, t := range []string{"string", "int"} {
 		if typeName == t {
 			return ""
 		}
 	}
-	return fmt.Sprintf("invalid type '%s', expected one of %s", typeName, strings.Join(ruleParams, ", "))
+	return fmt.Sprintf("invalid type '%s', expected one of: string, int", typeName)
 }
 
-func paramsValidateRequired(value reflect.Value, _ []string) string {
-	if value.IsZero() {
+// paramsValidateRequired validates that field is not nil and not empty
+func paramsValidateRequired(_, field reflect.Value, _ []string) string {
+	if field.IsZero() {
 		return "is required"
 	}
 	return ""

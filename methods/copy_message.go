@@ -8,7 +8,7 @@ import (
 )
 
 type CopyMessageParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
 	FromChatID               string                 `json:"from_chat_id" rules:"required"`
 	MessageID                int                    `json:"message_id" rules:"required"`
 	Caption                  string                 `json:"caption,omitempty"`

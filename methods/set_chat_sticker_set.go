@@ -7,7 +7,7 @@ import (
 )
 
 type SetChatStickerSetParams struct {
-	ChatID         any    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID         any    `json:"chat_id" rules:"required,chat_id"`
 	StickerSetName string `json:"sticker_set_name" rules:"required"`
 }
 

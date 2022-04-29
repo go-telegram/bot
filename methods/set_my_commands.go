@@ -8,9 +8,9 @@ import (
 )
 
 type SetMyCommandsParams struct {
-	Commands     []models.BotCommand    `json:"commands" rules:"required,max:100"`
-	Scope        models.BotCommandScope `json:"scope,omitempty"`
-	LanguageCode string                 `json:"language_code,omitempty"`
+	Commands     []models.BotCommand `json:"commands" rules:"required,max:100"`
+	Scope        BotCommandScope     `json:"scope,omitempty"`
+	LanguageCode string              `json:"language_code,omitempty"`
 }
 
 // SetMyCommands https://core.telegram.org/bots/api#setmycommands

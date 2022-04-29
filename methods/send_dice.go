@@ -8,7 +8,7 @@ import (
 )
 
 type SendDiceParams struct {
-	ChatID                   any                `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                `json:"chat_id" rules:"required,chat_id"`
 	Emoji                    string             `json:"emoji,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`

@@ -8,7 +8,7 @@ import (
 )
 
 type SendContactParams struct {
-	ChatID                   any                `json:"chat_id" rules:"required,type:string|int"`
+	ChatID                   any                `json:"chat_id" rules:"required,chat_id"`
 	PhoneNumber              string             `json:"phone_number" rules:"required"`
 	FirstName                string             `json:"first_name" rules:"required"`
 	LastName                 string             `json:"last_name,omitempty"`

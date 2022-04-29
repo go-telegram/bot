@@ -4,12 +4,11 @@ import (
 	"context"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 )
 
 type DeleteMyCommandsParams struct {
-	Scope        models.BotCommandScope `json:"scope,omitempty"`
-	LanguageCode string                 `json:"language_code,omitempty"`
+	Scope        BotCommandScope `json:"scope,omitempty"`
+	LanguageCode string          `json:"language_code,omitempty"`
 }
 
 // DeleteMyCommands https://core.telegram.org/bots/api#deletemycommands

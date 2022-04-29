@@ -7,7 +7,7 @@ import (
 )
 
 type SetChatDescriptionParams struct {
-	ChatID      any    `json:"chat_id" rules:"required,type:string|int"`
+	ChatID      any    `json:"chat_id" rules:"required,chat_id"`
 	Description string `json:"title" rules:"max:255"`
 }
 

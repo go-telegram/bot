@@ -2,13 +2,13 @@ package methods
 
 import (
 	"context"
+	"github.com/go-telegram/bot/models"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 )
 
 type SetChatPhotoParams struct {
-	ChatID any              `json:"chat_id" rules:"required,type:string|int"`
+	ChatID any              `json:"chat_id" rules:"required,chat_id"`
 	Photo  models.InputFile `json:"photo" rules:"required"`
 }
 

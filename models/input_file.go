@@ -6,16 +6,9 @@ import (
 
 type InputFileType int
 
-const (
-	InputFileTypeUpload InputFileType = iota
-	InputFileTypeString
-)
-
 // InputFile https://core.telegram.org/bots/api#inputfile
 type InputFile interface {
 	inputFileTag()
-
-	Type() InputFileType
 }
 
 type InputFileUpload struct {
@@ -24,10 +17,6 @@ type InputFileUpload struct {
 }
 
 func (InputFileUpload) inputFileTag() {}
-
-func (i *InputFileUpload) Type() InputFileType {
-	return InputFileTypeUpload
-}
 
 func (i *InputFileUpload) MarshalJSON() ([]byte, error) {
 	return []byte(`"@` + i.Filename + `"`), nil
@@ -38,10 +27,6 @@ type InputFileString struct {
 }
 
 func (InputFileString) inputFileTag() {}
-
-func (i *InputFileString) Type() InputFileType {
-	return InputFileTypeString
-}
 
 func (i *InputFileString) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + i.Data + `"`), nil
