@@ -65,6 +65,16 @@ b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 b.Start(context.TODO())
 ```
 
+You can to define default handler for the bot:
+
+```go
+b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", bot.WithDefaultHandler(handler))
+
+func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	// this handler will be called for all updates
+}
+```
+
 ## Available methods
 
 All available methods are listed in the [Telegram Bot API documentation](https://core.telegram.org/bots/api)
@@ -76,6 +86,10 @@ You can find these methods in the `methods` package. All methods have name like 
 ## Options
 
 You can use options to customize the bot.
+
+```go
+b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+```
 
 Full list of options you can find [here](options.go)
 
@@ -92,6 +106,9 @@ b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, mySt
 
 b.Start(context.TODO())
 ```
+
+> also you can use options `WithMessageTextHandler` and `WithCallbackQueryDataHandler`
+
 
 In this example, the handler will be called when the user sends `/start` message. All other messages will be handled by the default handler.
 
