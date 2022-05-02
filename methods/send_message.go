@@ -8,8 +8,8 @@ import (
 )
 
 type SendMessageParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
-	Text                     string                 `json:"text" rules:"required"`
+	ChatID                   any                    `json:"chat_id"`
+	Text                     string                 `json:"text"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities                 []models.MessageEntity `json:"entities,omitempty"`
 	DisableWebPagePreview    bool                   `json:"disable_web_page_preview,omitempty"`

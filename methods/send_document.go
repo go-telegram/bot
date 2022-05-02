@@ -8,8 +8,8 @@ import (
 )
 
 type SendDocumentParams struct {
-	ChatID                      any                    `json:"chat_id" rules:"required,chat_id"`
-	Document                    string                 `json:"document" rules:"required"`
+	ChatID                      any                    `json:"chat_id"`
+	Document                    string                 `json:"document"`
 	Thumb                       string                 `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`

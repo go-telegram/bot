@@ -7,7 +7,7 @@ import (
 )
 
 type UnpinAllChatMessagesParams struct {
-	ChatID any `json:"chat_id" rules:"required,chat_id"`
+	ChatID any `json:"chat_id"`
 }
 
 // UnpinAllChatMessages https://core.telegram.org/bots/api#unpinallchatmessages

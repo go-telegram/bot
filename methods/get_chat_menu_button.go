@@ -8,7 +8,7 @@ import (
 )
 
 type GetChatMenuButtonParams struct {
-	ChatID any `json:"chat_id" rules:"type:string|int"`
+	ChatID any `json:"chat_id"`
 }
 
 // GetChatMenuButton https://core.telegram.org/bots/api#getchatmenubutton

@@ -8,7 +8,7 @@ import (
 )
 
 type SendGameParams struct {
-	ChatID                   any                `json:"chat_id" rules:"required,chat_id"`
+	ChatID                   any                `json:"chat_id"`
 	GameShorName             string             `json:"game_short_name"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`

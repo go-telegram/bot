@@ -8,8 +8,8 @@ import (
 )
 
 type AnswerInlineQueryParams struct {
-	InlineQueryID     string                     `json:"inline_query_id" rules:"required"`
-	Results           []models.InlineQueryResult `json:"results" rules:"required"`
+	InlineQueryID     string                     `json:"inline_query_id"`
+	Results           []models.InlineQueryResult `json:"results"`
 	CacheTime         int                        `json:"cache_time,omitempty"`
 	IsPersonal        bool                       `json:"is_personal,omitempty"`
 	NextOffset        string                     `json:"next_offset,omitempty"`

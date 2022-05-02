@@ -7,8 +7,8 @@ import (
 )
 
 type SetChatTitleParams struct {
-	ChatID any    `json:"chat_id" rules:"required,chat_id"`
-	Title  string `json:"title" rules:"required,min:1,max:255"`
+	ChatID any    `json:"chat_id"`
+	Title  string `json:"title"`
 }
 
 // SetChatTitle https://core.telegram.org/bots/api#setchattitle

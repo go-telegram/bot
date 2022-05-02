@@ -8,8 +8,8 @@ import (
 )
 
 type SendVideoParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
-	Video                    models.InputFile       `json:"video" rules:"required"`
+	ChatID                   any                    `json:"chat_id"`
+	Video                    models.InputFile       `json:"video"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`

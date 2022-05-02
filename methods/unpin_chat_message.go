@@ -7,7 +7,7 @@ import (
 )
 
 type UnpinChatMessageParams struct {
-	ChatID    any `json:"chat_id" rules:"required,chat_id"`
+	ChatID    any `json:"chat_id"`
 	MessageID int `json:"message_id,omitempty"`
 }
 

@@ -8,8 +8,8 @@ import (
 )
 
 type SendAudioParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
-	Audio                    models.InputFile       `json:"audio" rules:"required"`
+	ChatID                   any                    `json:"chat_id"`
+	Audio                    models.InputFile       `json:"audio"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`

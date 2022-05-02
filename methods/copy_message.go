@@ -8,9 +8,9 @@ import (
 )
 
 type CopyMessageParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
-	FromChatID               string                 `json:"from_chat_id" rules:"required"`
-	MessageID                int                    `json:"message_id" rules:"required"`
+	ChatID                   any                    `json:"chat_id"`
+	FromChatID               string                 `json:"from_chat_id"`
+	MessageID                int                    `json:"message_id"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`

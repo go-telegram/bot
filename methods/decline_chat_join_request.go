@@ -7,8 +7,8 @@ import (
 )
 
 type DeclineChatJoinRequestParams struct {
-	ChatID any `json:"chat_id" rules:"required,chat_id"`
-	UserID int `json:"user_id" rules:"required"`
+	ChatID any `json:"chat_id"`
+	UserID int `json:"user_id"`
 }
 
 // DeclineChatJoinRequest https://core.telegram.org/bots/api#declinechatjoinrequest

@@ -8,8 +8,8 @@ import (
 )
 
 type SetChatPhotoParams struct {
-	ChatID any              `json:"chat_id" rules:"required,chat_id"`
-	Photo  models.InputFile `json:"photo" rules:"required"`
+	ChatID any              `json:"chat_id"`
+	Photo  models.InputFile `json:"photo"`
 }
 
 // SetChatPhoto https://core.telegram.org/bots/api#setchatphoto

@@ -8,7 +8,7 @@ import (
 )
 
 type SetChatPermissionsParams struct {
-	ChatID      any                    `json:"chat_id" rules:"required,chat_id"`
+	ChatID      any                    `json:"chat_id"`
 	Permissions models.ChatPermissions `json:"permissions"`
 }
 

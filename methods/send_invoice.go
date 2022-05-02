@@ -8,11 +8,11 @@ import (
 )
 
 type SendInvoiceParams struct {
-	ChatID                    any                   `json:"chat_id" rules:"required,chat_id"`
-	Title                     string                `json:"title" rules:"required,min:1,max:32"`
-	Description               string                `json:"description" rules:"required,min:1,max:255"`
-	Payload                   string                `json:"payload" rules:"required,min:1,max:128"`
-	ProviderToken             string                `json:"provider_token" rules:"required"`
+	ChatID                    any                   `json:"chat_id"`
+	Title                     string                `json:"title"`
+	Description               string                `json:"description"`
+	Payload                   string                `json:"payload"`
+	ProviderToken             string                `json:"provider_token"`
 	Currency                  string                `json:"currency"`
 	Prices                    []models.LabeledPrice `json:"prices"`
 	MaxTipAmount              int                   `json:"max_tip_amount,omitempty"`

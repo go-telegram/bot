@@ -8,10 +8,10 @@ import (
 )
 
 type EditMessageTextParams struct {
-	ChatID                any                    `json:"chat_id" rules:"required_if_empty:InlineMessageID,chat_id"`
-	MessageID             int                    `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
-	InlineMessageID       string                 `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID|MessageID"`
-	Text                  string                 `json:"text" rules:"required"`
+	ChatID                any                    `json:"chat_id"`
+	MessageID             int                    `json:"message_id,omitempty"`
+	InlineMessageID       string                 `json:"inline_message_id,omitempty"`
+	Text                  string                 `json:"text"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities              []models.MessageEntity `json:"caption_entities,omitempty"`
 	DisableWebPagePreview bool                   `json:"disable_web_page_preview,omitempty"`

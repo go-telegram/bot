@@ -8,9 +8,9 @@ import (
 )
 
 type SendLocationParams struct {
-	ChatID                   any                `json:"chat_id" rules:"required,chat_id"`
-	Latitude                 float64            `json:"latitude" rules:"required"`
-	Longitude                float64            `json:"longitude" rules:"required"`
+	ChatID                   any                `json:"chat_id"`
+	Latitude                 float64            `json:"latitude"`
+	Longitude                float64            `json:"longitude"`
 	HorizontalAccuracy       float64            `json:"horizontal_accuracy,omitempty"`
 	LivePeriod               int                `json:"live_period,omitempty"`
 	Heading                  int                `json:"heading,omitempty"`

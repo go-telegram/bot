@@ -8,7 +8,7 @@ import (
 )
 
 type SetMyCommandsParams struct {
-	Commands     []models.BotCommand `json:"commands" rules:"required,max:100"`
+	Commands     []models.BotCommand `json:"commands"`
 	Scope        BotCommandScope     `json:"scope,omitempty"`
 	LanguageCode string              `json:"language_code,omitempty"`
 }

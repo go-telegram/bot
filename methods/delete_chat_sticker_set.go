@@ -7,8 +7,8 @@ import (
 )
 
 type DeleteChatStickerSetParams struct {
-	ChatID         any    `json:"chat_id" rules:"required,chat_id"`
-	StickerSetName string `json:"sticker_set_name" rules:"required"`
+	ChatID         any    `json:"chat_id"`
+	StickerSetName string `json:"sticker_set_name"`
 }
 
 // DeleteChatStickerSet https://core.telegram.org/bots/api#deletechatstickerset

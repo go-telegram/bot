@@ -8,8 +8,8 @@ import (
 )
 
 type StopPollParams struct {
-	ChatID      any                `json:"chat_id" rules:"required,chat_id"`
-	MessageID   int                `json:"message_id" rules:"required"`
+	ChatID      any                `json:"chat_id"`
+	MessageID   int                `json:"message_id"`
 	ReplyMarkup models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 

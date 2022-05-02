@@ -7,8 +7,8 @@ import (
 )
 
 type AnswerCallbackQueryParams struct {
-	CallbackQueryID string `json:"callback_query_id" rules:"required"`
-	Text            string `json:"text,omitempty" rules:"max:200"`
+	CallbackQueryID string `json:"callback_query_id"`
+	Text            string `json:"text,omitempty"`
 	ShowAlert       bool   `json:"show_alert,omitempty"`
 	URL             string `json:"url,omitempty"`
 	CacheTime       int    `json:"cache_time,omitempty"`

@@ -8,9 +8,9 @@ import (
 )
 
 type EditMessageCaptionParams struct {
-	ChatID                any                    `json:"chat_id" rules:"required_if_empty:InlineMessageID,chat_id"`
-	MessageID             int                    `json:"message_id,omitempty" rules:"required_if_empty:InlineMessageID"`
-	InlineMessageID       string                 `json:"inline_message_id,omitempty" rules:"required_if_empty:ChatID|MessageID"`
+	ChatID                any                    `json:"chat_id"`
+	MessageID             int                    `json:"message_id,omitempty"`
+	InlineMessageID       string                 `json:"inline_message_id,omitempty"`
 	Caption               string                 `json:"caption,omitempty"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity `json:"caption_entities,omitempty"`

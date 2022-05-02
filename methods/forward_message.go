@@ -8,11 +8,11 @@ import (
 )
 
 type ForwardMessageParams struct {
-	ChatID              any    `json:"chat_id" rules:"required,chat_id"`
-	FromChatID          string `json:"from_chat_id" rules:"required"`
+	ChatID              any    `json:"chat_id"`
+	FromChatID          string `json:"from_chat_id"`
 	DisableNotification bool   `json:"disable_notification,omitempty"`
 	ProtectContent      bool   `json:"protect_content,omitempty"`
-	MessageID           int    `json:"message_id" rules:"required"`
+	MessageID           int    `json:"message_id"`
 }
 
 // ForwardMessage https://core.telegram.org/bots/api#forwardmessage

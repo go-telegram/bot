@@ -7,8 +7,8 @@ import (
 )
 
 type PinChatMessageParams struct {
-	ChatID              any  `json:"chat_id" rules:"required,chat_id"`
-	MessageID           int  `json:"message_id" rules:"required"`
+	ChatID              any  `json:"chat_id"`
+	MessageID           int  `json:"message_id"`
 	DisableNotification bool `json:"disable_notification,omitempty"`
 }
 

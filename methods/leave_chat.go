@@ -7,7 +7,7 @@ import (
 )
 
 type LeaveChatParams struct {
-	ChatID any `json:"chat_id" rules:"required,chat_id"`
+	ChatID any `json:"chat_id"`
 }
 
 // LeaveChat https://core.telegram.org/bots/api#leavechat

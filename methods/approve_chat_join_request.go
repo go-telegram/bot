@@ -7,8 +7,8 @@ import (
 )
 
 type ApproveChatJoinRequestParams struct {
-	ChatID any `json:"chat_id" rules:"required,chat_id"`
-	UserID int `json:"user_id" rules:"required"`
+	ChatID any `json:"chat_id"`
+	UserID int `json:"user_id"`
 }
 
 // ApproveChatJoinRequest https://core.telegram.org/bots/api#approvechatjoinrequest

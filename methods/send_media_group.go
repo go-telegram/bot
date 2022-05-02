@@ -8,8 +8,8 @@ import (
 )
 
 type SendMediaGroupParams struct {
-	ChatID                   any                 `json:"chat_id" rules:"required,chat_id"`
-	Media                    []models.InputMedia `json:"media" rules:"required,min:1"`
+	ChatID                   any                 `json:"chat_id"`
+	Media                    []models.InputMedia `json:"media"`
 	DisableNotification      bool                `json:"disable_notification,omitempty"`
 	ProtectContent           bool                `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                 `json:"reply_to_message_id,omitempty"`

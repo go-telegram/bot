@@ -8,8 +8,8 @@ import (
 )
 
 type SendVideoNoteParams struct {
-	ChatID                   any                `json:"chat_id" rules:"required,chat_id"`
-	VideoNote                models.InputFile   `json:"video_note" rules:"required"`
+	ChatID                   any                `json:"chat_id"`
+	VideoNote                models.InputFile   `json:"video_note"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
 	Thumb                    string             `json:"thumb,omitempty"`

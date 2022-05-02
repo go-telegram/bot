@@ -8,8 +8,8 @@ import (
 )
 
 type SendAnimationParams struct {
-	ChatID                   any                    `json:"chat_id" rules:"required,chat_id"`
-	Animation                models.InputFile       `json:"animation" rules:"required"`
+	ChatID                   any                    `json:"chat_id"`
+	Animation                models.InputFile       `json:"animation"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`

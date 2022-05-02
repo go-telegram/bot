@@ -8,7 +8,7 @@ import (
 )
 
 type SetChatMenuButtonParams struct {
-	ChatID     any                    `json:"chat_id" rules:"type:string|int"`
+	ChatID     any                    `json:"chat_id"`
 	MenuButton models.InputMenuButton `json:"menu_button"`
 }
 

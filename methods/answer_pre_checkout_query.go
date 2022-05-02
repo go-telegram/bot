@@ -7,7 +7,7 @@ import (
 )
 
 type AnswerPreCheckoutQueryParams struct {
-	PreCheckoutQueryID string `json:"pre_checkout_query_id" rules:"required"`
+	PreCheckoutQueryID string `json:"pre_checkout_query_id"`
 	OK                 bool   `json:"ok"`
 	ErrorMessage       string `json:"error_message,omitempty"`
 }

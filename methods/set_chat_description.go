@@ -7,8 +7,8 @@ import (
 )
 
 type SetChatDescriptionParams struct {
-	ChatID      any    `json:"chat_id" rules:"required,chat_id"`
-	Description string `json:"title" rules:"max:255"`
+	ChatID      any    `json:"chat_id"`
+	Description string `json:"title"`
 }
 
 // SetChatDescription https://core.telegram.org/bots/api#setchatdescription

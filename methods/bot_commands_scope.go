@@ -7,52 +7,52 @@ type BotCommandScope interface {
 
 // BotCommandScopeDefault https://core.telegram.org/bots/api#botcommandscopedefault
 type BotCommandScopeDefault struct {
-	Type string `json:"type" rules:"equals:default"`
+	Type string `json:"type"`
 }
 
 func (BotCommandScopeDefault) botCommandScopeTag() {}
 
 // BotCommandScopeAllPrivateChats https://core.telegram.org/bots/api#botcommandscopeallprivatechats
 type BotCommandScopeAllPrivateChats struct {
-	Type string `json:"type" rules:"equals:all_private_chats"`
+	Type string `json:"type"`
 }
 
 func (BotCommandScopeAllPrivateChats) botCommandScopeTag() {}
 
 // BotCommandScopeAllGroupChats https://core.telegram.org/bots/api#botcommandscopeallgroupchats
 type BotCommandScopeAllGroupChats struct {
-	Type string `json:"type" rules:"equals:all_group_chats"`
+	Type string `json:"type"` // todo
 }
 
 func (BotCommandScopeAllGroupChats) botCommandScopeTag() {}
 
 // BotCommandScopeAllChatAdministrators https://core.telegram.org/bots/api#botcommandscopeallchatadministrators
 type BotCommandScopeAllChatAdministrators struct {
-	Type string `json:"type" rules:"equals:all_chat_administrators"`
+	Type string `json:"type"`
 }
 
 func (BotCommandScopeAllChatAdministrators) botCommandScopeTag() {}
 
 // BotCommandScopeChat https://core.telegram.org/bots/api#botcommandscopechat
 type BotCommandScopeChat struct {
-	Type string `json:"type" rules:"equals:chat"`
+	Type string `json:"type"`
 }
 
 func (BotCommandScopeChat) botCommandScopeTag() {}
 
 // BotCommandScopeChatAdministrators https://core.telegram.org/bots/api#botcommandscopechatadministrators
 type BotCommandScopeChatAdministrators struct {
-	Type   string `json:"type" rules:"equals:chat_administrators"`
-	ChatID any    `json:"chat_id" rules:"required,chat_id"`
+	Type   string `json:"type"`
+	ChatID any    `json:"chat_id"`
 }
 
 func (BotCommandScopeChatAdministrators) botCommandScopeTag() {}
 
 // BotCommandScopeChatMember https://core.telegram.org/bots/api#botcommandscopechatmember
 type BotCommandScopeChatMember struct {
-	Type   string `json:"type" rules:"equals:chat_member"`
-	ChatID any    `json:"chat_id" rules:"required,chat_id"`
-	UserID int    `json:"user_id" rules:"required"`
+	Type   string `json:"type"`
+	ChatID any    `json:"chat_id"`
+	UserID int    `json:"user_id"`
 }
 
 func (BotCommandScopeChatMember) botCommandScopeTag() {}

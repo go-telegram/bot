@@ -22,11 +22,6 @@ func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any
 	contentType := "application/json"
 
 	if params != nil {
-		errValidate := paramsValidate(params)
-		if errValidate != nil {
-			return fmt.Errorf("error params validate for method %s, %w", method, errValidate)
-		}
-
 		buf := bytes.NewBuffer(nil)
 		form := multipart.NewWriter(buf)
 

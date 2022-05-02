@@ -8,7 +8,7 @@ import (
 )
 
 type AnswerShippingQueryParams struct {
-	ShippingQueryID string                  `json:"shipping_query_id" rules:"required"`
+	ShippingQueryID string                  `json:"shipping_query_id"`
 	OK              bool                    `json:"ok"`
 	ShippingOptions []models.ShippingOption `json:"shipping_options,omitempty"`
 	ErrorMessage    string                  `json:"error_message,omitempty"`

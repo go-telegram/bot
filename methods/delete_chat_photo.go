@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteChatPhotoParams struct {
-	ChatID any `json:"chat_id" rules:"required,chat_id"`
+	ChatID any `json:"chat_id"`
 }
 
 // DeleteChatPhoto https://core.telegram.org/bots/api#deletechatphoto
