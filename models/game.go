@@ -9,3 +9,10 @@ type Game struct {
 	TextEntities []MessageEntity `json:"text_entities,omitempty"`
 	Animation    *Animation      `json:"animation,omitempty"`
 }
+
+// GameHighScore https://core.telegram.org/bots/api#gamehighscore
+type GameHighScore struct {
+	Position int  `json:"position"`
+	User     User `json:"user"`
+	Score    int  `json:"score"`
+}
