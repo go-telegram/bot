@@ -10,3 +10,8 @@ type WebAppData struct {
 type WebAppInfo struct {
 	URL string `json:"url"`
 }
+
+// SentWebAppMessage https://core.telegram.org/bots/api#sentwebappmessage
+type SentWebAppMessage struct {
+	InlineMessageID string `json:"inline_message_id"`
+}
