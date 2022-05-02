@@ -144,7 +144,7 @@ methods.SendMessage(ctx, b, &methods.SendMessageParams{...})
 You can use options to customize the bot.
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 ```
 
 Full list of options you can find [here](options.go)
