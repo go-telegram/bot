@@ -1,12 +1,6 @@
 package models
 
-type OrderInfo struct {
-	Name            string           `json:"name,omitempty"`
-	PhoneNumber     string           `json:"phone_number,omitempty"`
-	Email           string           `json:"email,omitempty"`
-	ShippingAddress *ShippingAddress `json:"shipping_address,omitempty"`
-}
-
+// PreCheckoutQuery https://core.telegram.org/bots/api#precheckoutquery
 type PreCheckoutQuery struct {
 	ID               string     `json:"id"`
 	From             *User      `json:"from"`
