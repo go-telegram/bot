@@ -15,7 +15,6 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	"strconv"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/methods"
@@ -85,6 +84,20 @@ You can find these methods in the `methods` package. All methods have name like 
 
 `methods.SendMessage`, `methods.GetMe`, `methods.SendPhoto`, etc
 
+All methods have signature `(ctx context.Context, b *bot.Bot, params <PARAMS>) (<response>, error)`.
+Except `GetMe`, `Login` and `Logout` which are have not params
+
+`<PARAMS>` is a struct with fields that corresponds to Telegram Bot API parameters.
+All Params structs have name like for corresponded methods, but with `Params` suffix.
+
+`SendMessageParams` for `SendMessage` method etc.
+
+You should pass params by pointer
+
+```go
+methods.SendMessage(ctx, b, &methods.SendMessageParams{...})
+```
+
 ## Options
 
 You can use options to customize the bot.
@@ -109,7 +122,7 @@ b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, mySt
 b.Start(context.TODO())
 ```
 
-> also you can use options `WithMessageTextHandler` and `WithCallbackQueryDataHandler`
+> also you can use bot init options `WithMessageTextHandler` and `WithCallbackQueryDataHandler`
 
 
 In this example, the handler will be called when the user sends `/start` message. All other messages will be handled by the default handler.
