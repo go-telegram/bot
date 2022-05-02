@@ -4,6 +4,8 @@
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
+**Bot API: 6.0**
+
 It's a Go zero-dependencies telegram bot framework
 
 A simple example `echo-bot`:
@@ -85,7 +87,7 @@ You can find these methods in the `methods` package. All methods have name like 
 `methods.SendMessage`, `methods.GetMe`, `methods.SendPhoto`, etc
 
 All methods have signature `(ctx context.Context, b *bot.Bot, params <PARAMS>) (<response>, error)`.
-Except `GetMe`, `Login` and `Logout` which are have not params
+Except `GetMe`, `Close` and `Logout` which are have not params
 
 `<PARAMS>` is a struct with fields that corresponds to Telegram Bot API parameters.
 All Params structs have name like for corresponded methods, but with `Params` suffix.
