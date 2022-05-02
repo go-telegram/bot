@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"))
+	b := bot.New(context.Background(), os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"))
 
 	user, err := methods.GetMe(context.Background(), b)
 	if err != nil {

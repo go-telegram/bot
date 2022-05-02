@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"errors"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -14,8 +13,6 @@ const (
 	maxTimeoutAfterError = time.Second * 5
 )
 
-// https://core.telegram.org/bots/api#getupdates
-
 type getUpdatesParams struct {
 	Offset         int64    `json:"offset,omitempty"`
 	Limit          int      `json:"limit,omitempty"`
@@ -23,9 +20,8 @@ type getUpdatesParams struct {
 	AllowedUpdates []string `json:"allowed_updates,omitempty"`
 }
 
-func (b *Bot) watchUpdates(ctx context.Context, wg *sync.WaitGroup, updatesChan chan<- *models.Update) {
-	defer wg.Done()
-
+// GetUpdates https://core.telegram.org/bots/api#getupdates
+func (b *Bot) GetUpdates(ctx context.Context) {
 	var timeoutAfterError time.Duration
 
 	for {
@@ -66,7 +62,7 @@ func (b *Bot) watchUpdates(ctx context.Context, wg *sync.WaitGroup, updatesChan 
 		for _, upd := range updates {
 			atomic.StoreInt64(&b.lastUpdateID, upd.ID)
 			select {
-			case updatesChan <- upd:
+			case b.updates <- upd:
 			default:
 				b.error("error send update to processing, channel is full")
 			}

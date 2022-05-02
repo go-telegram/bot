@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/signal"
 
@@ -17,13 +18,31 @@ func main() {
 	defer cancel()
 
 	opts := []bot.Option{
-		bot.WithDebug(),
+		bot.WithMiddlewares(showMessageWithUserID, showMessageWithUserName),
 		bot.WithDefaultHandler(handler),
 	}
 
 	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	b.GetUpdates(ctx)
+}
+
+func showMessageWithUserID(next bot.HandlerFunc) bot.HandlerFunc {
+	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		if update.Message != nil {
+			log.Printf("%d say: %s", update.Message.From.ID, update.Message.Text)
+		}
+		next(ctx, b, update)
+	}
+}
+
+func showMessageWithUserName(next bot.HandlerFunc) bot.HandlerFunc {
+	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		if update.Message != nil {
+			log.Printf("%s say: %s", update.Message.From.FirstName, update.Message.Text)
+		}
+		next(ctx, b, update)
+	}
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {

@@ -2,8 +2,6 @@ package bot
 
 import (
 	"context"
-	"sync"
-
 	"github.com/go-telegram/bot/models"
 )
 
@@ -18,9 +16,7 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 	return wrapped
 }
 
-func (b *Bot) processUpdate(ctx context.Context, wg *sync.WaitGroup, upd *models.Update) {
-	defer wg.Done()
-
+func (b *Bot) processUpdate(ctx context.Context, upd *models.Update) {
 	h := b.defaultHandlerFunc
 
 	defer func() {
