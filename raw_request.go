@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 )
@@ -17,14 +18,30 @@ type apiResponse struct {
 }
 
 func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any) error {
-	errValidate := paramsValidate(params)
-	if errValidate != nil {
-		return fmt.Errorf("error params validate for method %s, %w", method, errValidate)
-	}
+	var httpBody io.Reader = http.NoBody
+	contentType := "application/json"
 
-	contentType, formData, errFormData := buildRequestForm(params)
-	if errFormData != nil {
-		return fmt.Errorf("error build request form for method %s, %w", method, errFormData)
+	if params != nil {
+		errValidate := paramsValidate(params)
+		if errValidate != nil {
+			return fmt.Errorf("error params validate for method %s, %w", method, errValidate)
+		}
+
+		buf := bytes.NewBuffer(nil)
+		form := multipart.NewWriter(buf)
+
+		errFormData := buildRequestForm(form, params)
+		if errFormData != nil {
+			return fmt.Errorf("error build request form for method %s, %w", method, errFormData)
+		}
+
+		errFormClose := form.Close()
+		if errFormClose != nil {
+			return fmt.Errorf("error form close for method %s, %w", method, errFormClose)
+		}
+
+		httpBody = buf
+		contentType = form.FormDataContentType()
 	}
 
 	u := b.url + "/bot" + b.token + "/" + method
@@ -34,7 +51,7 @@ func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any
 		b.debug("request url: %s, payload: %s", u, requestDebugData)
 	}
 
-	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, formData)
+	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, httpBody)
 	if errRequest != nil {
 		return fmt.Errorf("error create request for method %s, %w", method, errRequest)
 	}

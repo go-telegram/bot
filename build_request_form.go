@@ -5,32 +5,19 @@ import (
 	"encoding/json"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"reflect"
 	"strings"
 
 	"github.com/go-telegram/bot/models"
 )
 
-type MarshalInputMedia interface {
-	MarshalInputMedia() ([]byte, error)
-}
-
-//var marshalInputMediaType = reflect.TypeOf(new(MarshalInputMedia))
+var inputMediaInterface = reflect.TypeOf(new(models.InputMedia)).Elem()
+var inlineQueryResultInterface = reflect.TypeOf(new(models.InlineQueryResult)).Elem()
 
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file. Also, for InputMedia attachments
-// It returns content-type and form-data. And error if occurred
-func buildRequestForm(params any) (string, io.Reader, error) {
-	if params == nil {
-		return "application/json", http.NoBody, nil
-	}
-
-	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
+func buildRequestForm(form *multipart.Writer, params any) error {
 	v := reflect.ValueOf(params).Elem()
-
-	var fieldsCount int
 
 	for i := 0; i < v.NumField(); i++ {
 		jsonTag := v.Type().Field(i).Tag.Get("json")
@@ -44,97 +31,155 @@ func buildRequestForm(params any) (string, io.Reader, error) {
 			continue
 		}
 
-		var w io.Writer
-		var errCreateField error
-		var data io.Reader
+		// check fields by interface
+		if v.Field(i).Type().Implements(inputMediaInterface) {
+			err := addFormFieldInputMedia(form, fieldName, v.Field(i).Interface().(models.InputMedia))
+			if err != nil {
+				return err
+			}
+			continue
+		}
 
+		if v.Field(i).Type().Implements(inlineQueryResultInterface) {
+			err := addFormFieldInlineQueryResult(form, fieldName, v.Field(i).Interface().(models.InlineQueryResult))
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		var err error
+
+		// check fields by type
 		switch vv := v.Field(i).Interface().(type) {
 		case string:
-			data = strings.NewReader(vv)
-			w, errCreateField = form.CreateFormField(fieldName)
+			err = addFormFieldString(form, fieldName, vv)
 		case *models.InputFileUpload:
-			data = vv.Data
-			w, errCreateField = form.CreateFormFile(fieldName, vv.Filename)
+			err = addFormFieldInputFileUpload(form, fieldName, vv)
 		case *models.InputFileString:
-			data = strings.NewReader(vv.Data)
-			w, errCreateField = form.CreateFormField(fieldName)
-		case *models.InputMediaPhoto, *models.InputMediaVideo, *models.InputMediaAnimation, *models.InputMediaAudio, *models.InputMediaDocument:
-			media := vv.(models.InputMedia)
-			// add fields with media attachment if needed
-			if strings.HasPrefix(media.GetMedia(), "attach://") {
-				filename := strings.TrimPrefix(media.GetMedia(), "attach://")
-				mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
-				if errCreateMediaAttachmentField != nil {
-					return "", nil, errCreateMediaAttachmentField
-				}
-				_, errCopy := io.Copy(mediaAttachmentField, media.Attachment())
-				if errCopy != nil {
-					return "", nil, errCopy
-				}
-				fieldsCount++
-			}
-			line, errEncode := media.MarshalInputMedia()
-			if errEncode != nil {
-				return "", nil, errEncode
-			}
-
-			data = bytes.NewReader(line)
-			w, errCreateField = form.CreateFormField(fieldName)
+			err = addFormFieldString(form, fieldName, vv.Data)
 		case []models.InputMedia:
-			var lines []string
-			for _, media := range vv {
-				// add fields with media attachment if needed
-				if strings.HasPrefix(media.GetMedia(), "attach://") {
-					filename := strings.TrimPrefix(media.GetMedia(), "attach://")
-					mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
-					if errCreateMediaAttachmentField != nil {
-						return "", nil, errCreateMediaAttachmentField
-					}
-					_, errCopy := io.Copy(mediaAttachmentField, media.Attachment())
-					if errCopy != nil {
-						return "", nil, errCopy
-					}
-					fieldsCount++
-				}
-
-				line, errEncode := media.MarshalInputMedia()
-				if errEncode != nil {
-					return "", nil, errEncode
-				}
-				lines = append(lines, string(line))
-			}
-
-			data = strings.NewReader("[" + strings.Join(lines, ",") + "]")
-			w, errCreateField = form.CreateFormField(fieldName)
+			err = addFormFieldInputMediaSlice(form, fieldName, vv)
+		case []models.InlineQueryResult:
+			err = addFormFieldInlineQueryResultSlice(form, fieldName, vv)
 		default:
-			d, errMarshal := json.Marshal(v.Field(i).Interface())
-			if errMarshal != nil {
-				return "", nil, errMarshal
-			}
-			d = bytes.Trim(d, "\"")
-			data = bytes.NewReader(d)
-			w, errCreateField = form.CreateFormField(fieldName)
+			err = addFormFieldDefault(form, fieldName, v.Field(i).Interface())
 		}
 
-		if errCreateField != nil {
-			return "", nil, errCreateField
+		if err != nil {
+			return err
 		}
+	}
 
-		_, errCopy := io.Copy(w, data)
+	return nil
+}
+
+func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value *models.InputFileUpload) error {
+	w, errCreateField := form.CreateFormFile(fieldName, value.Filename)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, value.Data)
+	return errCopy
+}
+
+func addFormFieldInputMediaItem(form *multipart.Writer, value models.InputMedia) ([]byte, error) {
+	if strings.HasPrefix(value.GetMedia(), "attach://") {
+		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
+		mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
+		if errCreateMediaAttachmentField != nil {
+			return nil, errCreateMediaAttachmentField
+		}
+		_, errCopy := io.Copy(mediaAttachmentField, value.Attachment())
 		if errCopy != nil {
-			return "", nil, errCopy
+			return nil, errCopy
 		}
-		fieldsCount++
+	}
+	return value.MarshalInputMedia()
+}
+
+func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value models.InputMedia) error {
+	line, err := addFormFieldInputMediaItem(form, value)
+	if err != nil {
+		return err
 	}
 
-	errClose := form.Close()
-	if errClose != nil {
-		return "", nil, errClose
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, bytes.NewReader(line))
+	return errCopy
+}
+
+func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value []models.InputMedia) error {
+	var lines []string
+	for _, media := range value {
+		line, err := addFormFieldInputMediaItem(form, media)
+		if err != nil {
+			return err
+		}
+		lines = append(lines, string(line))
 	}
 
-	if fieldsCount == 0 {
-		return "application/json", http.NoBody, nil
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
+	return errCopy
+}
+
+func addFormFieldInlineQueryResult(form *multipart.Writer, fieldName string, value models.InlineQueryResult) error {
+	line, errEncode := value.MarshalInlineQueryResult()
+	if errEncode != nil {
+		return errEncode
+	}
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, bytes.NewReader(line))
+	return errCopy
+}
+
+func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string, value []models.InlineQueryResult) error {
+	var lines []string
+	for _, media := range value {
+		line, errEncode := media.MarshalInlineQueryResult()
+		if errEncode != nil {
+			return errEncode
+		}
+		lines = append(lines, string(line))
 	}
 
-	return form.FormDataContentType(), buf, nil
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
+	return errCopy
+}
+
+func addFormFieldDefault(form *multipart.Writer, fieldName string, value any) error {
+	d, errMarshal := json.Marshal(value)
+	if errMarshal != nil {
+		return errMarshal
+	}
+	d = bytes.Trim(d, "\"") // for strings values
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, bytes.NewReader(d))
+	return errCopy
+}
+
+func addFormFieldString(form *multipart.Writer, fieldName string, value string) error {
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, strings.NewReader(value))
+	return errCopy
 }
