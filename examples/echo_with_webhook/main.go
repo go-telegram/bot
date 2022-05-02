@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 
@@ -17,13 +18,18 @@ func main() {
 	defer cancel()
 
 	opts := []bot.Option{
-		bot.WithDebug(),
 		bot.WithDefaultHandler(handler),
 	}
 
 	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
-	b.GetUpdates(ctx)
+	methods.SetWebhook(ctx, b, &methods.SetWebhookParams{
+		URL: "https://example.com/webhook",
+	})
+
+	http.ListenAndServe(":2000", b.WebhookHandler())
+
+	// call methods.DeleteWebhook if needed
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {

@@ -26,16 +26,17 @@ import (
 // Send any text message to the bot after the bot has been started
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+	b := bot.New(ctx, "YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
 
-	b.Start(ctx)
+	b.GetUpdates(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -63,9 +64,9 @@ go get -u github.com/go-telegram/bot
 Initialize and run the bot:
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
-b.Start(context.TODO())
+b.GetUpdates(context.TODO())
 ```
 
 You can to define default handler for the bot:
@@ -77,6 +78,44 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	// this handler will be called for all updates
 }
 ```
+
+## Webhooks
+
+If you want to use webhooks, instead `bot.GetUpdates` you should use `bot.WebhookHandler` method as http handler for your server.
+
+```go
+func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	opts := []bot.Option{
+		bot.WithDefaultHandler(handler),
+	}
+
+	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+
+	// call methods.SetWebhook if needed
+
+	http.ListenAndServe(":2000", b.WebhookHandler())
+
+	// call methods.DeleteWebhook if needed
+}
+
+func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	methods.SendMessage(ctx, b, &methods.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   update.Message.Text,
+	})
+}
+```
+
+[Demo in examples](examples/echo_with_webhook/main.go)
+
+## Middlewares
+
+You can use middlewares with `WithMiddlewares(middlewares ...Middleware)` option.
+
+See an example in [examples](examples/middleware/main.go)
 
 ## Available methods
 
@@ -117,11 +156,11 @@ For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handle
 An example:
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
 b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, myStartHandler)
 
-b.Start(context.TODO())
+b.GetUpdates(context.TODO())
 ```
 
 > also you can use bot init options `WithMessageTextHandler` and `WithCallbackQueryDataHandler`
@@ -172,7 +211,7 @@ params := &methods.SendPhotoParams{
 methods.SendPhoto(ctx, b, params)
 ```
 
-[Demo in examples](examples/send_photo)
+[Demo in examples](examples/send_photo/main.go)
 
 For send image file by file contents, you can use `&models.InputFileUpload{Filename: string, Data: io.Reader}`:
 
@@ -187,7 +226,7 @@ params := &methods.SendPhotoParams{
 methods.SendPhoto(ctx, b, params)
 ```
 
-[Demo in examples](examples/send_photo_upload)
+[Demo in examples](examples/send_photo_upload/main.go)
 
 ## InputMedia
 
@@ -223,7 +262,7 @@ params := &methods.SendMediaGroupParams{
 methods.SendMediaGroup(ctx, b, params)
 ```
 
-[Demo in examples](examples/send_media_group)
+[Demo in examples](examples/send_media_group/main.go)
 
 ## UI Components
 

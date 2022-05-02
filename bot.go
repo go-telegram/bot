@@ -42,10 +42,12 @@ type Bot struct {
 	client       HttpClient
 	lastUpdateID int64
 	isDebug      bool
+
+	updates chan *models.Update
 }
 
 // New creates new Bot instance
-func New(token string, options ...Option) *Bot {
+func New(ctx context.Context, token string, options ...Option) *Bot {
 	b := &Bot{
 		url:           "https://api.telegram.org",
 		token:         token,
@@ -59,26 +61,17 @@ func New(token string, options ...Option) *Bot {
 		},
 		defaultHandlerFunc: defaultHandler,
 		errorsHandler:      defaultErrorsHandler,
+
+		updates: make(chan *models.Update),
 	}
 
 	for _, o := range options {
 		o(b)
 	}
 
+	go b.waitUpdates(ctx)
+
 	return b
-}
-
-// Start an application
-func (b *Bot) Start(ctx context.Context) {
-	updates := make(chan *models.Update)
-
-	var wg sync.WaitGroup
-
-	wg.Add(2)
-	go b.watchUpdates(ctx, &wg, updates)
-	go b.waitUpdates(ctx, &wg, updates)
-
-	wg.Wait()
 }
 
 func defaultErrorsHandler(err error) {
