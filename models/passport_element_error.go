@@ -8,7 +8,7 @@ import (
 type PassportElementError interface {
 	passportElementErrorTag()
 
-	MarshalPassportElementError() ([]byte, error)
+	MarshalCustom() ([]byte, error)
 }
 
 // PassportElementErrorDataField https://core.telegram.org/bots/api#passportelementerrordatafield
@@ -21,7 +21,7 @@ type PassportElementErrorDataField struct {
 
 func (PassportElementErrorDataField) passportElementErrorTag() {}
 
-func (m *PassportElementErrorDataField) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorDataField) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorDataField
@@ -42,7 +42,7 @@ type PassportElementErrorFrontSide struct {
 
 func (PassportElementErrorFrontSide) passportElementErrorTag() {}
 
-func (m *PassportElementErrorFrontSide) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorFrontSide) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorFrontSide
@@ -63,7 +63,7 @@ type PassportElementErrorReverseSide struct {
 
 func (PassportElementErrorReverseSide) passportElementErrorTag() {}
 
-func (m *PassportElementErrorReverseSide) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorReverseSide) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorReverseSide
@@ -84,7 +84,7 @@ type PassportElementErrorSelfie struct {
 
 func (PassportElementErrorSelfie) passportElementErrorTag() {}
 
-func (m *PassportElementErrorSelfie) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorSelfie) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorSelfie
@@ -105,7 +105,7 @@ type PassportElementErrorFile struct {
 
 func (PassportElementErrorFile) passportElementErrorTag() {}
 
-func (m *PassportElementErrorFile) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorFile) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorFile
@@ -126,7 +126,7 @@ type PassportElementErrorFiles struct {
 
 func (PassportElementErrorFiles) passportElementErrorTag() {}
 
-func (m *PassportElementErrorFiles) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorFiles) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorFiles
@@ -147,7 +147,7 @@ type PassportElementErrorTranslationFile struct {
 
 func (PassportElementErrorTranslationFile) passportElementErrorTag() {}
 
-func (m *PassportElementErrorTranslationFile) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorTranslationFile) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorTranslationFile
@@ -168,7 +168,7 @@ type PassportElementErrorTranslationFiles struct {
 
 func (PassportElementErrorTranslationFiles) passportElementErrorTag() {}
 
-func (m *PassportElementErrorTranslationFiles) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorTranslationFiles) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorTranslationFiles
@@ -189,7 +189,7 @@ type PassportElementErrorUnspecified struct {
 
 func (PassportElementErrorUnspecified) passportElementErrorTag() {}
 
-func (m *PassportElementErrorUnspecified) MarshalPassportElementError() ([]byte, error) {
+func (m *PassportElementErrorUnspecified) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*PassportElementErrorUnspecified

@@ -8,8 +8,8 @@ import (
 )
 
 type GetMyCommandsParams struct {
-	Scope        BotCommandScope `json:"scope,omitempty"`
-	LanguageCode string          `json:"language_code,omitempty"`
+	Scope        models.BotCommandScope `json:"scope,omitempty"`
+	LanguageCode string                 `json:"language_code,omitempty"`
 }
 
 // GetMyCommands https://core.telegram.org/bots/api#getmycommands

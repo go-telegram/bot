@@ -11,9 +11,12 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+type customMarshal interface {
+	MarshalCustom() ([]byte, error)
+}
+
+var customMarshalInterface = reflect.TypeOf(new(customMarshal)).Elem()
 var inputMediaInterface = reflect.TypeOf(new(models.InputMedia)).Elem()
-var inlineQueryResultInterface = reflect.TypeOf(new(models.InlineQueryResult)).Elem()
-var passportElementErrorInterface = reflect.TypeOf(new(models.PassportElementError)).Elem()
 
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file. Also, for InputMedia attachments
@@ -33,24 +36,15 @@ func buildRequestForm(form *multipart.Writer, params any) error {
 		}
 
 		// check fields by interface
+		if v.Field(i).Type().Implements(customMarshalInterface) {
+			err := addFormFieldCustomMarshal(form, fieldName, v.Field(i).Interface().(customMarshal))
+			if err != nil {
+				return err
+			}
+			continue
+		}
 		if v.Field(i).Type().Implements(inputMediaInterface) {
 			err := addFormFieldInputMedia(form, fieldName, v.Field(i).Interface().(models.InputMedia))
-			if err != nil {
-				return err
-			}
-			continue
-		}
-
-		if v.Field(i).Type().Implements(inlineQueryResultInterface) {
-			err := addFormFieldInlineQueryResult(form, fieldName, v.Field(i).Interface().(models.InlineQueryResult))
-			if err != nil {
-				return err
-			}
-			continue
-		}
-
-		if v.Field(i).Type().Implements(passportElementErrorInterface) {
-			err := addFormFieldPassportElementError(form, fieldName, v.Field(i).Interface().(models.PassportElementError))
 			if err != nil {
 				return err
 			}
@@ -107,6 +101,19 @@ func addFormFieldInputMediaItem(form *multipart.Writer, value models.InputMedia)
 	return value.MarshalInputMedia()
 }
 
+func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value customMarshal) error {
+	line, errEncode := value.MarshalCustom()
+	if errEncode != nil {
+		return errEncode
+	}
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, bytes.NewReader(line))
+	return errCopy
+}
+
 func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value models.InputMedia) error {
 	line, err := addFormFieldInputMediaItem(form, value)
 	if err != nil {
@@ -139,36 +146,10 @@ func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value
 	return errCopy
 }
 
-func addFormFieldInlineQueryResult(form *multipart.Writer, fieldName string, value models.InlineQueryResult) error {
-	line, errEncode := value.MarshalInlineQueryResult()
-	if errEncode != nil {
-		return errEncode
-	}
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, bytes.NewReader(line))
-	return errCopy
-}
-
-func addFormFieldPassportElementError(form *multipart.Writer, fieldName string, value models.PassportElementError) error {
-	line, errEncode := value.MarshalPassportElementError()
-	if errEncode != nil {
-		return errEncode
-	}
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, bytes.NewReader(line))
-	return errCopy
-}
-
 func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string, value []models.InlineQueryResult) error {
 	var lines []string
 	for _, media := range value {
-		line, errEncode := media.MarshalInlineQueryResult()
+		line, errEncode := media.MarshalCustom()
 		if errEncode != nil {
 			return errEncode
 		}

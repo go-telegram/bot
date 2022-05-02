@@ -29,7 +29,7 @@ type AnswerInlineQuery struct {
 type InlineQueryResult interface {
 	inlineQueryResultTag()
 
-	MarshalInlineQueryResult() ([]byte, error)
+	MarshalCustom() ([]byte, error)
 }
 
 // InlineQueryResultArticle https://core.telegram.org/bots/api#inlinequeryresultarticle
@@ -48,7 +48,7 @@ type InlineQueryResultArticle struct {
 
 func (InlineQueryResultArticle) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultArticle) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultArticle) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultArticle
@@ -78,7 +78,7 @@ type InlineQueryResultPhoto struct {
 
 func (InlineQueryResultPhoto) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultPhoto) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultPhoto) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultPhoto
@@ -109,7 +109,7 @@ type InlineQueryResultGif struct {
 
 func (InlineQueryResultGif) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultGif) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultGif) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultGif
@@ -140,7 +140,7 @@ type InlineQueryResultMpeg4Gif struct {
 
 func (InlineQueryResultMpeg4Gif) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultMpeg4Gif) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultMpeg4Gif) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultMpeg4Gif
@@ -172,7 +172,7 @@ type InlineQueryResultVideo struct {
 
 func (InlineQueryResultVideo) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultVideo) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultVideo) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultVideo
@@ -200,7 +200,7 @@ type InlineQueryResultAudio struct {
 
 func (InlineQueryResultAudio) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultAudio) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultAudio) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultAudio
@@ -227,7 +227,7 @@ type InlineQueryResultVoice struct {
 
 func (InlineQueryResultVoice) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultVoice) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultVoice) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultVoice
@@ -258,7 +258,7 @@ type InlineQueryResultDocument struct {
 
 func (InlineQueryResultDocument) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultDocument) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultDocument) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultDocument
@@ -289,7 +289,7 @@ type InlineQueryResultLocation struct {
 
 func (InlineQueryResultLocation) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultLocation) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultLocation) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultLocation
@@ -321,7 +321,7 @@ type InlineQueryResultVenue struct {
 
 func (InlineQueryResultVenue) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultVenue) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultVenue) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultVenue
@@ -349,7 +349,7 @@ type InlineQueryResultContact struct {
 
 func (InlineQueryResultContact) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultContact) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultContact) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultContact
@@ -370,7 +370,7 @@ type InlineQueryResultGame struct {
 
 func (InlineQueryResultGame) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultGame) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultGame) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultGame
@@ -397,7 +397,7 @@ type InlineQueryResultCachedPhoto struct {
 
 func (InlineQueryResultCachedPhoto) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedPhoto) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedPhoto) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedPhoto
@@ -423,7 +423,7 @@ type InlineQueryResultCachedGif struct {
 
 func (InlineQueryResultCachedGif) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedGif) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedGif) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedGif
@@ -449,7 +449,7 @@ type InlineQueryResultCachedMpeg4Gif struct {
 
 func (InlineQueryResultCachedMpeg4Gif) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedMpeg4Gif) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedMpeg4Gif) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedMpeg4Gif
@@ -471,7 +471,7 @@ type InlineQueryResultCachedSticker struct {
 
 func (InlineQueryResultCachedSticker) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedSticker) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedSticker) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedSticker
@@ -498,7 +498,7 @@ type InlineQueryResultCachedDocument struct {
 
 func (InlineQueryResultCachedDocument) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedDocument) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedDocument) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedDocument
@@ -525,7 +525,7 @@ type InlineQueryResultCachedVideo struct {
 
 func (InlineQueryResultCachedVideo) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedVideo) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedVideo) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedVideo
@@ -551,7 +551,7 @@ type InlineQueryResultCachedVoice struct {
 
 func (InlineQueryResultCachedVoice) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedVoice) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedVoice) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedVoice
@@ -576,7 +576,7 @@ type InlineQueryResultCachedAudio struct {
 
 func (InlineQueryResultCachedAudio) inlineQueryResultTag() {}
 
-func (m *InlineQueryResultCachedAudio) MarshalInlineQueryResult() ([]byte, error) {
+func (m *InlineQueryResultCachedAudio) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
 		*InlineQueryResultCachedAudio
