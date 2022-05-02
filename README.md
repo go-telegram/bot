@@ -2,6 +2,8 @@
 
 > The project is under development. API may be changed before v1.0.0 version.
 
+> [Telegram Group](https://t.me/gotelegrambotui)
+
 It's a Go zero-dependencies telegram bot framework
 
 A simple example `echo-bot`:
