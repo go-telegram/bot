@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	defaultPollTimeout = time.Minute
+	defaultPollTimeout    = time.Minute
+	defaultUpdatesChanCap = 64
 )
 
 type HttpClient interface {
@@ -47,7 +48,7 @@ type Bot struct {
 }
 
 // New creates new Bot instance
-func New(ctx context.Context, token string, options ...Option) *Bot {
+func New(token string, options ...Option) *Bot {
 	b := &Bot{
 		url:           "https://api.telegram.org",
 		token:         token,
@@ -62,24 +63,41 @@ func New(ctx context.Context, token string, options ...Option) *Bot {
 		defaultHandlerFunc: defaultHandler,
 		errorsHandler:      defaultErrorsHandler,
 
-		updates: make(chan *models.Update),
+		updates: make(chan *models.Update, defaultUpdatesChanCap),
 	}
 
 	for _, o := range options {
 		o(b)
 	}
 
-	go b.waitUpdates(ctx)
-
 	return b
+}
+
+func (b *Bot) StartWebhook(ctx context.Context) {
+	wg := &sync.WaitGroup{}
+
+	wg.Add(1)
+	go b.waitUpdates(ctx, wg)
+
+	wg.Wait()
+}
+
+func (b *Bot) Start(ctx context.Context) {
+	wg := &sync.WaitGroup{}
+
+	wg.Add(2)
+	go b.waitUpdates(ctx, wg)
+	go b.getUpdates(ctx, wg)
+
+	wg.Wait()
 }
 
 func defaultErrorsHandler(err error) {
 	log.Printf("[TGBOT] [ERROR] %v", err)
 }
 
-func defaultHandler(_ context.Context, _ *Bot, upd *models.Update) {
-	log.Printf("[TGBOT] [UPDATE] %+v", upd)
+func defaultHandler(_ context.Context, _ *Bot, update *models.Update) {
+	log.Printf("[TGBOT] [UPDATE] %+v", update)
 }
 
 func (b *Bot) error(format string, args ...interface{}) {

@@ -8,7 +8,6 @@ import (
 	"os/signal"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/methods"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -22,9 +21,9 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
-	b.GetUpdates(ctx)
+	b.Start(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -34,11 +33,11 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		return
 	}
 
-	params := &methods.SendPhotoParams{
+	params := &bot.SendPhotoParams{
 		ChatID:  update.Message.Chat.ID,
 		Photo:   &models.InputFileUpload{Filename: "facebook.png", Data: bytes.NewReader(fileData)},
 		Caption: "New uploaded Facebook logo",
 	}
 
-	methods.SendPhoto(ctx, b, params)
+	b.SendPhoto(ctx, params)
 }

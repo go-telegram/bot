@@ -7,7 +7,6 @@ import (
 	"os/signal"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/methods"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -21,19 +20,24 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
-	methods.SetWebhook(ctx, b, &methods.SetWebhookParams{
+	b.SetWebhook(ctx, &bot.SetWebhookParams{
 		URL: "https://example.com/webhook",
 	})
 
-	http.ListenAndServe(":2000", b.WebhookHandler())
+	go func() {
+		http.ListenAndServe(":2000", b.WebhookHandler())
+	}()
+
+	// Use StartWebhook instead of Start
+	b.StartWebhook(ctx)
 
 	// call methods.DeleteWebhook if needed
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	methods.SendMessage(ctx, b, &methods.SendMessageParams{
+	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})

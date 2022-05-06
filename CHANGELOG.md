@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.0 (2022-05-06)
+
+- change API. Use bot funcs instead of`methods` package.
+
 ## v0.1.1 (2022-05-02)
 
 - add webhook support

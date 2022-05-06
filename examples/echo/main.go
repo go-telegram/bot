@@ -6,7 +6,6 @@ import (
 	"os/signal"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/methods"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -17,17 +16,15 @@ func main() {
 	defer cancel()
 
 	opts := []bot.Option{
-		bot.WithDebug(),
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
-
-	b.GetUpdates(ctx)
+	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b.Start(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	methods.SendMessage(ctx, b, &methods.SendMessageParams{
+	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})

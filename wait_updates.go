@@ -2,13 +2,16 @@ package bot
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/go-telegram/bot/models"
 )
 
 // waitUpdates listen Updates channel and spawn goroutines if needed. It's a simple worker pool
-func (b *Bot) waitUpdates(ctx context.Context) {
+func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	taskQueue := make(chan *models.Update)
 
 	for {
@@ -20,7 +23,8 @@ func (b *Bot) waitUpdates(ctx context.Context) {
 			case taskQueue <- upd:
 			default:
 				go func(ctx context.Context, taskQueue chan *models.Update) {
-					b.processUpdate(ctx, upd)
+					wg.Add(1)
+					b.processUpdate(ctx, wg, upd)
 
 					const cleanupDuration = 10 * time.Second
 					cleanupTicker := time.NewTicker(cleanupDuration)
@@ -31,7 +35,8 @@ func (b *Bot) waitUpdates(ctx context.Context) {
 						case <-ctx.Done():
 							return
 						case upd := <-taskQueue:
-							b.processUpdate(ctx, upd)
+							wg.Add(1)
+							b.processUpdate(ctx, wg, upd)
 							cleanupTicker.Reset(cleanupDuration)
 						case <-cleanupTicker.C:
 							return

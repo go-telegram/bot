@@ -9,7 +9,7 @@ import (
 )
 
 func (b *Bot) WebhookHandler() http.HandlerFunc {
-	return func(rw http.ResponseWriter, req *http.Request) {
+	return func(_ http.ResponseWriter, req *http.Request) {
 		body, errReadBody := io.ReadAll(req.Body)
 		if errReadBody != nil {
 			b.error("error read request body, %w", errReadBody)

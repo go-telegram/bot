@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -21,7 +22,9 @@ type getUpdatesParams struct {
 }
 
 // GetUpdates https://core.telegram.org/bots/api#getupdates
-func (b *Bot) GetUpdates(ctx context.Context) {
+func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	var timeoutAfterError time.Duration
 
 	for {
@@ -47,7 +50,7 @@ func (b *Bot) GetUpdates(ctx context.Context) {
 
 		var updates []*models.Update
 
-		errRequest := RawRequest(ctx, b, "getUpdates", params, &updates)
+		errRequest := b.rawRequest(ctx, "getUpdates", params, &updates)
 		if errRequest != nil {
 			if errors.Is(errRequest, context.Canceled) {
 				return

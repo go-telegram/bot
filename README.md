@@ -19,7 +19,6 @@ import (
 	"os/signal"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/methods"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -33,14 +32,13 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, "YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+	b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 
-
-	b.GetUpdates(ctx)
+	b.Start(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	methods.SendMessage(ctx, b, &methods.SendMessageParams{
+	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})
@@ -64,9 +62,9 @@ go get -u github.com/go-telegram/bot
 Initialize and run the bot:
 
 ```go
-b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
-b.GetUpdates(context.TODO())
+b.Start(context.TODO())
 ```
 
 You can to define default handler for the bot:
@@ -81,7 +79,8 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 ## Webhooks
 
-If you want to use webhooks, instead `bot.GetUpdates` you should use `bot.WebhookHandler` method as http handler for your server.
+If you want to use webhooks, instead `bot.Start` you should use `bot.StartWebhook` method for start the bot.
+Alse you can to use `bot.WebhookHandler()` method as http handler for your server.
 
 ```go
 func main() {
@@ -92,9 +91,11 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	// call methods.SetWebhook if needed
+	
+	go b.StartWebhook(ctx)
 
 	http.ListenAndServe(":2000", b.WebhookHandler())
 
@@ -102,7 +103,7 @@ func main() {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	methods.SendMessage(ctx, b, &methods.SendMessageParams{
+	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text:   update.Message.Text,
 	})
@@ -121,11 +122,11 @@ See an example in [examples](examples/middleware/main.go)
 
 All available methods are listed in the [Telegram Bot API documentation](https://core.telegram.org/bots/api)
 
-You can find these methods in the `methods` package. All methods have name like in official documentation, but with capital first letter.
+You can use all these methods as bot funcs. All methods have name like in official documentation, but with capital first letter.
 
-`methods.SendMessage`, `methods.GetMe`, `methods.SendPhoto`, etc
+`bot.SendMessage`, `bot.GetMe`, `bot.SendPhoto`, etc
 
-All methods have signature `(ctx context.Context, b *bot.Bot, params <PARAMS>) (<response>, error)`.
+All methods have signature `(ctx context.Context, params <PARAMS>) (<response>, error)`.
 Except `GetMe`, `Close` and `Logout` which are have not params
 
 `<PARAMS>` is a struct with fields that corresponds to Telegram Bot API parameters.
@@ -136,7 +137,7 @@ All Params structs have name like for corresponded methods, but with `Params` su
 You should pass params by pointer
 
 ```go
-methods.SendMessage(ctx, b, &methods.SendMessageParams{...})
+bot.SendMessage(ctx, &bot.SendMessageParams{...})
 ```
 
 ## Options
@@ -144,7 +145,7 @@ methods.SendMessage(ctx, b, &methods.SendMessageParams{...})
 You can use options to customize the bot.
 
 ```go
-b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 ```
 
 Full list of options you can find [here](options.go)
@@ -156,11 +157,11 @@ For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handle
 An example:
 
 ```go
-b := bot.New(context.TODO(), "YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
 b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, myStartHandler)
 
-b.GetUpdates(context.TODO())
+b.Start(context.TODO())
 ```
 
 > also you can use bot init options `WithMessageTextHandler` and `WithCallbackQueryDataHandler`
@@ -203,12 +204,12 @@ inputFileData := "AgACAgIAAxkDAAIBOWJimnCJHQJiJ4P3aasQCPNyo6mlAALDuzEbcD0YSxzjB-
 // or URL image path
 // inputFileData := "https://example.com/image.png"
 
-params := &methods.SendPhotoParams{
+params := &bot.SendPhotoParams{
     ChatID:  chatID,
     Photo:   &models.InputFileString{Data: inputFileData},
 }
 
-methods.SendPhoto(ctx, b, params)
+bot.SendPhoto(ctx, params)
 ```
 
 [Demo in examples](examples/send_photo/main.go)
@@ -218,12 +219,12 @@ For send image file by file contents, you can use `&models.InputFileUpload{Filen
 ```go
 fileContent, _ := os.ReadFile("/path/to/image.png")
 
-params := &methods.SendPhotoParams{
+params := &bot.SendPhotoParams{
     ChatID:  chatID,
     Photo:   &models.InputFileUpload{Filename: "image.png", Data: bytes.NewReader(fileContent)},
 }
 
-methods.SendPhoto(ctx, b, params)
+bot.SendPhoto(ctx, params)
 ```
 
 [Demo in examples](examples/send_photo_upload/main.go)
@@ -251,7 +252,7 @@ media2 := &models.InputMediaPhoto{
 	MediaAttachment: bytes.NewReader(fileConetent),
 }
 
-params := &methods.SendMediaGroupParams{
+params := &bot.SendMediaGroupParams{
     ChatID: update.Message.Chat.ID,
     Media: []models.InputMedia{
         media1,
@@ -259,7 +260,7 @@ params := &methods.SendMediaGroupParams{
     },
 }
 
-methods.SendMediaGroup(ctx, b, params)
+bot.SendMediaGroup(ctx, params)
 ```
 
 [Demo in examples](examples/send_media_group/main.go)

@@ -17,7 +17,7 @@ type apiResponse struct {
 	Description string          `json:"description,omitempty"`
 }
 
-func RawRequest(ctx context.Context, b *Bot, method string, params any, dest any) error {
+func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
 	var httpBody io.Reader = http.NoBody
 	contentType := "application/json"
 

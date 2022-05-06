@@ -6,7 +6,6 @@ import (
 	"os/signal"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/methods"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -20,9 +19,9 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(ctx, os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
-	b.GetUpdates(ctx)
+	b.Start(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -36,7 +35,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		&models.InlineQueryResultArticle{ID: "3", Title: "Foo 3", InputMessageContent: &models.InputTextMessageContent{MessageText: "foo 3"}},
 	}
 
-	methods.AnswerInlineQuery(ctx, b, &methods.AnswerInlineQueryParams{
+	b.AnswerInlineQuery(ctx, &bot.AnswerInlineQueryParams{
 		InlineQueryID: update.InlineQuery.ID,
 		Results:       results,
 	})
