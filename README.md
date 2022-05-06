@@ -80,7 +80,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 ## Webhooks
 
 If you want to use webhooks, instead `bot.Start` you should use `bot.StartWebhook` method for start the bot.
-Alse you can to use `bot.WebhookHandler()` method as http handler for your server.
+Also, you should to use `bot.WebhookHandler()` method as http handler for your server.
 
 ```go
 func main() {
