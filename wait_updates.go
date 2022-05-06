@@ -22,9 +22,11 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			select {
 			case taskQueue <- upd:
 			default:
-				go func(ctx context.Context, taskQueue chan *models.Update) {
-					wg.Add(1)
-					b.processUpdate(ctx, wg, upd)
+				wg.Add(1)
+				go func(ctx context.Context, wg *sync.WaitGroup, taskQueue chan *models.Update) {
+					defer wg.Done()
+
+					b.processUpdate(ctx, upd)
 
 					const cleanupDuration = 10 * time.Second
 					cleanupTicker := time.NewTicker(cleanupDuration)
@@ -35,14 +37,13 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 						case <-ctx.Done():
 							return
 						case upd := <-taskQueue:
-							wg.Add(1)
-							b.processUpdate(ctx, wg, upd)
+							b.processUpdate(ctx, upd)
 							cleanupTicker.Reset(cleanupDuration)
 						case <-cleanupTicker.C:
 							return
 						}
 					}
-				}(ctx, taskQueue)
+				}(ctx, wg, taskQueue)
 			}
 		}
 	}

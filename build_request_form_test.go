@@ -53,7 +53,7 @@ func Test_buildRequestForm(t *testing.T) {
 
 	buf := bytes.NewBuffer(nil)
 	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX")
+	form.SetBoundary("XXX") //nolint
 
 	errBuild := buildRequestForm(form, &params)
 	if errBuild != nil {

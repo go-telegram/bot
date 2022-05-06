@@ -6,15 +6,11 @@ import (
 
 // BotCommandScope https://core.telegram.org/bots/api#botcommandscope
 type BotCommandScope interface {
-	botCommandScopeTag()
-
 	MarshalCustom() ([]byte, error)
 }
 
 // BotCommandScopeDefault https://core.telegram.org/bots/api#botcommandscopedefault
 type BotCommandScopeDefault struct{}
-
-func (BotCommandScopeDefault) botCommandScopeTag() {}
 
 func (m *BotCommandScopeDefault) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -31,8 +27,6 @@ func (m *BotCommandScopeDefault) MarshalCustom() ([]byte, error) {
 // BotCommandScopeAllPrivateChats https://core.telegram.org/bots/api#botcommandscopeallprivatechats
 type BotCommandScopeAllPrivateChats struct{}
 
-func (BotCommandScopeAllPrivateChats) botCommandScopeTag() {}
-
 func (m *BotCommandScopeAllPrivateChats) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
@@ -47,8 +41,6 @@ func (m *BotCommandScopeAllPrivateChats) MarshalCustom() ([]byte, error) {
 
 // BotCommandScopeAllGroupChats https://core.telegram.org/bots/api#botcommandscopeallgroupchats
 type BotCommandScopeAllGroupChats struct{}
-
-func (BotCommandScopeAllGroupChats) botCommandScopeTag() {}
 
 func (m *BotCommandScopeAllGroupChats) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -65,8 +57,6 @@ func (m *BotCommandScopeAllGroupChats) MarshalCustom() ([]byte, error) {
 // BotCommandScopeAllChatAdministrators https://core.telegram.org/bots/api#botcommandscopeallchatadministrators
 type BotCommandScopeAllChatAdministrators struct{}
 
-func (BotCommandScopeAllChatAdministrators) botCommandScopeTag() {}
-
 func (m *BotCommandScopeAllChatAdministrators) MarshalCustom() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`
@@ -81,8 +71,6 @@ func (m *BotCommandScopeAllChatAdministrators) MarshalCustom() ([]byte, error) {
 
 // BotCommandScopeChat https://core.telegram.org/bots/api#botcommandscopechat
 type BotCommandScopeChat struct{}
-
-func (BotCommandScopeChat) botCommandScopeTag() {}
 
 func (m *BotCommandScopeChat) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -101,15 +89,11 @@ type BotCommandScopeChatAdministrators struct {
 	ChatID any `json:"chat_id"`
 }
 
-func (BotCommandScopeChatAdministrators) botCommandScopeTag() {}
-
 // BotCommandScopeChatMember https://core.telegram.org/bots/api#botcommandscopechatmember
 type BotCommandScopeChatMember struct {
 	ChatID any `json:"chat_id"`
 	UserID int `json:"user_id"`
 }
-
-func (BotCommandScopeChatMember) botCommandScopeTag() {}
 
 func (m *BotCommandScopeChatMember) MarshalCustom() ([]byte, error) {
 	ret := struct {
