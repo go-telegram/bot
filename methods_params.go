@@ -11,6 +11,7 @@ type SetWebhookParams struct {
 	MaxConnections     int              `json:"max_connections,omitempty"`
 	AllowedUpdates     []string         `json:"allowed_updates,omitempty"`
 	DropPendingUpdates bool             `json:"drop_pending_updates,omitempty"`
+	SecretToken        string           `json:"secret_token,omitempty"`
 }
 
 type DeleteWebhookParams struct {
@@ -624,6 +625,29 @@ type SendInvoiceParams struct {
 	ReplyToMessageID          int                   `json:"reply_to_message_id,omitempty"`
 	AllowSendingWithoutReply  bool                  `json:"allow_sending_without_reply,omitempty"`
 	ReplyMarkup               models.ReplyMarkup    `json:"reply_markup,omitempty"`
+}
+
+type CreateInvoiceLinkParams struct {
+	Title                     string                `json:"title"`
+	Description               string                `json:"description"`
+	Payload                   string                `json:"payload"`
+	ProviderToken             string                `json:"provider_token"`
+	Currency                  string                `json:"currency"`
+	Prices                    []models.LabeledPrice `json:"prices"`
+	MaxTipAmount              int                   `json:"max_tip_amount,omitempty"`
+	SuggestedTipAmounts       []int                 `json:"suggested_tip_amounts,omitempty"`
+	ProviderData              string                `json:"provider_data,omitempty"`
+	PhotoURL                  string                `json:"photo_url,omitempty"`
+	PhotoSize                 int                   `json:"photo_size,omitempty"`
+	PhotoWidth                int                   `json:"photo_width,omitempty"`
+	PhotoHeight               int                   `json:"photo_height,omitempty"`
+	NeedName                  bool                  `json:"need_name,omitempty"`
+	NeedPhoneNumber           bool                  `json:"need_phone_number,omitempty"`
+	NeedEmail                 bool                  `json:"need_email,omitempty"`
+	NeedShippingAddress       bool                  `json:"need_shipping_address,omitempty"`
+	SendPhoneNumberToProvider bool                  `json:"send_phone_number_to_provider,omitempty"`
+	SendEmailToProvider       bool                  `json:"send_email_to_provider,omitempty"`
+	IsFlexible                bool                  `json:"is_flexible,omitempty"`
 }
 
 type AnswerShippingQueryParams struct {

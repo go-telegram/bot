@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.1 (2022-07-08)
+
+- support bot api v6.1
+
 ## v0.2.0 (2022-05-06)
 
 - change API. Use bot funcs instead of`methods` package.

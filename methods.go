@@ -566,6 +566,13 @@ func (b *Bot) SendInvoice(ctx context.Context, params *SendInvoiceParams) (*mode
 	return result, err
 }
 
+// CreateInvoiceLink https://core.telegram.org/bots/api#createinvoicelink
+func (b *Bot) CreateInvoiceLink(ctx context.Context, params *CreateInvoiceLinkParams) (string, error) {
+	var result string
+	err := b.rawRequest(ctx, "createInvoiceLink", params, &result)
+	return result, err
+}
+
 // AnswerShippingQuery https://core.telegram.org/bots/api#answershippingquery
 func (b *Bot) AnswerShippingQuery(ctx context.Context, params *AnswerShippingQueryParams) (bool, error) {
 	var result bool
