@@ -74,6 +74,8 @@ type Chat struct {
 	Photo                 *ChatPhoto       `json:"photo,omitempty"`
 	Bio                   string           `json:"bio"`
 	HasPrivateForwards    bool             `json:"has_private_forwards,omitempty"`
+	JoinToSendMessages    bool             `json:"join_to_send_messages"`
+	JoinByRequest         bool             `json:"join_by_request"`
 	Description           string           `json:"description,omitempty"`
 	InviteLink            string           `json:"invite_link,omitempty"`
 	PinnedMessage         *Message         `json:"pinned_message,omitempty"`
