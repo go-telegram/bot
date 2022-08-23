@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.2 (2022-08-23)
+
+- support bot api v6.2
+
 ## v0.2.1 (2022-07-08)
 
 - support bot api v6.1
