@@ -503,6 +503,13 @@ func (b *Bot) GetStickerSet(ctx context.Context, params *GetStickerSetParams) (*
 	return result, err
 }
 
+// GetCustomEmojiStickers https://core.telegram.org/bots/api#getcustomemojistickers
+func (b *Bot) GetCustomEmojiStickers(ctx context.Context, params *GetCustomEmojiStickersParams) ([]*models.Sticker, error) {
+	var result []*models.Sticker
+	err := b.rawRequest(ctx, "getCustomEmojiStickers", params, &result)
+	return result, err
+}
+
 // UploadStickerFile https://core.telegram.org/bots/api#uploadstickerfile
 func (b *Bot) UploadStickerFile(ctx context.Context, params *UploadStickerFileParams) (*models.File, error) {
 	result := &models.File{}

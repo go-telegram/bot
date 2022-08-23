@@ -12,6 +12,7 @@ type MaskPosition struct {
 type Sticker struct {
 	FileID           string       `json:"file_id"`
 	FileUniqueID     string       `json:"file_unique_id"`
+	Type             string       `json:"type"`
 	Width            int          `json:"width"`
 	Height           int          `json:"height"`
 	IsAnimated       bool         `json:"is_animated"`
@@ -21,5 +22,6 @@ type Sticker struct {
 	SetName          string       `json:"set_name,omitempty"`
 	PremiumAnimation *File        `json:"premium_animation,omitempty"`
 	MaskPosition     MaskPosition `json:"mask_position,omitempty"`
+	CustomEmojiID    string       `json:"custom_emoji_id"`
 	FileSize         int          `json:"file_size,omitempty"`
 }

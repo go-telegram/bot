@@ -540,6 +540,10 @@ type GetStickerSetParams struct {
 	Name string `json:"name"`
 }
 
+type GetCustomEmojiStickersParams struct {
+	CustomEmojiIDs []string `json:"custom_emoji_ids"`
+}
+
 type UploadStickerFileParams struct {
 	UserID     int              `json:"user_id"`
 	PngSticker models.InputFile `json:"png_sticker"`
@@ -552,6 +556,7 @@ type CreateNewStickerSetParams struct {
 	PngSticker    models.InputFile    `json:"png_sticker,omitempty"`
 	TgsSticker    models.InputFile    `json:"tgs_sticker,omitempty"`
 	WebmSticker   models.InputFile    `json:"webm_sticker,omitempty"`
+	StickerType   string              `json:"sticker_type,omitempty"`
 	Emojis        string              `json:"emojis"`
 	ContainsMasks bool                `json:"contains_masks,omitempty"`
 	MaskPosition  models.MaskPosition `json:"mask_position,omitempty"`
