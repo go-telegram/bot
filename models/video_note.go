@@ -7,5 +7,5 @@ type VideoNote struct {
 	Length       int        `json:"length"`
 	Duration     int        `json:"duration"`
 	Thumb        *PhotoSize `json:"thumb,omitempty"`
-	FileSize     int        `json:"file_size,omitempty"`
+	FileSize64   int        `json:"file_size,omitempty"`
 }

@@ -6,5 +6,5 @@ type Voice struct {
 	FileUniqueID string `json:"file_unique_id"`
 	Duration     int    `json:"duration"`
 	MimeType     string `json:"mime_type,omitempty"`
-	FileSize     int    `json:"file_size,omitempty"`
+	FileSize64   int    `json:"file_size,omitempty"`
 }
