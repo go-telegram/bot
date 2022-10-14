@@ -19,7 +19,7 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	b.Start(ctx)
 }

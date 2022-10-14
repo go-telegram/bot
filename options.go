@@ -7,6 +7,13 @@ import (
 // Option is a function that configures a bot.
 type Option func(b *Bot)
 
+// WithCheckInitTimeout allows to redefine CheckInitTimeout
+func WithCheckInitTimeout(timeout time.Duration) Option {
+	return func(b *Bot) {
+		b.checkInitTimeout = timeout
+	}
+}
+
 // WithMiddlewares allows to set middlewares for each incoming request
 func WithMiddlewares(middlewares ...Middleware) Option {
 	return func(b *Bot) {
