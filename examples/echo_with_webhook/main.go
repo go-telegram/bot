@@ -20,7 +20,7 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	b.SetWebhook(ctx, &bot.SetWebhookParams{
 		URL: "https://example.com/webhook",

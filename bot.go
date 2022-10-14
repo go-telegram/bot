@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	defaultPollTimeout    = time.Minute
-	defaultUpdatesChanCap = 64
+	defaultPollTimeout      = time.Minute
+	defaultUpdatesChanCap   = 64
+	defaultCheckInitTimeout = time.Second * 5
 )
 
 type HttpClient interface {
@@ -40,15 +41,16 @@ type Bot struct {
 	handlersMx *sync.RWMutex
 	handlers   map[string]handler
 
-	client       HttpClient
-	lastUpdateID int64
-	isDebug      bool
+	client           HttpClient
+	lastUpdateID     int64
+	isDebug          bool
+	checkInitTimeout time.Duration
 
 	updates chan *models.Update
 }
 
 // New creates new Bot instance
-func New(token string, options ...Option) *Bot {
+func New(token string, options ...Option) (*Bot, error) {
 	b := &Bot{
 		url:           "https://api.telegram.org",
 		token:         token,
@@ -62,6 +64,7 @@ func New(token string, options ...Option) *Bot {
 		},
 		defaultHandlerFunc: defaultHandler,
 		errorsHandler:      defaultErrorsHandler,
+		checkInitTimeout:   defaultCheckInitTimeout,
 
 		updates: make(chan *models.Update, defaultUpdatesChanCap),
 	}
@@ -70,7 +73,15 @@ func New(token string, options ...Option) *Bot {
 		o(b)
 	}
 
-	return b
+	ctx, cancel := context.WithTimeout(context.Background(), b.checkInitTimeout)
+	defer cancel()
+
+	_, err := b.GetMe(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error call getMe, %w", err)
+	}
+
+	return b, nil
 }
 
 func (b *Bot) StartWebhook(ctx context.Context) {

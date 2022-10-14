@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"))
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"))
 
 	user, _ := b.GetMe(context.Background())
 

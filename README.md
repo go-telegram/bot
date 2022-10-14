@@ -30,7 +30,10 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+	b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+	if err != nil {
+		panic(err)
+	}
 
 	b.Start(ctx)
 }
@@ -60,15 +63,18 @@ go get -u github.com/go-telegram/bot
 Initialize and run the bot:
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
 b.Start(context.TODO())
 ```
 
+On create bot will call the `getMe` method (with 5 sec timeout). And returns error on fail.
+If you want to change this timeout, use option `bot.WithCheckInitTimeout`
+
 You can to define default handler for the bot:
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", bot.WithDefaultHandler(handler))
+b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", bot.WithDefaultHandler(handler))
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	// this handler will be called for all updates
@@ -89,7 +95,7 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	// call methods.SetWebhook if needed
 	
@@ -143,7 +149,7 @@ bot.SendMessage(ctx, &bot.SendMessageParams{...})
 You can use options to customize the bot.
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
+b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 ```
 
 Full list of options you can find [here](options.go)
@@ -155,7 +161,7 @@ For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handle
 An example:
 
 ```go
-b := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
+b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER")
 
 b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, myStartHandler)
 

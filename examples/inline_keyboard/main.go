@@ -20,7 +20,7 @@ func main() {
 		bot.WithCallbackQueryDataHandler("button", bot.MatchTypePrefix, callbackHandler),
 	}
 
-	b := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	b.Start(ctx)
 }
