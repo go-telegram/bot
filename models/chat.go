@@ -43,6 +43,7 @@ type ChatAdministratorRights struct {
 	CanPostMessages     bool `json:"can_post_messages,omitempty"`
 	CanEditMessages     bool `json:"can_edit_messages,omitempty"`
 	CanPinMessages      bool `json:"can_pin_messages,omitempty"`
+	CanManageTopics     bool `json:"can_manage_topics,omitempty"`
 }
 
 // ChatPermissions https://core.telegram.org/bots/api#chatpermissions
@@ -55,6 +56,7 @@ type ChatPermissions struct {
 	CanChangeInfo         bool `json:"can_change_info,omitempty"`
 	CanInviteUsers        bool `json:"can_invite_users,omitempty"`
 	CanPinMessages        bool `json:"can_pin_messages,omitempty"`
+	CanManageTopics       bool `json:"can_manage_topics,omitempty"`
 }
 
 // ChatLocation https://core.telegram.org/bots/api#chatlocation
@@ -71,7 +73,10 @@ type Chat struct {
 	Username                           string           `json:"username,omitempty"`
 	FirstName                          string           `json:"first_name,omitempty"`
 	LastName                           string           `json:"last_name,omitempty"`
+	IsForum                            bool             `json:"is_forum,omitempty"`
 	Photo                              *ChatPhoto       `json:"photo,omitempty"`
+	ActiveUsernames                    []string         `json:"active_usernames,omitempty"`
+	EmojiStatusCustomEmojiID           string           `json:"emoji_status_custom_emoji_id,omitempty"`
 	Bio                                string           `json:"bio"`
 	HasPrivateForwards                 bool             `json:"has_private_forwards,omitempty"`
 	HasRestrictedVoiceAndVideoMessages bool             `json:"has_restricted_voice_and_video_messages,omitempty"`
