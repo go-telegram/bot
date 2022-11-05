@@ -12,6 +12,7 @@ type MessageAutoDeleteTimerChanged struct {
 // Message https://core.telegram.org/bots/api#message
 type Message struct {
 	ID                            int                            `json:"message_id"`
+	MessageThreadID               int                            `json:"message_thread_id,omitempty"`
 	From                          *User                          `json:"from,omitempty"`
 	SenderChat                    *Chat                          `json:"sender_chat,omitempty"`
 	Date                          int                            `json:"date"`
@@ -22,6 +23,7 @@ type Message struct {
 	ForwardSignature              string                         `json:"forward_signature,omitempty"`
 	ForwardSenderName             string                         `json:"forward_sender_name,omitempty"`
 	ForwardDate                   int                            `json:"forward_date,omitempty"`
+	IsTopicMessage                bool                           `json:"is_topic_message,omitempty"`
 	IsAutomaticForward            bool                           `json:"is_automatic_forward,omitempty"`
 	ReplyToMessage                *Message                       `json:"reply_to_message,omitempty"`
 	ViaBot                        *User                          `json:"via_bot,omitempty"`
@@ -64,6 +66,9 @@ type Message struct {
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`
 	ProximityAlertTriggered       *ProximityAlertTriggered       `json:"proximity_alert_triggered,omitempty"`
+	ForumTopicCreated             *ForumTopicCreated             `json:"forum_topic_created,omitempty"`
+	ForumTopicClosed              *ForumTopicClosed              `json:"forum_topic_closed,omitempty"`
+	ForumTopicReopened            *ForumTopicReopened            `json:"forum_topic_reopened,omitempty"`
 	VoiceChatScheduled            *VoiceChatScheduled            `json:"voice_chat_scheduled,omitempty"`
 	VoiceChatStarted              *VoiceChatStarted              `json:"voice_chat_started,omitempty"`
 	VoiceChatEnded                *VoiceChatEnded                `json:"voice_chat_ended,omitempty"`

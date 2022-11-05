@@ -98,6 +98,7 @@ type ChatMemberAdministrator struct {
 	CanPostMessages     bool   `json:"can_post_messages,omitempty"`
 	CanEditMessages     bool   `json:"can_edit_messages,omitempty"`
 	CanPinMessages      bool   `json:"can_pin_messages,omitempty"`
+	CanManageTopics     bool   `json:"can_manage_topics,omitempty"`
 	CustomTitle         string `json:"custom_title,omitempty"`
 }
 
@@ -115,6 +116,7 @@ type ChatMemberRestricted struct {
 	CanChangeInfo         bool   `json:"can_change_info"`
 	CanInviteUsers        bool   `json:"can_invite_users"`
 	CanPinMessages        bool   `json:"can_pin_messages"`
+	CanManageTopics       bool   `json:"can_manage_topics,omitempty"`
 	CanSendMessages       bool   `json:"can_send_messages"`
 	CanSendMediaMessages  bool   `json:"can_send_media_messages"`
 	CanSendPolls          bool   `json:"can_send_polls"`

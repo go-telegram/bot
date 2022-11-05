@@ -20,6 +20,7 @@ type DeleteWebhookParams struct {
 
 type SendMessageParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Text                     string                 `json:"text"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities                 []models.MessageEntity `json:"entities,omitempty"`
@@ -33,6 +34,7 @@ type SendMessageParams struct {
 
 type ForwardMessageParams struct {
 	ChatID              any    `json:"chat_id"`
+	MessageThreadID     int    `json:"message_thread_id,omitempty"`
 	FromChatID          string `json:"from_chat_id"`
 	DisableNotification bool   `json:"disable_notification,omitempty"`
 	ProtectContent      bool   `json:"protect_content,omitempty"`
@@ -41,6 +43,7 @@ type ForwardMessageParams struct {
 
 type CopyMessageParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	FromChatID               string                 `json:"from_chat_id"`
 	MessageID                int                    `json:"message_id"`
 	Caption                  string                 `json:"caption,omitempty"`
@@ -55,6 +58,7 @@ type CopyMessageParams struct {
 
 type SendPhotoParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Photo                    models.InputFile       `json:"photo"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
@@ -68,6 +72,7 @@ type SendPhotoParams struct {
 
 type SendAudioParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Audio                    models.InputFile       `json:"audio"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
@@ -85,6 +90,7 @@ type SendAudioParams struct {
 
 type SendDocumentParams struct {
 	ChatID                      any                    `json:"chat_id"`
+	MessageThreadID             int                    `json:"message_thread_id,omitempty"`
 	Document                    string                 `json:"document"`
 	Thumb                       string                 `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
@@ -100,6 +106,7 @@ type SendDocumentParams struct {
 
 type SendVideoParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Video                    models.InputFile       `json:"video"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
@@ -118,6 +125,7 @@ type SendVideoParams struct {
 
 type SendAnimationParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Animation                models.InputFile       `json:"animation"`
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
@@ -135,6 +143,7 @@ type SendAnimationParams struct {
 
 type SendVoiceParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Voice                    models.InputFile       `json:"voice"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
@@ -149,6 +158,7 @@ type SendVoiceParams struct {
 
 type SendVideoNoteParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	VideoNote                models.InputFile   `json:"video_note"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
@@ -162,6 +172,7 @@ type SendVideoNoteParams struct {
 
 type SendMediaGroupParams struct {
 	ChatID                   any                 `json:"chat_id"`
+	MessageThreadID          int                 `json:"message_thread_id,omitempty"`
 	Media                    []models.InputMedia `json:"media"`
 	DisableNotification      bool                `json:"disable_notification,omitempty"`
 	ProtectContent           bool                `json:"protect_content,omitempty"`
@@ -171,6 +182,7 @@ type SendMediaGroupParams struct {
 
 type SendLocationParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	Latitude                 float64            `json:"latitude"`
 	Longitude                float64            `json:"longitude"`
 	HorizontalAccuracy       float64            `json:"horizontal_accuracy,omitempty"`
@@ -205,6 +217,7 @@ type StopMessageLiveLocationParams struct {
 
 type SendVenueParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	Latitude                 float64            `json:"latitude"`
 	Longitude                float64            `json:"longitude"`
 	Title                    string             `json:"title"`
@@ -222,6 +235,7 @@ type SendVenueParams struct {
 
 type SendContactParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	PhoneNumber              string             `json:"phone_number"`
 	FirstName                string             `json:"first_name"`
 	LastName                 string             `json:"last_name,omitempty"`
@@ -235,6 +249,7 @@ type SendContactParams struct {
 
 type SendPollParams struct {
 	ChatID                   any                    `json:"chat_id"`
+	MessageThreadID          int                    `json:"message_thread_id,omitempty"`
 	Question                 string                 `json:"question"`
 	Options                  []string               `json:"options"`
 	IsAnonymous              bool                   `json:"is_anonymous,omitempty"`
@@ -256,6 +271,7 @@ type SendPollParams struct {
 
 type SendDiceParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	Emoji                    string             `json:"emoji,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
@@ -312,6 +328,7 @@ type PromoteChatMemberParams struct {
 	CanChangeInfo      bool `json:"can_change_info,omitempty"`
 	CanInviteUsers     bool `json:"can_invite_users,omitempty"`
 	CanPinMessages     bool `json:"can_pin_messages,omitempty"`
+	CanManageTopics    bool `json:"can_manage_topics,omitempty"`
 }
 
 type SetChatAdministratorCustomTitleParams struct {
@@ -431,6 +448,40 @@ type SetChatStickerSetParams struct {
 	StickerSetName string `json:"sticker_set_name"`
 }
 
+type CreateForumTopicParams struct {
+	ChatID            any    `json:"chat_id"`
+	Name              string `json:"name"`
+	IconColor         int    `json:"icon_color,omitempty"`
+	IconCustomEmojiID string `json:"icon_custom_emoji_id,omitempty"`
+}
+
+type EditForumTopicParams struct {
+	ChatID            any    `json:"chat_id"`
+	MessageThreadID   int    `json:"message_thread_id"`
+	Name              string `json:"name"`
+	IconCustomEmojiID string `json:"icon_custom_emoji_id"`
+}
+
+type CloseForumTopicParams struct {
+	ChatID          any `json:"chat_id"`
+	MessageThreadID int `json:"message_thread_id"`
+}
+
+type ReopenForumTopicParams struct {
+	ChatID          any `json:"chat_id"`
+	MessageThreadID int `json:"message_thread_id"`
+}
+
+type DeleteForumTopicParams struct {
+	ChatID          any `json:"chat_id"`
+	MessageThreadID int `json:"message_thread_id"`
+}
+
+type UnpinAllForumTopicMessagesParams struct {
+	ChatID          any `json:"chat_id"`
+	MessageThreadID int `json:"message_thread_id"`
+}
+
 type DeleteChatStickerSetParams struct {
 	ChatID         any    `json:"chat_id"`
 	StickerSetName string `json:"sticker_set_name"`
@@ -528,6 +579,7 @@ type DeleteMessageParams struct {
 
 type SendStickerParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	Sticker                  models.InputFile   `json:"sticker"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
@@ -604,6 +656,7 @@ type AnswerWebAppQueryParams struct {
 
 type SendInvoiceParams struct {
 	ChatID                    any                   `json:"chat_id"`
+	MessageThreadID           int                   `json:"message_thread_id,omitempty"`
 	Title                     string                `json:"title"`
 	Description               string                `json:"description"`
 	Payload                   string                `json:"payload"`
@@ -675,6 +728,7 @@ type SetPassportDataErrorsParams struct {
 
 type SendGameParams struct {
 	ChatID                   any                `json:"chat_id"`
+	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	GameShorName             string             `json:"game_short_name"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`

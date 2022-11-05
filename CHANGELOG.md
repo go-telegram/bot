@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1 (2022-11-05)
+
+- support bot api 6.3
+
 ## v0.3.0 (2022-10-14)
 
 - **[API CHANGE]** method New now call `getMe` after init and returns error as second result on fail
