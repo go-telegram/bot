@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.2 (2022-11-28)
+
+- fix field type SendDocumentParams.Document from string to InputFile, add example
+
 ## v0.3.1 (2022-11-05)
 
 - support bot api 6.3
