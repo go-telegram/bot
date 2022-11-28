@@ -91,7 +91,7 @@ type SendAudioParams struct {
 type SendDocumentParams struct {
 	ChatID                      any                    `json:"chat_id"`
 	MessageThreadID             int                    `json:"message_thread_id,omitempty"`
-	Document                    string                 `json:"document"`
+	Document                    models.InputFile       `json:"document"`
 	Thumb                       string                 `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`
