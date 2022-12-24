@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+
 	"github.com/go-telegram/bot/models"
 )
 
@@ -24,22 +25,22 @@ func (b *Bot) processUpdate(ctx context.Context, upd *models.Update) {
 	}()
 
 	if upd.Message != nil {
-		h = b.findHandler(HandlerTypeMessageText, upd.Message.Text)
+		h = b.findHandler(HandlerTypeMessageText, upd)
 		return
 	}
 	if upd.CallbackQuery != nil {
-		h = b.findHandler(HandlerTypeCallbackQueryData, upd.CallbackQuery.Data)
+		h = b.findHandler(HandlerTypeCallbackQueryData, upd)
 		return
 	}
 }
 
-func (b *Bot) findHandler(handlerType HandlerType, pattern string) HandlerFunc {
+func (b *Bot) findHandler(handlerType HandlerType, upd *models.Update) HandlerFunc {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
 
 	for _, h := range b.handlers {
 		if h.handlerType == handlerType {
-			if h.match(pattern) {
+			if h.match(upd) {
 				return h.handler
 			}
 		}
