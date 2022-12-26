@@ -3,6 +3,8 @@ package bot
 import (
 	"regexp"
 	"strings"
+
+	"github.com/go-telegram/bot/models"
 )
 
 type HandlerType int
@@ -20,17 +22,32 @@ const (
 	MatchTypeContains
 
 	matchTypeRegexp
+	matchTypeFunc
 )
 
 type handler struct {
 	handlerType HandlerType
 	matchType   MatchType
-	pattern     string
 	handler     HandlerFunc
-	re          *regexp.Regexp
+
+	pattern   string
+	re        *regexp.Regexp
+	matchFunc MatchFunc
 }
 
-func (h handler) match(data string) bool {
+func (h handler) match(update *models.Update) bool {
+	if h.matchType == matchTypeFunc {
+		return h.matchFunc(update)
+	}
+
+	var data string
+	switch h.handlerType {
+	case HandlerTypeMessageText:
+		data = update.Message.Text
+	case HandlerTypeCallbackQueryData:
+		data = update.CallbackQuery.Data
+	}
+
 	if h.matchType == MatchTypeExact {
 		return data == h.pattern
 	}
@@ -44,6 +61,24 @@ func (h handler) match(data string) bool {
 		return h.re.Match([]byte(data))
 	}
 	return false
+}
+
+func (b *Bot) RegisterHandlerMatchFunc(handlerType HandlerType, matchFunc MatchFunc, f HandlerFunc) string {
+	b.handlersMx.Lock()
+	defer b.handlersMx.Unlock()
+
+	id := RandomString(16)
+
+	h := handler{
+		handlerType: handlerType,
+		matchType:   matchTypeFunc,
+		matchFunc:   matchFunc,
+		handler:     f,
+	}
+
+	b.handlers[id] = h
+
+	return id
 }
 
 func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc) string {

@@ -24,6 +24,7 @@ type HttpClient interface {
 type ErrorsHandler func(err error)
 type Middleware func(next HandlerFunc) HandlerFunc
 type HandlerFunc func(ctx context.Context, bot *Bot, update *models.Update)
+type MatchFunc func(update *models.Update) bool
 
 // Bot represents Telegram Bot main object
 type Bot struct {
