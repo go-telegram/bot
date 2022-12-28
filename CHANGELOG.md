@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.3 (2022-12-28)
+
+- add `RegisterHandlerMatchFunc` 
+
 ## v0.3.2 (2022-11-28)
 
 - fix field type SendDocumentParams.Document from string to InputFile, add example

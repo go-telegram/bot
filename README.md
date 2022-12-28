@@ -188,12 +188,23 @@ Match Types:
 - `MatchTypePrefix` 
 - `MatchTypeContains`
 
-Also, you can use `RegisterHandlerRegexp` to match by regular expression.
+You can use `RegisterHandlerRegexp` to match by regular expression.
 
 ```go
 re := regexp.MustCompile(`^/start`)
 
 b.RegisterHandlerRegexp(bot.HandlerTypeMessageText, re, myStartHandler)
+```
+
+If you want to use custom handler, use `RegisterHandlerMatchFunc`
+
+```go
+matchFunc := func(update *models.Update) bool {
+	// your checks
+	return true
+}
+
+b.RegisterHandlerMatchFunc(bot.HandlerTypeMessageText, matchFunc, myHandler)
 ```
 
 ## InputFile
