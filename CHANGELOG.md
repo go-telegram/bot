@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.4 (2023-01-10)
+
+- support bot api 6.4
+
 ## v0.3.3 (2022-12-28)
 
 - add `RegisterHandlerMatchFunc` 

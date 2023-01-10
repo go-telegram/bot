@@ -63,6 +63,7 @@ type SendPhotoParams struct {
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -115,6 +116,7 @@ type SendVideoParams struct {
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	SupportsStreaming        bool                   `json:"supports_streaming,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
@@ -134,6 +136,7 @@ type SendAnimationParams struct {
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler               bool                   `json:"has_spoiler,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -281,8 +284,9 @@ type SendDiceParams struct {
 }
 
 type SendChatActionParams struct {
-	ChatID any    `json:"chat_id"`
-	Action string `json:"action"`
+	ChatID          any    `json:"chat_id"`
+	MessageThreadID int    `json:"message_thread_id,omitempty"`
+	Action          string `json:"action"`
 }
 
 type GetUserProfilePhotosParams struct {
@@ -458,8 +462,8 @@ type CreateForumTopicParams struct {
 type EditForumTopicParams struct {
 	ChatID            any    `json:"chat_id"`
 	MessageThreadID   int    `json:"message_thread_id"`
-	Name              string `json:"name"`
-	IconCustomEmojiID string `json:"icon_custom_emoji_id"`
+	Name              string `json:"name,omitempty"`
+	IconCustomEmojiID string `json:"icon_custom_emoji_id,omitempty"`
 }
 
 type CloseForumTopicParams struct {
@@ -480,6 +484,27 @@ type DeleteForumTopicParams struct {
 type UnpinAllForumTopicMessagesParams struct {
 	ChatID          any `json:"chat_id"`
 	MessageThreadID int `json:"message_thread_id"`
+}
+
+type EditGeneralForumTopicParams struct {
+	ChatID any    `json:"chat_id"`
+	Name   string `json:"name"`
+}
+
+type CloseGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type ReopenGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type HideGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
+}
+
+type UnhideGeneralForumTopicParams struct {
+	ChatID any `json:"chat_id"`
 }
 
 type DeleteChatStickerSetParams struct {

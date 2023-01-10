@@ -43,6 +43,7 @@ type Message struct {
 	Voice                         *Voice                         `json:"voice,omitempty"`
 	Caption                       string                         `json:"caption,omitempty"`
 	CaptionEntities               []MessageEntity                `json:"caption_entities,omitempty"`
+	HasMediaSpoiler               bool                           `json:"has_media_spoiler,omitempty"`
 	Contact                       *Contact                       `json:"contact,omitempty"`
 	Dice                          *Dice                          `json:"dice,omitempty"`
 	Game                          *Game                          `json:"game,omitempty"`
@@ -64,11 +65,15 @@ type Message struct {
 	Invoice                       *Invoice                       `json:"invoice,omitempty"`
 	SuccessfulPayment             *SuccessfulPayment             `json:"successful_payment,omitempty"`
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`
+	WriteAccessAllowed            *WriteAccessAllowed            `json:"write_access_allowed,omitempty"`
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`
 	ProximityAlertTriggered       *ProximityAlertTriggered       `json:"proximity_alert_triggered,omitempty"`
 	ForumTopicCreated             *ForumTopicCreated             `json:"forum_topic_created,omitempty"`
+	ForumTopicEdited              *ForumTopicEdited              `json:"forum_topic_edited,omitempty"`
 	ForumTopicClosed              *ForumTopicClosed              `json:"forum_topic_closed,omitempty"`
 	ForumTopicReopened            *ForumTopicReopened            `json:"forum_topic_reopened,omitempty"`
+	GeneralForumTopicHidden       *GeneralForumTopicHidden       `json:"general_forum_topic_hidden,omitempty"`
+	GeneralForumTopicUnhidden     *GeneralForumTopicUnhidden     `json:"general_forum_topic_unhidden,omitempty"`
 	VoiceChatScheduled            *VoiceChatScheduled            `json:"voice_chat_scheduled,omitempty"`
 	VoiceChatStarted              *VoiceChatStarted              `json:"voice_chat_started,omitempty"`
 	VoiceChatEnded                *VoiceChatEnded                `json:"voice_chat_ended,omitempty"`

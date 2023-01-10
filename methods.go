@@ -426,6 +426,41 @@ func (b *Bot) UnpinAllForumTopicMessages(ctx context.Context, params *UnpinAllFo
 	return result, err
 }
 
+// EditGeneralForumTopic https://core.telegram.org/bots/api#editgeneralforumtopic
+func (b *Bot) EditGeneralForumTopic(ctx context.Context, params *EditGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// CloseGeneralForumTopic https://core.telegram.org/bots/api#closegeneralforumtopic
+func (b *Bot) CloseGeneralForumTopic(ctx context.Context, params *CloseGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "closeGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// ReopenGeneralForumTopic https://core.telegram.org/bots/api#reopengeneralforumtopic
+func (b *Bot) ReopenGeneralForumTopic(ctx context.Context, params *ReopenGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "reopenGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// HideGeneralForumTopic https://core.telegram.org/bots/api#hidegeneralforumtopic
+func (b *Bot) HideGeneralForumTopic(ctx context.Context, params *HideGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "hideGeneralForumTopic", params, &result)
+	return result, err
+}
+
+// UnhideGeneralForumTopic https://core.telegram.org/bots/api#unhidegeneralforumtopic
+func (b *Bot) UnhideGeneralForumTopic(ctx context.Context, params *UnhideGeneralForumTopicParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "unhideGeneralForumTopic", params, &result)
+	return result, err
+}
+
 // DeleteForumTopic https://core.telegram.org/bots/api#unpinallforumtopicmessages
 func (b *Bot) DeleteForumTopic(ctx context.Context, params *DeleteForumTopicParams) (bool, error) {
 	var result bool

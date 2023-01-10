@@ -88,6 +88,8 @@ type Chat struct {
 	Permissions                        *ChatPermissions `json:"permissions,omitempty"`
 	SlowModeDelay                      int              `json:"slow_mode_delay,omitempty"`
 	MessageAutoDeleteTime              int              `json:"message_auto_delete_time,omitempty"`
+	HasAggressiveAntiSpamEnabled       bool             `json:"has_aggressive_anti_spam_enabled,omitempty"`
+	HasHiddenMembers                   bool             `json:"has_hidden_members,omitempty"`
 	HasProtectedContent                bool             `json:"has_protected_content,omitempty"`
 	StickerSetName                     string           `json:"sticker_set_name,omitempty"`
 	CanSetStickerSet                   bool             `json:"can_set_sticker_set,omitempty"`

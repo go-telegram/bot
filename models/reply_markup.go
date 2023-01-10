@@ -31,6 +31,7 @@ type InlineKeyboardButton struct {
 // ReplyKeyboardMarkup https://core.telegram.org/bots/api#replykeyboardmarkup
 type ReplyKeyboardMarkup struct {
 	Keyboard              [][]KeyboardButton `json:"keyboard"`
+	IsPersistent          bool               `json:"is_persistent,omitempty"`
 	ResizeKeyboard        bool               `json:"resize_keyboard,omitempty"`
 	OneTimeKeyboard       bool               `json:"one_time_keyboard,omitempty"`
 	InputFieldPlaceholder string             `json:"input_field_placeholder,omitempty"`
