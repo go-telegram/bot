@@ -8,7 +8,7 @@ type UserProfilePhotos struct {
 
 // User https://core.telegram.org/bots/api#user
 type User struct {
-	ID                      int    `json:"id"`
+	ID                      int64  `json:"id"`
 	IsBot                   bool   `json:"is_bot"`
 	FirstName               string `json:"first_name,omitempty"`
 	LastName                string `json:"last_name,omitempty"`

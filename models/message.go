@@ -59,8 +59,8 @@ type Message struct {
 	SupergroupChatCreated         bool                           `json:"supergroup_chat_created,omitempty"`
 	ChannelChatCreated            bool                           `json:"channel_chat_created,omitempty"`
 	MessageAutoDeleteTimerChanged *MessageAutoDeleteTimerChanged `json:"message_auto_delete_timer_changed,omitempty"`
-	MigrateToChatID               int                            `json:"migrate_to_chat_id,omitempty"`
-	MigrateFromChatID             int                            `json:"migrate_from_chat_id,omitempty"`
+	MigrateToChatID               int64                          `json:"migrate_to_chat_id,omitempty"`
+	MigrateFromChatID             int64                          `json:"migrate_from_chat_id,omitempty"`
 	PinnedMessage                 *Message                       `json:"pinned_message,omitempty"`
 	Invoice                       *Invoice                       `json:"invoice,omitempty"`
 	SuccessfulPayment             *SuccessfulPayment             `json:"successful_payment,omitempty"`
