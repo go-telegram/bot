@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.0 (2023-01-13)
+
+- [BREAKING] change some types from `int` to `int64` #11
+
 ## v0.3.4 (2023-01-10)
 
 - support bot api 6.4
