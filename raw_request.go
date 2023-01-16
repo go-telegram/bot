@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"reflect"
 	"strings"
 )
 
@@ -21,7 +22,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	var httpBody io.Reader = http.NoBody
 	contentType := "application/json"
 
-	if params != nil {
+	if params != nil && !reflect.ValueOf(params).IsNil() {
 		buf := bytes.NewBuffer(nil)
 		form := multipart.NewWriter(buf)
 
