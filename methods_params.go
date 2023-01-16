@@ -212,7 +212,7 @@ type EditMessageLiveLocationParams struct {
 }
 
 type StopMessageLiveLocationParams struct {
-	ChatID          string             `json:"chat_id,omitempty"`
+	ChatID          any                `json:"chat_id,omitempty"`
 	MessageID       int                `json:"message_id,omitempty"`
 	InlineMessageID string             `json:"inline_message_id,omitempty"`
 	ReplyMarkup     models.ReplyMarkup `json:"reply_markup,omitempty"`
