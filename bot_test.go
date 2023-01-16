@@ -1,0 +1,211 @@
+package bot
+
+import (
+	"context"
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/go-telegram/bot/models"
+)
+
+type serverMock struct {
+	s          *httptest.Server
+	custom     map[string]any
+	hooks      map[string]func(body []byte) any
+	hooksCalls map[string]int
+	updateIdx  int
+	updates    []*models.Update
+}
+
+type getUpdatesResponse struct {
+	OK     bool             `json:"ok"`
+	Result []*models.Update `json:"result"`
+}
+
+func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
+	if req.URL.String() == "/bot/getMe" {
+		rw.Write([]byte(`{"ok":true,"result":{}}`))
+		return
+	}
+	if req.URL.String() == "/bot/getUpdates" {
+		s.handlerGetUpdates(rw)
+		return
+	}
+
+	reqBody, errReadBody := io.ReadAll(req.Body)
+	if errReadBody != nil {
+		panic(errReadBody)
+	}
+	defer req.Body.Close()
+
+	hook, okHook := s.hooks[req.URL.String()]
+	if okHook {
+		s.hooksCalls[req.URL.String()]++
+		resp, errData := json.Marshal(hook(reqBody))
+		if errData != nil {
+			panic(errData)
+		}
+		rw.Write(resp)
+		return
+	}
+
+	d, ok := s.custom[req.URL.String()]
+	if !ok {
+		panic("answer not found for request: " + req.URL.String())
+	}
+
+	resp, errData := json.Marshal(d)
+	if errData != nil {
+		panic(errData)
+	}
+	rw.Write(resp)
+}
+
+func (s *serverMock) Close() {
+	s.s.Close()
+}
+
+func (s *serverMock) handlerGetUpdates(rw http.ResponseWriter) {
+	if s.updateIdx >= len(s.updates) {
+		rw.Write([]byte(`{"ok":true,"result":[]}`))
+		return
+	}
+
+	s.updates[s.updateIdx].ID = int64(s.updateIdx + 1)
+
+	r := getUpdatesResponse{
+		OK:     true,
+		Result: []*models.Update{s.updates[s.updateIdx]},
+	}
+
+	s.updateIdx++
+
+	d, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+	rw.Write(d)
+}
+
+func (s *serverMock) URL() string {
+	return s.s.URL
+}
+
+func newServerMock() *serverMock {
+	s := &serverMock{
+		custom:     map[string]any{},
+		hooks:      map[string]func([]byte) any{},
+		hooksCalls: map[string]int{},
+	}
+
+	s.s = httptest.NewServer(http.HandlerFunc(s.handler))
+
+	return s
+}
+
+func TestNew_error_getMe(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.Write([]byte(`{"ok":false,"description":"err1"}`))
+	}))
+	defer server.Close()
+
+	_, err := New("", WithServerURL(server.URL))
+	if err == nil {
+		t.Fatal("unexpected nil error")
+	}
+	if err.Error() != "error call getMe, error response from telegram for method getMe, err1" {
+		t.Fatalf("wrong error message %q", err.Error())
+	}
+}
+
+func TestNew(t *testing.T) {
+	s := newServerMock()
+	defer s.Close()
+
+	_, err := New("", WithServerURL(s.URL()))
+	if err != nil {
+		t.Fatalf("unexpected error %q", err)
+	}
+}
+
+func TestBot_StartWebhook(t *testing.T) {
+	s := newServerMock()
+	defer s.Close()
+
+	b, err := New("", WithServerURL(s.URL()))
+	if err != nil {
+		t.Fatalf("unexpected error %q", err)
+	}
+
+	var called bool
+
+	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
+		if update.Message.ID != 1 {
+			t.Errorf("unexpected message id")
+		}
+		called = true
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go b.StartWebhook(ctx)
+
+	time.Sleep(time.Millisecond * 100)
+
+	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
+	if errReq != nil {
+		t.Error(errReq)
+		return
+	}
+
+	b.WebhookHandler().ServeHTTP(nil, req)
+
+	cancel()
+
+	time.Sleep(time.Millisecond * 100)
+
+	if !called {
+		t.Errorf("not called default handler")
+	}
+}
+
+func TestBot_Start(t *testing.T) {
+	s := newServerMock()
+	defer s.Close()
+
+	s.updates = append(s.updates, &models.Update{Message: &models.Message{ID: 42}})
+
+	b, err := New("", WithServerURL(s.URL()))
+	if err != nil {
+		t.Fatalf("unexpected error %q", err)
+	}
+
+	var called bool
+
+	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
+		if update.Message.ID != 42 {
+			t.Errorf("unexpected message id %d", update.Message.ID)
+		}
+		called = true
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go b.Start(ctx)
+
+	time.Sleep(time.Millisecond * 100)
+
+	cancel()
+
+	time.Sleep(time.Millisecond * 100)
+
+	if !called {
+		t.Errorf("not called default handler")
+	}
+}
