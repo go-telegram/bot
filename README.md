@@ -1,5 +1,8 @@
 # Golang Telegram Bot
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/go-telegram/bot)](https://goreportcard.com/report/github.com/go-telegram/bot) [![codecov](https://codecov.io/gh/go-telegram/bot/branch/main/graph/badge.svg)](https://codecov.io/gh/go-telegram/bot)
+
+
 > [Telegram Group](https://t.me/gotelegrambotui)
 
 > Supports Bot API version: [6.4](https://core.telegram.org/bots/api-changelog#december-30-2022) from December 30, 2022
