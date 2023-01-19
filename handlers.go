@@ -63,17 +63,16 @@ func (h handler) match(update *models.Update) bool {
 	return false
 }
 
-func (b *Bot) RegisterHandlerMatchFunc(handlerType HandlerType, matchFunc MatchFunc, f HandlerFunc) string {
+func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
 	id := RandomString(16)
 
 	h := handler{
-		handlerType: handlerType,
-		matchType:   matchTypeFunc,
-		matchFunc:   matchFunc,
-		handler:     f,
+		matchType: matchTypeFunc,
+		matchFunc: matchFunc,
+		handler:   f,
 	}
 
 	b.handlers[id] = h
