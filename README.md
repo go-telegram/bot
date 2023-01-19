@@ -283,6 +283,20 @@ bot.SendMediaGroup(ctx, params)
 
 [Demo in examples](examples/send_media_group/main.go)
 
+## Helpers
+
+### `EscapeMarkdown(s string) string`
+
+Escape special symbols for Telegram MarkdownV2 syntax 
+
+### `EscapeMarkdownUnescaped(s string) string`
+
+Escape only unescaped special symbols for Telegram MarkdownV2 syntax 
+
+### `RandomString(n int) string`
+
+Returns fast random a-zA-Z string with n length
+
 ## UI Components
 
 In the repo https://github.com/go-telegram/ui you can find a some UI elements for your bot.

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1 (2023-01-19)
+
+- add func `EscapeMarkdownUnescaped` for escape only unescaped symbols
+
 ## v0.4.0 (2023-01-13)
 
 - [BREAKING] change some types from `int` to `int64` #11
