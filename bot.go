@@ -85,6 +85,7 @@ func New(token string, options ...Option) (*Bot, error) {
 	return b, nil
 }
 
+// StartWebhook starts the Bot with webhook mode
 func (b *Bot) StartWebhook(ctx context.Context) {
 	wg := &sync.WaitGroup{}
 
@@ -94,6 +95,7 @@ func (b *Bot) StartWebhook(ctx context.Context) {
 	wg.Wait()
 }
 
+// Start the bot
 func (b *Bot) Start(ctx context.Context) {
 	wg := &sync.WaitGroup{}
 

@@ -11,6 +11,7 @@ import (
 
 var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
 
+// EscapeMarkdown escapes special symbols for Telegram MarkdownV2 syntax
 func EscapeMarkdown(s string) string {
 	var result []rune
 	for _, r := range s {
@@ -22,6 +23,7 @@ func EscapeMarkdown(s string) string {
 	return string(result)
 }
 
+// EscapeMarkdownUnescaped escapes unescaped special symbols for Telegram Markdown v2 syntax
 func EscapeMarkdownUnescaped(s string) string {
 	var result []rune
 	var escaped bool
@@ -55,6 +57,7 @@ const (
 var randSrc = rand.NewSource(time.Now().UnixNano())
 var randSrcMx sync.Mutex
 
+// RandomString returns random a-zA-Z string with n length
 func RandomString(n int) string {
 	b := make([]byte, n)
 	// A randSrc.Int63() generates 63 random bits, enough for letterIdxMax characters!
