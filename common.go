@@ -22,6 +22,24 @@ func EscapeMarkdown(s string) string {
 	return string(result)
 }
 
+func EscapeMarkdownUnescaped(s string) string {
+	var result []rune
+	var escaped bool
+	for _, r := range s {
+		if r == '\\' {
+			escaped = !escaped
+			result = append(result, r)
+			continue
+		}
+		if strings.ContainsRune(shouldBeEscaped, r) && !escaped {
+			result = append(result, '\\')
+		}
+		escaped = false
+		result = append(result, r)
+	}
+	return string(result)
+}
+
 // log functions
 
 // random string generator

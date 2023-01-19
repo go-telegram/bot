@@ -3,8 +3,15 @@ package bot
 import "testing"
 
 func TestEscapeMarkdown(t *testing.T) {
-	res := EscapeMarkdown("foo _*[]()~`>#+-=|{}.! bar")
-	if res != "foo \\_\\*\\[\\]\\(\\)\\~\\`\\>\\#\\+\\-\\=\\|\\{\\}\\.\\! bar" {
+	res := EscapeMarkdown("foo \\! _*[]()~`>#+-=|{}.! bar")
+	if res != "foo \\\\! \\_\\*\\[\\]\\(\\)\\~\\`\\>\\#\\+\\-\\=\\|\\{\\}\\.\\! bar" {
+		t.Fatalf("unexpected result %q", res)
+	}
+}
+
+func TestEscapeMarkdownUnescaped(t *testing.T) {
+	res := EscapeMarkdownUnescaped("foo \\! _*[]()~`>#+-=|{}.! bar")
+	if res != "foo \\! \\_\\*\\[\\]\\(\\)\\~\\`\\>\\#\\+\\-\\=\\|\\{\\}\\.\\! bar" {
 		t.Fatalf("unexpected result %q", res)
 	}
 }
