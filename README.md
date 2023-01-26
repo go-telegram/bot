@@ -2,6 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-telegram/bot)](https://goreportcard.com/report/github.com/go-telegram/bot) [![codecov](https://codecov.io/gh/go-telegram/bot/branch/main/graph/badge.svg?token=57B1OR6PCK)](https://codecov.io/gh/go-telegram/bot)
 
+✅ Present in the list of libraries https://core.telegram.org/bots/samples#go
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
