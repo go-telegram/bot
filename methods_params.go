@@ -81,7 +81,7 @@ type SendAudioParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Performer                string                 `json:"performer,omitempty"`
 	Title                    string                 `json:"title,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -93,7 +93,7 @@ type SendDocumentParams struct {
 	ChatID                      any                    `json:"chat_id"`
 	MessageThreadID             int                    `json:"message_thread_id,omitempty"`
 	Document                    models.InputFile       `json:"document"`
-	Thumb                       string                 `json:"thumb,omitempty"`
+	Thumb                       models.InputFile       `json:"thumb,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities             []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -112,7 +112,7 @@ type SendVideoParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -132,7 +132,7 @@ type SendAnimationParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    string                 `json:"thumb,omitempty"`
+	Thumb                    models.InputFile       `json:"thumb,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -165,7 +165,7 @@ type SendVideoNoteParams struct {
 	VideoNote                models.InputFile   `json:"video_note"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
-	Thumb                    string             `json:"thumb,omitempty"`
+	Thumb                    models.InputFile   `json:"thumb,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                `json:"reply_to_message_id,omitempty"`
