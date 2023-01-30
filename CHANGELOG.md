@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.2 (2023-01-30)
+
+- [BUGFIX] change field Thumb to InputFile type
+
 ## v0.4.1 (2023-01-19)
 
 - add func `EscapeMarkdownUnescaped` for escape only unescaped symbols
