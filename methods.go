@@ -177,7 +177,7 @@ func (b *Bot) SendDice(ctx context.Context, params *SendDiceParams) (*models.Mes
 // SendChatAction https://core.telegram.org/bots/api#sendchataction
 func (b *Bot) SendChatAction(ctx context.Context, params *SendChatActionParams) (bool, error) {
 	var result bool
-	err := b.rawRequest(ctx, "sendDice", params, &result)
+	err := b.rawRequest(ctx, "sendChatAction", params, &result)
 	return result, err
 }
 
