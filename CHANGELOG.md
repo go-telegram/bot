@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.3 (2023-02-05)
+
+- [BUGFIX] SendChatAction now calls `sendChatAction` instead `sendDice`
+
 ## v0.4.2 (2023-01-30)
 
 - [BUGFIX] change field Thumb to InputFile type
