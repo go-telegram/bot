@@ -64,6 +64,8 @@ type Message struct {
 	PinnedMessage                 *Message                       `json:"pinned_message,omitempty"`
 	Invoice                       *Invoice                       `json:"invoice,omitempty"`
 	SuccessfulPayment             *SuccessfulPayment             `json:"successful_payment,omitempty"`
+	UserShared                    *UserShared                    `json:"user_shared,omitempty"`
+	ChatShared                    *ChatShared                    `json:"chat_shared,omitempty"`
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`
 	WriteAccessAllowed            *WriteAccessAllowed            `json:"write_access_allowed,omitempty"`
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`

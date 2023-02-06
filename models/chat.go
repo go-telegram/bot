@@ -4,6 +4,7 @@ package models
 type ChatJoinRequest struct {
 	Chat       Chat            `json:"chat"`
 	From       User            `json:"from"`
+	UserChatID int64           `json:"user_chat_id"`
 	Date       int             `json:"date"`
 	Bio        string          `json:"bio,omitempty"`
 	InviteLink *ChatInviteLink `json:"invite_link,omitempty"`
@@ -49,7 +50,12 @@ type ChatAdministratorRights struct {
 // ChatPermissions https://core.telegram.org/bots/api#chatpermissions
 type ChatPermissions struct {
 	CanSendMessages       bool `json:"can_send_messages,omitempty"`
-	CanSendMediaMessages  bool `json:"can_send_media_messages,omitempty"`
+	CanSendAudios         bool `json:"can_send_audios"`
+	CanSendDocuments      bool `json:"can_send_documents"`
+	CanSendPhotos         bool `json:"can_send_photos"`
+	CanSendVideos         bool `json:"can_send_videos"`
+	CanSendVideoNotes     bool `json:"can_send_video_notes"`
+	CanSendVoiceNotes     bool `json:"can_send_voice_notes"`
 	CanSendPolls          bool `json:"can_send_polls,omitempty"`
 	CanSendOtherMessages  bool `json:"can_send_other_messages,omitempty"`
 	CanAddWebPagePreviews bool `json:"can_add_web_page_previews,omitempty"`
