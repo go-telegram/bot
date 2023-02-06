@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.0 (2023-02-06)
+
+- support bot api 6.5 
+
 ## v0.4.3 (2023-02-05)
 
 - [BUGFIX] SendChatAction now calls `sendChatAction` instead `sendDice`

@@ -313,10 +313,11 @@ type UnbanChatMemberParams struct {
 }
 
 type RestrictChatMemberParams struct {
-	ChatID      any                     `json:"chat_id"`
-	UserID      int                     `json:"user_id"`
-	Permissions *models.ChatPermissions `json:"permissions,omitempty"`
-	UntilDate   int                     `json:"until_date,omitempty"`
+	ChatID                        any                     `json:"chat_id"`
+	UserID                        int                     `json:"user_id"`
+	Permissions                   *models.ChatPermissions `json:"permissions,omitempty"`
+	UseIndependentChatPermissions bool                    `json:"use_independent_chat_permissions,omitempty"`
+	UntilDate                     int                     `json:"until_date,omitempty"`
 }
 
 type PromoteChatMemberParams struct {
@@ -352,8 +353,9 @@ type UnbanChatSenderChatParams struct {
 }
 
 type SetChatPermissionsParams struct {
-	ChatID      any                    `json:"chat_id"`
-	Permissions models.ChatPermissions `json:"permissions"`
+	ChatID                        any                    `json:"chat_id"`
+	Permissions                   models.ChatPermissions `json:"permissions"`
+	UseIndependentChatPermissions bool                   `json:"use_independent_chat_permissions,omitempty"`
 }
 
 type ExportChatInviteLinkParams struct {

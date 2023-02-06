@@ -37,6 +37,18 @@ type GeneralForumTopicHidden struct {
 type GeneralForumTopicUnhidden struct {
 }
 
+// UserShared https://core.telegram.org/bots/api#usershared
+type UserShared struct {
+	RequestID int   `json:"request_id"`
+	UserID    int64 `json:"user_id"`
+}
+
+// ChatShared https://core.telegram.org/bots/api#chatshared
+type ChatShared struct {
+	RequestID int   `json:"request_id"`
+	ChatID    int64 `json:"chat_id"`
+}
+
 // WriteAccessAllowed https://core.telegram.org/bots/api#writeaccessallowed
 type WriteAccessAllowed struct {
 }
