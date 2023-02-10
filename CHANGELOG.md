@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1 (2023-02-10)
+
+- [BUGFIX] send http.NoBody if all params fields are empty. For example, method `getMyCommands` has not required fields
+
 ## v0.5.0 (2023-02-06)
 
 - support bot api 6.5 
