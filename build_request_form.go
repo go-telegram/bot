@@ -20,8 +20,10 @@ var inputMediaInterface = reflect.TypeOf(new(models.InputMedia)).Elem()
 
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file. Also, for InputMedia attachments
-func buildRequestForm(form *multipart.Writer, params any) error {
+func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 	v := reflect.ValueOf(params).Elem()
+
+	var fieldsCount int
 
 	for i := 0; i < v.NumField(); i++ {
 		jsonTag := v.Type().Field(i).Tag.Get("json")
@@ -39,14 +41,14 @@ func buildRequestForm(form *multipart.Writer, params any) error {
 		if v.Field(i).Type().Implements(customMarshalInterface) {
 			err := addFormFieldCustomMarshal(form, fieldName, v.Field(i).Interface().(customMarshal))
 			if err != nil {
-				return err
+				return 0, err
 			}
 			continue
 		}
 		if v.Field(i).Type().Implements(inputMediaInterface) {
 			err := addFormFieldInputMedia(form, fieldName, v.Field(i).Interface().(models.InputMedia))
 			if err != nil {
-				return err
+				return 0, err
 			}
 			continue
 		}
@@ -68,13 +70,14 @@ func buildRequestForm(form *multipart.Writer, params any) error {
 		default:
 			err = addFormFieldDefault(form, fieldName, v.Field(i).Interface())
 		}
-
 		if err != nil {
-			return err
+			return 0, err
 		}
+
+		fieldsCount++
 	}
 
-	return nil
+	return fieldsCount, nil
 }
 
 func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value *models.InputFileUpload) error {

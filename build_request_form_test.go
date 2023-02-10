@@ -55,7 +55,7 @@ func Test_buildRequestForm(t *testing.T) {
 	form := multipart.NewWriter(buf)
 	form.SetBoundary("XXX") //nolint
 
-	errBuild := buildRequestForm(form, &params)
+	fieldsCount, errBuild := buildRequestForm(form, &params)
 	if errBuild != nil {
 		t.Error(errBuild)
 		return
@@ -102,6 +102,6 @@ Content-Disposition: form-data; name="inline_query_result_interface"
 {"type":"article","id":"","title":"foo","input_message_content":{"message_text":"foo"},"description":"bar"}
 --XXX--
 `
-
+	assertEqualInt(t, fieldsCount, 6)
 	assertFormData(t, buf.String(), expect)
 }
