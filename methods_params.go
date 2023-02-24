@@ -290,9 +290,9 @@ type SendChatActionParams struct {
 }
 
 type GetUserProfilePhotosParams struct {
-	UserID int `json:"user_id"`
-	Offset int `json:"offset,omitempty"`
-	Limit  int `json:"limit,omitempty"`
+	UserID int64 `json:"user_id"`
+	Offset int   `json:"offset,omitempty"`
+	Limit  int   `json:"limit,omitempty"`
 }
 
 type GetFileParams struct {
@@ -300,45 +300,45 @@ type GetFileParams struct {
 }
 
 type BanChatMemberParams struct {
-	ChatID         any  `json:"chat_id"`
-	UserID         int  `json:"user_id"`
-	UntilDate      int  `json:"until_date,omitempty"`
-	RevokeMessages bool `json:"revoke_messages,omitempty"`
+	ChatID         any   `json:"chat_id"`
+	UserID         int64 `json:"user_id"`
+	UntilDate      int   `json:"until_date,omitempty"`
+	RevokeMessages bool  `json:"revoke_messages,omitempty"`
 }
 
 type UnbanChatMemberParams struct {
-	ChatID       any  `json:"chat_id"`
-	UserID       int  `json:"user_id"`
-	OnlyIfBanned bool `json:"only_if_banned,omitempty"`
+	ChatID       any   `json:"chat_id"`
+	UserID       int64 `json:"user_id"`
+	OnlyIfBanned bool  `json:"only_if_banned,omitempty"`
 }
 
 type RestrictChatMemberParams struct {
 	ChatID                        any                     `json:"chat_id"`
-	UserID                        int                     `json:"user_id"`
+	UserID                        int64                   `json:"user_id"`
 	Permissions                   *models.ChatPermissions `json:"permissions,omitempty"`
 	UseIndependentChatPermissions bool                    `json:"use_independent_chat_permissions,omitempty"`
 	UntilDate                     int                     `json:"until_date,omitempty"`
 }
 
 type PromoteChatMemberParams struct {
-	ChatID             any  `json:"chat_id" rules:"required,chat_id"`
-	UserID             int  `json:"user_id" rules:"required"`
-	IsAnonymous        bool `json:"is_anonymous,omitempty"`
-	CanManageChat      bool `json:"can_manage_chat,omitempty"`
-	CanPostMessages    bool `json:"can_post_messages,omitempty"`
-	CanEditMessages    bool `json:"can_edit_messages,omitempty"`
-	CanDeleteMessages  bool `json:"can_delete_messages,omitempty"`
-	CanRestrictMembers bool `json:"can_restrict_members,omitempty"`
-	CanPromoteMembers  bool `json:"can_promote_members,omitempty"`
-	CanChangeInfo      bool `json:"can_change_info,omitempty"`
-	CanInviteUsers     bool `json:"can_invite_users,omitempty"`
-	CanPinMessages     bool `json:"can_pin_messages,omitempty"`
-	CanManageTopics    bool `json:"can_manage_topics,omitempty"`
+	ChatID             any   `json:"chat_id" rules:"required,chat_id"`
+	UserID             int64 `json:"user_id" rules:"required"`
+	IsAnonymous        bool  `json:"is_anonymous,omitempty"`
+	CanManageChat      bool  `json:"can_manage_chat,omitempty"`
+	CanPostMessages    bool  `json:"can_post_messages,omitempty"`
+	CanEditMessages    bool  `json:"can_edit_messages,omitempty"`
+	CanDeleteMessages  bool  `json:"can_delete_messages,omitempty"`
+	CanRestrictMembers bool  `json:"can_restrict_members,omitempty"`
+	CanPromoteMembers  bool  `json:"can_promote_members,omitempty"`
+	CanChangeInfo      bool  `json:"can_change_info,omitempty"`
+	CanInviteUsers     bool  `json:"can_invite_users,omitempty"`
+	CanPinMessages     bool  `json:"can_pin_messages,omitempty"`
+	CanManageTopics    bool  `json:"can_manage_topics,omitempty"`
 }
 
 type SetChatAdministratorCustomTitleParams struct {
 	ChatID      any    `json:"chat_id"`
-	UserID      int    `json:"user_id"`
+	UserID      int64  `json:"user_id"`
 	CustomTitle string `json:"custom_title"`
 }
 
@@ -385,13 +385,13 @@ type RevokeChatInviteLinkParams struct {
 }
 
 type ApproveChatJoinRequestParams struct {
-	ChatID any `json:"chat_id"`
-	UserID int `json:"user_id"`
+	ChatID any   `json:"chat_id"`
+	UserID int64 `json:"user_id"`
 }
 
 type DeclineChatJoinRequestParams struct {
-	ChatID any `json:"chat_id"`
-	UserID int `json:"user_id"`
+	ChatID any   `json:"chat_id"`
+	UserID int64 `json:"user_id"`
 }
 
 type SetChatPhotoParams struct {
@@ -445,8 +445,8 @@ type GetChatMemberCountParams struct {
 }
 
 type GetChatMemberParams struct {
-	ChatID any `json:"chat_id"`
-	UserID int `json:"user_id"`
+	ChatID any   `json:"chat_id"`
+	UserID int64 `json:"user_id"`
 }
 
 type SetChatStickerSetParams struct {
@@ -624,12 +624,12 @@ type GetCustomEmojiStickersParams struct {
 }
 
 type UploadStickerFileParams struct {
-	UserID     int              `json:"user_id"`
+	UserID     int64            `json:"user_id"`
 	PngSticker models.InputFile `json:"png_sticker"`
 }
 
 type CreateNewStickerSetParams struct {
-	UserID        int                 `json:"user_id"`
+	UserID        int64               `json:"user_id"`
 	Name          string              `json:"name"`
 	Title         string              `json:"title"`
 	PngSticker    models.InputFile    `json:"png_sticker,omitempty"`
@@ -642,7 +642,7 @@ type CreateNewStickerSetParams struct {
 }
 
 type AddStickerToSetParams struct {
-	UserID       int                 `json:"user_id"`
+	UserID       int64               `json:"user_id"`
 	Name         string              `json:"name"`
 	PngSticker   models.InputFile    `json:"png_sticker,omitempty"`
 	TgsSticker   models.InputFile    `json:"tgs_sticker,omitempty"`
@@ -662,7 +662,7 @@ type DeleteStickerFromSetParams struct {
 
 type SetStickerSetThumbParams struct {
 	Name   string           `json:"name"`
-	UserID int              `json:"user_id"`
+	UserID int64            `json:"user_id"`
 	Thumb  models.InputFile `json:"thumb"`
 }
 
@@ -749,7 +749,7 @@ type AnswerPreCheckoutQueryParams struct {
 }
 
 type SetPassportDataErrorsParams struct {
-	UserID int                           `json:"user_id"`
+	UserID int64                         `json:"user_id"`
 	Errors []models.PassportElementError `json:"errors"`
 }
 
@@ -765,18 +765,18 @@ type SendGameParams struct {
 }
 
 type SetGameScoreParams struct {
-	UserID             int  `json:"user_id"`
-	Score              int  `json:"score"`
-	Force              bool `json:"force,omitempty"`
-	DisableEditMessage bool `json:"disable_edit_message,omitempty"`
-	ChatID             int  `json:"chat_id,omitempty"`
-	MessageID          int  `json:"message_id,omitempty"`
-	InlineMessageID    int  `json:"inline_message_id,omitempty"`
+	UserID             int64 `json:"user_id"`
+	Score              int   `json:"score"`
+	Force              bool  `json:"force,omitempty"`
+	DisableEditMessage bool  `json:"disable_edit_message,omitempty"`
+	ChatID             int   `json:"chat_id,omitempty"`
+	MessageID          int   `json:"message_id,omitempty"`
+	InlineMessageID    int   `json:"inline_message_id,omitempty"`
 }
 
 type GetGameHighScoresParams struct {
-	UserID          int `json:"user_id"`
-	ChatID          int `json:"chat_id,omitempty"`
-	MessageID       int `json:"message_id,omitempty"`
-	InlineMessageID int `json:"inline_message_id,omitempty"`
+	UserID          int64 `json:"user_id"`
+	ChatID          int   `json:"chat_id,omitempty"`
+	MessageID       int   `json:"message_id,omitempty"`
+	InlineMessageID int   `json:"inline_message_id,omitempty"`
 }
