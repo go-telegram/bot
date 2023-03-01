@@ -91,8 +91,8 @@ type BotCommandScopeChatAdministrators struct {
 
 // BotCommandScopeChatMember https://core.telegram.org/bots/api#botcommandscopechatmember
 type BotCommandScopeChatMember struct {
-	ChatID any `json:"chat_id"`
-	UserID int `json:"user_id"`
+	ChatID any   `json:"chat_id"`
+	UserID int64 `json:"user_id"`
 }
 
 func (m *BotCommandScopeChatMember) MarshalCustom() ([]byte, error) {
