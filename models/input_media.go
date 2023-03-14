@@ -49,7 +49,7 @@ func (InputMediaPhoto) inputMediaTag() {}
 // InputMediaVideo https://core.telegram.org/bots/api#inputmediavideo
 type InputMediaVideo struct {
 	Media             string          `json:"media"`
-	Thumb             InputFile       `json:"thumb,omitempty"`
+	Thumbnail         InputFile       `json:"thumbnail,omitempty"`
 	Caption           string          `json:"caption,omitempty"`
 	ParseMode         ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities   []MessageEntity `json:"caption_entities,omitempty"`
@@ -84,7 +84,7 @@ func (InputMediaVideo) inputMediaTag() {}
 // InputMediaAnimation https://core.telegram.org/bots/api#inputmediaanimation
 type InputMediaAnimation struct {
 	Media           string          `json:"media"`
-	Thumb           InputFile       `json:"thumb,omitempty"`
+	Thumbnail       InputFile       `json:"thumbnail,omitempty"`
 	Caption         string          `json:"caption,omitempty"`
 	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
@@ -118,7 +118,7 @@ func (InputMediaAnimation) inputMediaTag() {}
 // InputMediaAudio https://core.telegram.org/bots/api#inputmediaaudio
 type InputMediaAudio struct {
 	Media           string          `json:"media"`
-	Thumb           InputFile       `json:"thumb,omitempty"`
+	Thumbnail       InputFile       `json:"thumbnail,omitempty"`
 	Caption         string          `json:"caption,omitempty"`
 	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
@@ -152,7 +152,7 @@ func (InputMediaAudio) inputMediaTag() {}
 // InputMediaDocument https://core.telegram.org/bots/api#inputmediadocument
 type InputMediaDocument struct {
 	Media                       string          `json:"media"`
-	Thumb                       InputFile       `json:"thumb,omitempty"`
+	Thumbnail                   InputFile       `json:"thumbnail,omitempty"`
 	Caption                     string          `json:"caption,omitempty"`
 	ParseMode                   ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities             []MessageEntity `json:"caption_entities,omitempty"`

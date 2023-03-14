@@ -9,5 +9,5 @@ type StickerSet struct {
 	IsVideo       bool       `json:"is_video"`
 	ContainsMasks bool       `json:"contains_masks"`
 	Stickers      []Sticker  `json:"stickers"`
-	Thumb         *PhotoSize `json:"thumb,omitempty"`
+	Thumbnail     *PhotoSize `json:"thumbnail,omitempty"`
 }
