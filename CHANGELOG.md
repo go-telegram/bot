@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.0 (2023-03-14)
+
+- support bot api 6.6
+
 ## v0.6.0 (2023-03-01)
 
 - [BREAKING] change UserID field type in methods params and models from `int` to `int64` #19
