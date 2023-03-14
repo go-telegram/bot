@@ -29,7 +29,10 @@ type getUpdatesResponse struct {
 
 func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
 	if req.URL.String() == "/bot/getMe" {
-		rw.Write([]byte(`{"ok":true,"result":{}}`))
+		_, err := rw.Write([]byte(`{"ok":true,"result":{}}`))
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 	if req.URL.String() == "/bot/getUpdates" {
@@ -50,7 +53,10 @@ func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
 		if errData != nil {
 			panic(errData)
 		}
-		rw.Write(resp)
+		_, err := rw.Write(resp)
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 
@@ -63,7 +69,10 @@ func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
 	if errData != nil {
 		panic(errData)
 	}
-	rw.Write(resp)
+	_, err := rw.Write(resp)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *serverMock) Close() {
@@ -72,7 +81,10 @@ func (s *serverMock) Close() {
 
 func (s *serverMock) handlerGetUpdates(rw http.ResponseWriter) {
 	if s.updateIdx >= len(s.updates) {
-		rw.Write([]byte(`{"ok":true,"result":[]}`))
+		_, err := rw.Write([]byte(`{"ok":true,"result":[]}`))
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 
@@ -89,7 +101,10 @@ func (s *serverMock) handlerGetUpdates(rw http.ResponseWriter) {
 	if err != nil {
 		panic(err)
 	}
-	rw.Write(d)
+	_, err = rw.Write(d)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *serverMock) URL() string {
@@ -110,7 +125,10 @@ func newServerMock() *serverMock {
 
 func TestNew_error_getMe(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		rw.Write([]byte(`{"ok":false,"description":"err1"}`))
+		_, err := rw.Write([]byte(`{"ok":false,"description":"err1"}`))
+		if err != nil {
+			panic(err)
+		}
 	}))
 	defer server.Close()
 
