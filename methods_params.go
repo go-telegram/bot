@@ -81,7 +81,7 @@ type SendAudioParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Performer                string                 `json:"performer,omitempty"`
 	Title                    string                 `json:"title,omitempty"`
-	Thumb                    models.InputFile       `json:"thumb,omitempty"`
+	Thumbnail                models.InputFile       `json:"thumbnail,omitempty"`
 	DisableNotification      bool                   `json:"disable_notification,omitempty"`
 	ProtectContent           bool                   `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                    `json:"reply_to_message_id,omitempty"`
@@ -93,7 +93,7 @@ type SendDocumentParams struct {
 	ChatID                      any                    `json:"chat_id"`
 	MessageThreadID             int                    `json:"message_thread_id,omitempty"`
 	Document                    models.InputFile       `json:"document"`
-	Thumb                       models.InputFile       `json:"thumb,omitempty"`
+	Thumbnail                   models.InputFile       `json:"thumbnail,omitempty"`
 	Caption                     string                 `json:"caption,omitempty"`
 	ParseMode                   models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities             []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -112,7 +112,7 @@ type SendVideoParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    models.InputFile       `json:"thumb,omitempty"`
+	Thumbnail                models.InputFile       `json:"thumbnail,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -132,7 +132,7 @@ type SendAnimationParams struct {
 	Duration                 int                    `json:"duration,omitempty"`
 	Width                    int                    `json:"width,omitempty"`
 	Height                   int                    `json:"height,omitempty"`
-	Thumb                    models.InputFile       `json:"thumb,omitempty"`
+	Thumbnail                models.InputFile       `json:"thumbnail,omitempty"`
 	Caption                  string                 `json:"caption,omitempty"`
 	ParseMode                models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities          []models.MessageEntity `json:"caption_entities,omitempty"`
@@ -165,7 +165,7 @@ type SendVideoNoteParams struct {
 	VideoNote                models.InputFile   `json:"video_note"`
 	Duration                 int                `json:"duration,omitempty"`
 	Length                   int                `json:"length,omitempty"`
-	Thumb                    models.InputFile   `json:"thumb,omitempty"`
+	Thumbnail                models.InputFile   `json:"thumbnail,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                `json:"reply_to_message_id,omitempty"`
@@ -538,6 +538,24 @@ type GetMyCommandsParams struct {
 	LanguageCode string                 `json:"language_code,omitempty"`
 }
 
+type SetMyDescriptionParams struct {
+	Description  string `json:"description,omitempty"`
+	LanguageCode string `json:"language_code,omitempty"`
+}
+
+type GetMyDescriptionParams struct {
+	LanguageCode string `json:"language_code,omitempty"`
+}
+
+type SetMyShortDescriptionParams struct {
+	ShortDescription string `json:"short_description,omitempty"`
+	LanguageCode     string `json:"language_code,omitempty"`
+}
+
+type GetMyShortDescriptionParams struct {
+	LanguageCode string `json:"language_code,omitempty"`
+}
+
 type SetChatMenuButtonParams struct {
 	ChatID     any                    `json:"chat_id"`
 	MenuButton models.InputMenuButton `json:"menu_button"`
@@ -608,6 +626,7 @@ type SendStickerParams struct {
 	ChatID                   any                `json:"chat_id"`
 	MessageThreadID          int                `json:"message_thread_id,omitempty"`
 	Sticker                  models.InputFile   `json:"sticker"`
+	Emoji                    string             `json:"emoji,omitempty"`
 	DisableNotification      bool               `json:"disable_notification,omitempty"`
 	ProtectContent           bool               `json:"protect_content,omitempty"`
 	ReplyToMessageID         int                `json:"reply_to_message_id,omitempty"`
@@ -629,26 +648,19 @@ type UploadStickerFileParams struct {
 }
 
 type CreateNewStickerSetParams struct {
-	UserID        int64               `json:"user_id"`
-	Name          string              `json:"name"`
-	Title         string              `json:"title"`
-	PngSticker    models.InputFile    `json:"png_sticker,omitempty"`
-	TgsSticker    models.InputFile    `json:"tgs_sticker,omitempty"`
-	WebmSticker   models.InputFile    `json:"webm_sticker,omitempty"`
-	StickerType   string              `json:"sticker_type,omitempty"`
-	Emojis        string              `json:"emojis"`
-	ContainsMasks bool                `json:"contains_masks,omitempty"`
-	MaskPosition  models.MaskPosition `json:"mask_position,omitempty"`
+	UserID          int64            `json:"user_id"`
+	Name            string           `json:"name"`
+	Title           string           `json:"title"`
+	Sticker         models.InputFile `json:"sticker"`
+	StickerFormat   string           `json:"sticker_format"`
+	StickerType     string           `json:"sticker_type,omitempty"`
+	NeedsRepainting bool             `json:"needs_repainting,omitempty"`
 }
 
 type AddStickerToSetParams struct {
-	UserID       int64               `json:"user_id"`
-	Name         string              `json:"name"`
-	PngSticker   models.InputFile    `json:"png_sticker,omitempty"`
-	TgsSticker   models.InputFile    `json:"tgs_sticker,omitempty"`
-	WebmSticker  models.InputFile    `json:"webm_sticker,omitempty"`
-	Emojis       string              `json:"emojis"`
-	MaskPosition models.MaskPosition `json:"mask_position,omitempty"`
+	UserID  int64               `json:"user_id"`
+	Name    string              `json:"name"`
+	Sticker models.InputSticker `json:"sticker"`
 }
 
 type SetStickerPositionInSetParams struct {
@@ -660,10 +672,39 @@ type DeleteStickerFromSetParams struct {
 	Sticker string `json:"sticker"`
 }
 
-type SetStickerSetThumbParams struct {
-	Name   string           `json:"name"`
-	UserID int64            `json:"user_id"`
-	Thumb  models.InputFile `json:"thumb"`
+type SetStickerEmojiListParams struct {
+	Sticker   string   `json:"sticker"`
+	EmojiList []string `json:"emoji_list"`
+}
+
+type SetStickerKeywordsParams struct {
+	Sticker  string   `json:"sticker"`
+	Keywords []string `json:"keywords"`
+}
+
+type SetStickerMaskPositionParams struct {
+	Sticker      string              `json:"sticker"`
+	MaskPosition models.MaskPosition `json:"mask_position"`
+}
+
+type SetStickerSetTitleParams struct {
+	Name  string `json:"name"`
+	Title string `json:"title"`
+}
+
+type SetStickerSetThumbnailParams struct {
+	Name      string           `json:"name"`
+	UserID    int64            `json:"user_id"`
+	Thumbnail models.InputFile `json:"thumbnail"`
+}
+
+type SetCustomEmojiStickerSetThumbnailParams struct {
+	Name          string `json:"name"`
+	CustomEmojiID string `json:"custom_emoji_id,omitempty"`
+}
+
+type DeleteStickerSetParams struct {
+	Name string `json:"name"`
 }
 
 type AnswerInlineQueryParams struct {

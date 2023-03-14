@@ -503,6 +503,34 @@ func (b *Bot) GetMyCommands(ctx context.Context, params *GetMyCommandsParams) ([
 	return result, err
 }
 
+// SetMyDescription https://core.telegram.org/bots/api#setmydescription
+func (b *Bot) SetMyDescription(ctx context.Context, params *SetMyDescriptionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMyDescription", params, &result)
+	return result, err
+}
+
+// GetMyDescription https://core.telegram.org/bots/api#getmydescription
+func (b *Bot) GetMyDescription(ctx context.Context, params *GetMyDescriptionParams) (models.BotDescription, error) {
+	var result models.BotDescription
+	err := b.rawRequest(ctx, "getMyDescription", params, &result)
+	return result, err
+}
+
+// SetMyShortDescription https://core.telegram.org/bots/api#setmyshortdescription
+func (b *Bot) SetMyShortDescription(ctx context.Context, params *SetMyShortDescriptionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMyShortDescription", params, &result)
+	return result, err
+}
+
+// GetMyShortDescription https://core.telegram.org/bots/api#getmyshortdescription
+func (b *Bot) GetMyShortDescription(ctx context.Context, params *GetMyShortDescriptionParams) (models.BotShortDescription, error) {
+	var result models.BotShortDescription
+	err := b.rawRequest(ctx, "getMyShortDescription", params, &result)
+	return result, err
+}
+
 // SetChatMenuButton https://core.telegram.org/bots/api#setchatmenubutton
 func (b *Bot) SetChatMenuButton(ctx context.Context, params *SetChatMenuButtonParams) (bool, error) {
 	var result bool
@@ -629,10 +657,52 @@ func (b *Bot) DeleteStickerFromSet(ctx context.Context, params *DeleteStickerFro
 	return result, err
 }
 
-// SetStickerSetThumb https://core.telegram.org/bots/api#setstickersetthumb
-func (b *Bot) SetStickerSetThumb(ctx context.Context, params *SetStickerSetThumbParams) (bool, error) {
+// SetStickerEmojiList https://core.telegram.org/bots/api#setstickeremojilist
+func (b *Bot) SetStickerEmojiList(ctx context.Context, params *SetStickerEmojiListParams) (bool, error) {
 	var result bool
-	err := b.rawRequest(ctx, "setStickerSetThumb", params, &result)
+	err := b.rawRequest(ctx, "setStickerEmojiList", params, &result)
+	return result, err
+}
+
+// SetStickerKeywords https://core.telegram.org/bots/api#setstickerkeywords
+func (b *Bot) SetStickerKeywords(ctx context.Context, params *SetStickerKeywordsParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setStickerKeywords", params, &result)
+	return result, err
+}
+
+// SetStickerMaskPosition https://core.telegram.org/bots/api#setstickermaskposition
+func (b *Bot) SetStickerMaskPosition(ctx context.Context, params *SetStickerMaskPositionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setStickerMaskPosition", params, &result)
+	return result, err
+}
+
+// SetStickerSetTitle https://core.telegram.org/bots/api#setstickermaskposition
+func (b *Bot) SetStickerSetTitle(ctx context.Context, params *SetStickerSetTitleParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setStickerSetTitle", params, &result)
+	return result, err
+}
+
+// SetStickerSetThumbnail https://core.telegram.org/bots/api#setstickersetthumbnail
+func (b *Bot) SetStickerSetThumbnail(ctx context.Context, params *SetStickerSetThumbnailParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setStickerSetThumbnail", params, &result)
+	return result, err
+}
+
+// SetCustomEmojiStickerSetThumbnail https://core.telegram.org/bots/api#setcustomemojistickersetthumbnail
+func (b *Bot) SetCustomEmojiStickerSetThumbnail(ctx context.Context, params *SetCustomEmojiStickerSetThumbnailParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setCustomEmojiStickerSetThumbnail", params, &result)
+	return result, err
+}
+
+// DeleteStickerSet https://core.telegram.org/bots/api#deletestickerset
+func (b *Bot) DeleteStickerSet(ctx context.Context, params *DeleteStickerSetParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteStickerSet", params, &result)
 	return result, err
 }
 

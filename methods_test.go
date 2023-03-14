@@ -230,11 +230,11 @@ func TestBot_Methods(t *testing.T) {
 
 	t.Run("SendVideoNote", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `{"text":"bar"}`, reqFields: map[string]string{
-			"thumb": `{"Data":"foo"}`,
+			"thumbnail": `{"Data":"foo"}`,
 		}}
 		b := &Bot{client: c}
 		resp, err := b.SendVideoNote(context.Background(), &SendVideoNoteParams{
-			Thumb: models.InputFileString{Data: "foo"},
+			Thumbnail: models.InputFileString{Data: "foo"},
 		})
 		assertNoErr(t, err)
 		assertEqualString(t, "bar", resp.Text)
@@ -896,6 +896,54 @@ func TestBot_Methods(t *testing.T) {
 		assertEqualInt(t, 0, len(resp))
 	})
 
+	t.Run("SetMyDescription", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetMyDescription(context.Background(), &SetMyDescriptionParams{
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("GetMyDescription", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"description":"foo"}`, reqFields: map[string]string{
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.GetMyDescription(context.Background(), &GetMyDescriptionParams{
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertEqualString(t, "foo", resp.Description)
+	})
+
+	t.Run("SetMyShortDescription", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetMyShortDescription(context.Background(), &SetMyShortDescriptionParams{
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("GetMyShortDescription", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"short_description":"foo"}`, reqFields: map[string]string{
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.GetMyShortDescription(context.Background(), &GetMyShortDescriptionParams{
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertEqualString(t, "foo", resp.ShortDescription)
+	})
+
 	t.Run("SetChatMenuButton", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
 			"chat_id": "123",
@@ -1109,12 +1157,84 @@ func TestBot_Methods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 
-	t.Run("SetStickerSetThumb", func(t *testing.T) {
+	t.Run("SetStickerEmojiList", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"sticker": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetStickerEmojiList(context.Background(), &SetStickerEmojiListParams{
+			Sticker: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SetStickerKeywords", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"sticker": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetStickerKeywords(context.Background(), &SetStickerKeywordsParams{
+			Sticker: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SetStickerMaskPosition", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"sticker": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetStickerMaskPosition(context.Background(), &SetStickerMaskPositionParams{
+			Sticker: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SetStickerSetTitle", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"title": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetStickerSetTitle(context.Background(), &SetStickerSetTitleParams{
+			Title: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SetStickerSetThumbnail", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
 			"name": "123",
 		}}
 		b := &Bot{client: c}
-		resp, err := b.SetStickerSetThumb(context.Background(), &SetStickerSetThumbParams{
+		resp, err := b.SetStickerSetThumbnail(context.Background(), &SetStickerSetThumbnailParams{
+			Name: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SetCustomEmojiStickerSetThumbnail", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"name": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetCustomEmojiStickerSetThumbnail(context.Background(), &SetCustomEmojiStickerSetThumbnailParams{
+			Name: "123",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("DeleteStickerSet", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"name": "123",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.DeleteStickerSet(context.Background(), &DeleteStickerSetParams{
 			Name: "123",
 		})
 		assertNoErr(t, err)
