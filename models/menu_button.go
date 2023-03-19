@@ -58,7 +58,7 @@ func (MenuButtonCommands) menuButtonTag() {}
 type MenuButtonWebApp struct {
 	Type   string     `json:"type" rules:"required,equals:web_app"`
 	Text   string     `json:"text" rules:"required"`
-	WebApp WebAppInfo `json:"web_app_info" rules:"required"`
+	WebApp WebAppInfo `json:"web_app" rules:"required"`
 }
 
 func (MenuButtonWebApp) menuButtonTag() {}
