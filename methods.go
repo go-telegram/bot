@@ -65,7 +65,7 @@ func (b *Bot) ForwardMessage(ctx context.Context, params *ForwardMessageParams) 
 // CopyMessage https://core.telegram.org/bots/api#copymessage
 func (b *Bot) CopyMessage(ctx context.Context, params *CopyMessageParams) (*models.MessageID, error) {
 	result := &models.MessageID{}
-	err := b.rawRequest(ctx, "forwardMessage", params, result)
+	err := b.rawRequest(ctx, "copyMessage", params, result)
 	return result, err
 }
 
