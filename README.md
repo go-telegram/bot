@@ -120,6 +120,16 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 [Demo in examples](examples/echo_with_webhook/main.go)
 
+Also, you can manually process updates with `bot.ProcessUpdate` method.
+
+```go
+update := models.Update{}
+
+json.NewDecoder(req.Body).Decode(&update)
+
+b.ProcessUpdate(ctx, &update)
+```
+
 ## Middlewares
 
 You can use middlewares with `WithMiddlewares(middlewares ...Middleware)` option.

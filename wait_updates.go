@@ -26,7 +26,7 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 				go func(ctx context.Context, wg *sync.WaitGroup, taskQueue chan *models.Update) {
 					defer wg.Done()
 
-					b.processUpdate(ctx, upd)
+					b.ProcessUpdate(ctx, upd)
 
 					const cleanupDuration = 10 * time.Second
 					cleanupTicker := time.NewTicker(cleanupDuration)
@@ -37,7 +37,7 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 						case <-ctx.Done():
 							return
 						case upd := <-taskQueue:
-							b.processUpdate(ctx, upd)
+							b.ProcessUpdate(ctx, upd)
 							cleanupTicker.Reset(cleanupDuration)
 						case <-cleanupTicker.C:
 							return

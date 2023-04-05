@@ -17,7 +17,8 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 	return wrapped
 }
 
-func (b *Bot) processUpdate(ctx context.Context, upd *models.Update) {
+// ProcessUpdate allows you to process update
+func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 	h := b.defaultHandlerFunc
 
 	defer func() {
