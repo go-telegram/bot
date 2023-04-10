@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.4 (2023-04-10)
+
+- [BUGFIX] change field `SendPollParams.IsAnonymous` to *bool (#26)
+- add helpers `bot.True()` and `bot.False()` for define *bool values
+
 ## v0.7.3 (2023-04-05)
 
 - make `bot.ProcessUpdate` public 

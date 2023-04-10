@@ -125,3 +125,13 @@ func (b *Bot) debug(format string, args ...interface{}) {
 
 	log.Printf("[TGBOT] [DEBUG] "+format, args...)
 }
+
+func True() *bool {
+	b := true
+	return &b
+}
+
+func False() *bool {
+	b := false
+	return &b
+}

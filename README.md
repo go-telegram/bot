@@ -308,6 +308,21 @@ Escape only unescaped special symbols for Telegram MarkdownV2 syntax
 
 Returns fast random a-zA-Z string with n length
 
+### `True() bool`, `False() bool`
+
+Allows you to define *bool values for params, which require `*bool`, like `SendPoolParams`
+
+```go
+p := &bot.SendPollParams{
+    ChatID: chatID,
+    Question: "Question",
+    Options: []string{"Option 1", "Option 2"},
+    IsAnonymous: bot.False(),
+}
+
+b.SendPool(ctx, p)
+```
+
 ## UI Components
 
 In the repo https://github.com/go-telegram/ui you can find a some UI elements for your bot.
