@@ -44,7 +44,7 @@ func WithDefaultHandler(handler HandlerFunc) Option {
 	}
 }
 
-// WithDebug allows to enable debug mode. In debug mode, all requests and responses are logged
+// WithDebug allows to enable debug mode. In debug mode, all requests and responses are logged by debug handler
 func WithDebug() Option {
 	return func(b *Bot) {
 		b.isDebug = true
@@ -52,9 +52,16 @@ func WithDebug() Option {
 }
 
 // WithErrorsHandler allows to set handler for errors
-func WithErrorsHandler(handler func(err error)) Option {
+func WithErrorsHandler(handler ErrorsHandler) Option {
 	return func(b *Bot) {
 		b.errorsHandler = handler
+	}
+}
+
+// WithDebugHandler allows to set handler for debug messages
+func WithDebugHandler(handler DebugHandler) Option {
+	return func(b *Bot) {
+		b.debugHandler = handler
 	}
 }
 

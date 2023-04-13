@@ -24,7 +24,9 @@ func (b *Bot) WebhookHandler() http.HandlerFunc {
 			return
 		}
 
-		b.debug("webhook request '%s'", body)
+		if b.isDebug {
+			b.debugHandler("webhook request '%s'", body)
+		}
 
 		select {
 		case b.updates <- update:

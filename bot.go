@@ -22,6 +22,7 @@ type HttpClient interface {
 }
 
 type ErrorsHandler func(err error)
+type DebugHandler func(format string, args ...any)
 type Middleware func(next HandlerFunc) HandlerFunc
 type HandlerFunc func(ctx context.Context, bot *Bot, update *models.Update)
 type MatchFunc func(update *models.Update) bool
@@ -35,6 +36,7 @@ type Bot struct {
 	defaultHandlerFunc HandlerFunc
 
 	errorsHandler ErrorsHandler
+	debugHandler  DebugHandler
 
 	middlewaresMx *sync.RWMutex
 	middlewares   []Middleware
@@ -65,6 +67,7 @@ func New(token string, options ...Option) (*Bot, error) {
 		},
 		defaultHandlerFunc: defaultHandler,
 		errorsHandler:      defaultErrorsHandler,
+		debugHandler:       defaultDebugHandler,
 		checkInitTimeout:   defaultCheckInitTimeout,
 
 		updates: make(chan *models.Update, defaultUpdatesChanCap),
@@ -110,20 +113,16 @@ func defaultErrorsHandler(err error) {
 	log.Printf("[TGBOT] [ERROR] %v", err)
 }
 
+func defaultDebugHandler(format string, args ...interface{}) {
+	log.Printf("[TGBOT] [DEBUG] "+format, args...)
+}
+
 func defaultHandler(_ context.Context, _ *Bot, update *models.Update) {
 	log.Printf("[TGBOT] [UPDATE] %+v", update)
 }
 
 func (b *Bot) error(format string, args ...interface{}) {
 	b.errorsHandler(fmt.Errorf(format, args...))
-}
-
-func (b *Bot) debug(format string, args ...interface{}) {
-	if !b.isDebug {
-		return
-	}
-
-	log.Printf("[TGBOT] [DEBUG] "+format, args...)
 }
 
 func True() *bool {

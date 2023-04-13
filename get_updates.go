@@ -35,7 +35,9 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 		}
 
 		if timeoutAfterError > 0 {
-			b.debug("wait after error, %v", timeoutAfterError)
+			if b.isDebug {
+				b.debugHandler("wait after error, %v", timeoutAfterError)
+			}
 			select {
 			case <-ctx.Done():
 				return

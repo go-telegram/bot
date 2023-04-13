@@ -46,7 +46,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 
 	if b.isDebug && strings.ToLower(method) != "getupdates" {
 		requestDebugData, _ := json.Marshal(params)
-		b.debug("request url: %s, payload: %s", u, requestDebugData)
+		b.debugHandler("request url: %s, payload: %s", u, requestDebugData)
 	}
 
 	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, httpBody)
@@ -85,7 +85,9 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 
 	if !bytes.Equal(r.Result, []byte("[]")) {
-		b.debug("response from '%s' with payload '%s'", u, body)
+		if b.isDebug {
+			b.debugHandler("response from '%s' with payload '%s'", u, body)
+		}
 	}
 
 	if dest != nil {
