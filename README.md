@@ -166,7 +166,18 @@ You can use options to customize the bot.
 b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 ```
 
-Full list of options you can find [here](options.go)
+### Options list (see [options.go](options.go) for more details)
+
+- `WithCheckInitTimeout(timeout time.Duration)` - timeout for check init bot
+- `WithMiddlewares(middlewares ...Middleware)` - add middlewares
+- `WithMessageTextHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for Message.Text field
+- `WithCallbackQueryDataHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for CallbackQuery.Data field
+- `WithDefaultHandler(handler HandlerFunc)` - add default handler
+- `WithDebug()` - enable debug mode
+- `WithErrorsHandler(handler ErrorsHandler)` - add errors handler
+- `WithDebugHandler(handler DebugHandler)` - add debug handler
+- `WithHTTPClient(pollTimeout time.Duration, client HttpClient)` - set custom http client
+- `WithServerURL(serverURL string)` - set server url
 
 ## Message.Text and CallbackQuery.Data handlers
 

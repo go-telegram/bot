@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.5 (2023-04-13)
+
+- add option `WithDebugHandler`
+
 ## v0.7.4 (2023-04-10)
 
 - [BUGFIX] change field `SendPollParams.IsAnonymous` to *bool (#26)
