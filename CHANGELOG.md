@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.7 (2023-04-24)
+
+- change `models.ReplyMarkup` from `any` to interface
+
 ## v0.7.6 (2023-04-24)
 
 - support bot api 6.7
