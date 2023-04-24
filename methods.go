@@ -503,6 +503,20 @@ func (b *Bot) GetMyCommands(ctx context.Context, params *GetMyCommandsParams) ([
 	return result, err
 }
 
+// SetMyName https://core.telegram.org/bots/api#setmyname
+func (b *Bot) SetMyName(ctx context.Context, params *SetMyNameParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMyName", params, &result)
+	return result, err
+}
+
+// GetMyName https://core.telegram.org/bots/api#getmyname
+func (b *Bot) GetMyName(ctx context.Context, params *GetMyNameParams) (models.BotName, error) {
+	var result models.BotName
+	err := b.rawRequest(ctx, "getMyName", params, &result)
+	return result, err
+}
+
 // SetMyDescription https://core.telegram.org/bots/api#setmydescription
 func (b *Bot) SetMyDescription(ctx context.Context, params *SetMyDescriptionParams) (bool, error) {
 	var result bool

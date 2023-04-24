@@ -25,6 +25,13 @@ type AnswerInlineQuery struct {
 	SwitchPmParameter string              `json:"switch_pm_parameter,omitempty"`
 }
 
+// InlineQueryResultsButton https://core.telegram.org/bots/api#inlinequeryresultsbutton
+type InlineQueryResultsButton struct {
+	Text           string      `json:"text"`
+	WebApp         *WebAppInfo `json:"web_app"`
+	StartParameter string      `json:"start_parameter,omitempty"`
+}
+
 // InlineQueryResult https://core.telegram.org/bots/api#inlinequeryresult
 type InlineQueryResult interface {
 	inlineQueryResultTag()
