@@ -6,6 +6,11 @@ type BotCommand struct {
 	Description string `json:"description" rules:"min:1,max:256"`
 }
 
+// BotName https://core.telegram.org/bots/api#botname
+type BotName struct {
+	Name string `json:"name"`
+}
+
 // BotDescription https://core.telegram.org/bots/api#botdescription
 type BotDescription struct {
 	Description string `json:"description"`

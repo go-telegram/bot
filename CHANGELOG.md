@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.7.6 (2023-04-24)
+
+- support bot api 6.7
+
 ## v0.7.5 (2023-04-13)
 
 - add option `WithDebugHandler`

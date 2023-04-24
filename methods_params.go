@@ -538,6 +538,15 @@ type GetMyCommandsParams struct {
 	LanguageCode string                 `json:"language_code,omitempty"`
 }
 
+type SetMyNameParams struct {
+	Name         string `json:"name,omitempty"`
+	LanguageCode string `json:"language_code,omitempty"`
+}
+
+type GetMyNameParams struct {
+	LanguageCode string `json:"language_code,omitempty"`
+}
+
 type SetMyDescriptionParams struct {
 	Description  string `json:"description,omitempty"`
 	LanguageCode string `json:"language_code,omitempty"`
@@ -708,13 +717,12 @@ type DeleteStickerSetParams struct {
 }
 
 type AnswerInlineQueryParams struct {
-	InlineQueryID     string                     `json:"inline_query_id"`
-	Results           []models.InlineQueryResult `json:"results"`
-	CacheTime         int                        `json:"cache_time,omitempty"`
-	IsPersonal        bool                       `json:"is_personal,omitempty"`
-	NextOffset        string                     `json:"next_offset,omitempty"`
-	SwitchPmText      string                     `json:"switch_pm_text,omitempty"`
-	SwitchPmParameter string                     `json:"switch_pm_parameter,omitempty"`
+	InlineQueryID string                           `json:"inline_query_id"`
+	Results       []models.InlineQueryResult       `json:"results"`
+	CacheTime     int                              `json:"cache_time,omitempty"`
+	IsPersonal    bool                             `json:"is_personal,omitempty"`
+	NextOffset    string                           `json:"next_offset,omitempty"`
+	Button        *models.InlineQueryResultsButton `json:"button,omitempty"`
 }
 
 type AnswerWebAppQueryParams struct {

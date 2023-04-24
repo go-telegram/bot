@@ -8,12 +8,13 @@ import (
 
 // ChatMemberUpdated https://core.telegram.org/bots/api#chatmemberupdated
 type ChatMemberUpdated struct {
-	Chat          Chat            `json:"chat"`
-	From          User            `json:"from"`
-	Date          int             `json:"date"`
-	OldChatMember ChatMember      `json:"old_chat_member"`
-	NewChatMember ChatMember      `json:"new_chat_member"`
-	InviteLink    *ChatInviteLink `json:"invite_link,omitempty"`
+	Chat                    Chat            `json:"chat"`
+	From                    User            `json:"from"`
+	Date                    int             `json:"date"`
+	OldChatMember           ChatMember      `json:"old_chat_member"`
+	NewChatMember           ChatMember      `json:"new_chat_member"`
+	InviteLink              *ChatInviteLink `json:"invite_link,omitempty"`
+	ViaChatFolderInviteLink bool            `json:"via_chat_folder_invite_link,omitempty"`
 }
 
 type ChatMemberType int

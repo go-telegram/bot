@@ -51,4 +51,5 @@ type ChatShared struct {
 
 // WriteAccessAllowed https://core.telegram.org/bots/api#writeaccessallowed
 type WriteAccessAllowed struct {
+	WebAppName string `json:"web_app_name,omitempty"`
 }

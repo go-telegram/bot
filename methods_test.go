@@ -896,6 +896,32 @@ func TestBot_Methods(t *testing.T) {
 		assertEqualInt(t, 0, len(resp))
 	})
 
+	t.Run("SetMyName", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"name":          "bar",
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetMyName(context.Background(), &SetMyNameParams{
+			Name:         "bar",
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("GetMyName", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"name":"bar"}`, reqFields: map[string]string{
+			"language_code": "foo",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.GetMyName(context.Background(), &GetMyNameParams{
+			LanguageCode: "foo",
+		})
+		assertNoErr(t, err)
+		assertEqualString(t, "bar", resp.Name)
+	})
+
 	t.Run("SetMyDescription", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
 			"language_code": "foo",
