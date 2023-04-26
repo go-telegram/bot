@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 	"os"
 	"os/signal"
+
+	"github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 )
 
 // Send any text message to the bot after the bot has been started
@@ -18,7 +19,13 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	if nil != err {
+		// panics for the sake of simplicity.
+		// you should handle this error properly in your code.
+		panic(err)
+	}
+
 	b.Start(ctx)
 }
 

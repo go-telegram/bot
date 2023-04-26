@@ -19,7 +19,12 @@ func main() {
 		bot.WithDefaultHandler(defaultHandler),
 	}
 
-	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	if nil != err {
+		// panics for the sake of simplicity.
+		// you should handle this error properly in your code.
+		panic(err)
+	}
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/hello", bot.MatchTypeExact, helloHandler)
 

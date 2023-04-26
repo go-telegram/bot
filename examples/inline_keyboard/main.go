@@ -20,12 +20,25 @@ func main() {
 		bot.WithCallbackQueryDataHandler("button", bot.MatchTypePrefix, callbackHandler),
 	}
 
-	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	if nil != err {
+		// panics for the sake of simplicity.
+		// you should handle this error properly in your code.
+		panic(err)
+	}
 
 	b.Start(ctx)
 }
 
 func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	// answering callback query first to let Telegram know that we received the callback query,
+	// and we're handling it. Otherwise, Telegram might retry sending the update repetitively
+	// as it thinks the callback query doesn't reach to our application. learn more by
+	// reading the footnote of the https://core.telegram.org/bots/api#callbackquery type.
+	b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
+	})
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.CallbackQuery.Message.Chat.ID,
 		Text:   "You selected the button: " + update.CallbackQuery.Data,
