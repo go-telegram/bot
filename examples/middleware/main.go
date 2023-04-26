@@ -21,7 +21,12 @@ func main() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	if nil != err {
+		// panics for the sake of simplicity.
+		// you should handle this error properly in your code.
+		panic(err)
+	}
 
 	b.Start(ctx)
 }
