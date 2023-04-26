@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.8 (2023-04-26)
+
+- [BUGFIX] fix type of field `Message.ReplyMarkup` (#30)
+- improve examples (#31)
+
 ## v0.7.7 (2023-04-24)
 
 - change `models.ReplyMarkup` from `any` to interface
