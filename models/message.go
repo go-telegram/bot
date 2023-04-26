@@ -81,5 +81,5 @@ type Message struct {
 	VoiceChatEnded                *VoiceChatEnded                `json:"voice_chat_ended,omitempty"`
 	VoiceChatParticipantsInvited  *VoiceChatParticipantsInvited  `json:"voice_chat_participants_invited,omitempty"`
 	WebAppData                    *WebAppData                    `json:"web_app_data,omitempty"`
-	ReplyMarkup                   ReplyMarkup                    `json:"reply_markup,omitempty"`
+	ReplyMarkup                   InlineKeyboardMarkup           `json:"reply_markup,omitempty"`
 }
