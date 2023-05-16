@@ -79,3 +79,10 @@ func WithServerURL(serverURL string) Option {
 		b.url = serverURL
 	}
 }
+
+// WithSkipGetMe allows skip call GetMe on bot init
+func WithSkipGetMe() Option {
+	return func(b *Bot) {
+		b.skipGetMe = true
+	}
+}

@@ -32,6 +32,7 @@ type Bot struct {
 	url         string
 	token       string
 	pollTimeout time.Duration
+	skipGetMe   bool
 
 	defaultHandlerFunc HandlerFunc
 
@@ -80,9 +81,11 @@ func New(token string, options ...Option) (*Bot, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), b.checkInitTimeout)
 	defer cancel()
 
-	_, err := b.GetMe(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("error call getMe, %w", err)
+	if !b.skipGetMe {
+		_, err := b.GetMe(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("error call getMe, %w", err)
+		}
 	}
 
 	return b, nil

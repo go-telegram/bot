@@ -178,6 +178,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithDebugHandler(handler DebugHandler)` - add debug handler
 - `WithHTTPClient(pollTimeout time.Duration, client HttpClient)` - set custom http client
 - `WithServerURL(serverURL string)` - set server url
+- `WithSkipGetMe()` - skip call GetMe on bot init
 
 ## Message.Text and CallbackQuery.Data handlers
 
