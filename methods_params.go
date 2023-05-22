@@ -284,9 +284,9 @@ type SendDiceParams struct {
 }
 
 type SendChatActionParams struct {
-	ChatID          any    `json:"chat_id"`
-	MessageThreadID int    `json:"message_thread_id,omitempty"`
-	Action          string `json:"action"`
+	ChatID          any               `json:"chat_id"`
+	MessageThreadID int               `json:"message_thread_id,omitempty"`
+	Action          models.ChatAction `json:"action"`
 }
 
 type GetUserProfilePhotosParams struct {
