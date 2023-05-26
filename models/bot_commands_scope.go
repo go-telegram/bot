@@ -70,7 +70,9 @@ func (m *BotCommandScopeAllChatAdministrators) MarshalCustom() ([]byte, error) {
 }
 
 // BotCommandScopeChat https://core.telegram.org/bots/api#botcommandscopechat
-type BotCommandScopeChat struct{}
+type BotCommandScopeChat struct {
+	ChatID any `json:"chat_id"`
+}
 
 func (m *BotCommandScopeChat) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -87,6 +89,18 @@ func (m *BotCommandScopeChat) MarshalCustom() ([]byte, error) {
 // BotCommandScopeChatAdministrators https://core.telegram.org/bots/api#botcommandscopechatadministrators
 type BotCommandScopeChatAdministrators struct {
 	ChatID any `json:"chat_id"`
+}
+
+func (m *BotCommandScopeChatAdministrators) MarshalCustom() ([]byte, error) {
+	ret := struct {
+		Type string `json:"type"`
+		*BotCommandScopeChatAdministrators
+	}{
+		Type:                              "chat_administrators",
+		BotCommandScopeChatAdministrators: m,
+	}
+
+	return json.Marshal(&ret)
 }
 
 // BotCommandScopeChatMember https://core.telegram.org/bots/api#botcommandscopechatmember
