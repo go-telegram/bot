@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.11 (2023-05-26)
+
+- add missed ChatID to BotCommandScopeChat
+- add missed BotCommandScopeChatAdministrators.MarshalCustom
+
 ## v0.7.10 (2023-05-22)
 
 - add ChatAction type with consts for `sendChatAction` method
