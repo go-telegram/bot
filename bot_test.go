@@ -20,6 +20,7 @@ type serverMock struct {
 	hooksCalls map[string]int
 	updateIdx  int
 	updates    []*models.Update
+	token      string
 }
 
 type getUpdatesResponse struct {
@@ -28,14 +29,14 @@ type getUpdatesResponse struct {
 }
 
 func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
-	if req.URL.String() == "/bot/getMe" {
+	if req.URL.String() == "/bot"+s.token+"/getMe" {
 		_, err := rw.Write([]byte(`{"ok":true,"result":{}}`))
 		if err != nil {
 			panic(err)
 		}
 		return
 	}
-	if req.URL.String() == "/bot/getUpdates" {
+	if req.URL.String() == "/bot"+s.token+"/getUpdates" {
 		s.handlerGetUpdates(rw)
 		return
 	}
@@ -111,8 +112,9 @@ func (s *serverMock) URL() string {
 	return s.s.URL
 }
 
-func newServerMock() *serverMock {
+func newServerMock(token string) *serverMock {
 	s := &serverMock{
+		token:      token,
 		custom:     map[string]any{},
 		hooks:      map[string]func([]byte) any{},
 		hooksCalls: map[string]int{},
@@ -132,7 +134,7 @@ func TestNew_error_getMe(t *testing.T) {
 	}))
 	defer server.Close()
 
-	_, err := New("", WithServerURL(server.URL))
+	_, err := New("xxx", WithServerURL(server.URL))
 	if err == nil {
 		t.Fatal("unexpected nil error")
 	}
@@ -141,21 +143,31 @@ func TestNew_error_getMe(t *testing.T) {
 	}
 }
 
+func TestNew_emptyToken(t *testing.T) {
+	_, err := New("")
+	if err == nil {
+		t.Fatalf("expect error %q", err)
+	}
+	if err.Error() != "empty token" {
+		t.Fatalf("exexpected error %q", err)
+	}
+}
+
 func TestNew(t *testing.T) {
-	s := newServerMock()
+	s := newServerMock("xxx")
 	defer s.Close()
 
-	_, err := New("", WithServerURL(s.URL()))
+	_, err := New("xxx", WithServerURL(s.URL()))
 	if err != nil {
 		t.Fatalf("unexpected error %q", err)
 	}
 }
 
 func TestBot_StartWebhook(t *testing.T) {
-	s := newServerMock()
+	s := newServerMock("xxx")
 	defer s.Close()
 
-	b, err := New("", WithServerURL(s.URL()))
+	b, err := New("xxx", WithServerURL(s.URL()))
 	if err != nil {
 		t.Fatalf("unexpected error %q", err)
 	}
@@ -194,12 +206,12 @@ func TestBot_StartWebhook(t *testing.T) {
 }
 
 func TestBot_Start(t *testing.T) {
-	s := newServerMock()
+	s := newServerMock("xxx")
 	defer s.Close()
 
 	s.updates = append(s.updates, &models.Update{Message: &models.Message{ID: 42}})
 
-	b, err := New("", WithServerURL(s.URL()))
+	b, err := New("xxx", WithServerURL(s.URL()))
 	if err != nil {
 		t.Fatalf("unexpected error %q", err)
 	}

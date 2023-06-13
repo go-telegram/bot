@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -55,6 +56,10 @@ type Bot struct {
 
 // New creates new Bot instance
 func New(token string, options ...Option) (*Bot, error) {
+	if strings.TrimSpace(token) == "" {
+		return nil, fmt.Errorf("empty token")
+	}
+
 	b := &Bot{
 		url:           "https://api.telegram.org",
 		token:         token,
