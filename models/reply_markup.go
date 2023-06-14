@@ -1,15 +1,11 @@
 package models
 
-type ReplyMarkup interface {
-	replyMarkupTag()
-}
+type ReplyMarkup any
 
 // InlineKeyboardMarkup https://core.telegram.org/bots/api#inlinekeyboardmarkup
 type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }
-
-func (InlineKeyboardMarkup) replyMarkupTag() {}
 
 // LoginURL https://core.telegram.org/bots/api#loginurl
 type LoginURL struct {
@@ -51,8 +47,6 @@ type ReplyKeyboardMarkup struct {
 	InputFieldPlaceholder string             `json:"input_field_placeholder,omitempty"`
 	Selective             bool               `json:"selective,omitempty"`
 }
-
-func (ReplyKeyboardMarkup) replyMarkupTag() {}
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
@@ -105,13 +99,9 @@ type ReplyKeyboardRemove struct {
 	Selective      bool `json:"selective,omitempty"`
 }
 
-func (ReplyKeyboardRemove) replyMarkupTag() {}
-
 // ForceReply https://core.telegram.org/bots/api#forcereply
 type ForceReply struct {
 	ForceReply            bool   `json:"force_reply"`
 	InputFieldPlaceholder string `json:"input_field_placeholder,omitempty"`
 	Selective             bool   `json:"selective,omitempty"`
 }
-
-func (ForceReply) replyMarkupTag() {}
