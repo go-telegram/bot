@@ -14,7 +14,7 @@ import (
 
 const (
 	defaultPollTimeout      = time.Minute
-	defaultUpdatesChanCap   = 64
+	defaultUpdatesChanCap   = 1024
 	defaultCheckInitTimeout = time.Second * 5
 )
 
