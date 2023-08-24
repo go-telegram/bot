@@ -461,6 +461,13 @@ func (b *Bot) UnhideGeneralForumTopic(ctx context.Context, params *UnhideGeneral
 	return result, err
 }
 
+// UnpinAllGeneralForumTopicMessages https://core.telegram.org/bots/api#unpinallgeneralforumtopicmessages
+func (b *Bot) UnpinAllGeneralForumTopicMessages(ctx context.Context, params *UnpinAllGeneralForumTopicMessagesParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "unpinAllGeneralForumTopicMessages", params, &result)
+	return result, err
+}
+
 // DeleteForumTopic https://core.telegram.org/bots/api#unpinallforumtopicmessages
 func (b *Bot) DeleteForumTopic(ctx context.Context, params *DeleteForumTopicParams) (bool, error) {
 	var result bool

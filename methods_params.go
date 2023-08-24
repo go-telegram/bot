@@ -509,6 +509,10 @@ type UnhideGeneralForumTopicParams struct {
 	ChatID any `json:"chat_id"`
 }
 
+type UnpinAllGeneralForumTopicMessagesParams struct {
+	ChatID any `json:"chat_id"`
+}
+
 type DeleteChatStickerSetParams struct {
 	ChatID         any    `json:"chat_id"`
 	StickerSetName string `json:"sticker_set_name"`

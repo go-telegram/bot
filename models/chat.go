@@ -83,6 +83,7 @@ type Chat struct {
 	Photo                              *ChatPhoto       `json:"photo,omitempty"`
 	ActiveUsernames                    []string         `json:"active_usernames,omitempty"`
 	EmojiStatusCustomEmojiID           string           `json:"emoji_status_custom_emoji_id,omitempty"`
+	EmojiStatusExpirationDate          int              `json:"emoji_status_expiration_date,omitempty"`
 	Bio                                string           `json:"bio"`
 	HasPrivateForwards                 bool             `json:"has_private_forwards,omitempty"`
 	HasRestrictedVoiceAndVideoMessages bool             `json:"has_restricted_voice_and_video_messages,omitempty"`
