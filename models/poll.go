@@ -3,6 +3,7 @@ package models
 // PollAnswer https://core.telegram.org/bots/api#pollanswer
 type PollAnswer struct {
 	PollID    string `json:"poll_id"`
+	VoterChat *Chat  `json:"voter_chat,omitempty"`
 	User      *User  `json:"user"`
 	OptionIDs []int  `json:"option_ids,omitempty"`
 }
