@@ -321,19 +321,23 @@ type RestrictChatMemberParams struct {
 }
 
 type PromoteChatMemberParams struct {
-	ChatID             any   `json:"chat_id" rules:"required,chat_id"`
-	UserID             int64 `json:"user_id" rules:"required"`
-	IsAnonymous        bool  `json:"is_anonymous,omitempty"`
-	CanManageChat      bool  `json:"can_manage_chat,omitempty"`
-	CanPostMessages    bool  `json:"can_post_messages,omitempty"`
-	CanEditMessages    bool  `json:"can_edit_messages,omitempty"`
-	CanDeleteMessages  bool  `json:"can_delete_messages,omitempty"`
-	CanRestrictMembers bool  `json:"can_restrict_members,omitempty"`
-	CanPromoteMembers  bool  `json:"can_promote_members,omitempty"`
-	CanChangeInfo      bool  `json:"can_change_info,omitempty"`
-	CanInviteUsers     bool  `json:"can_invite_users,omitempty"`
-	CanPinMessages     bool  `json:"can_pin_messages,omitempty"`
-	CanManageTopics    bool  `json:"can_manage_topics,omitempty"`
+	ChatID              any   `json:"chat_id" rules:"required,chat_id"`
+	UserID              int64 `json:"user_id" rules:"required"`
+	IsAnonymous         bool  `json:"is_anonymous,omitempty"`
+	CanManageChat       bool  `json:"can_manage_chat,omitempty"`
+	CanDeleteMessages   bool  `json:"can_delete_messages,omitempty"`
+	CanManageVideoChats bool  `json:"can_manage_video_chats,omitempty"`
+	CanRestrictMembers  bool  `json:"can_restrict_members,omitempty"`
+	CanPromoteMembers   bool  `json:"can_promote_members,omitempty"`
+	CanChangeInfo       bool  `json:"can_change_info,omitempty"`
+	CanInviteUsers      bool  `json:"can_invite_users,omitempty"`
+	CanPostMessages     bool  `json:"can_post_messages,omitempty"`
+	CanEditMessages     bool  `json:"can_edit_messages,omitempty"`
+	CanPinMessages      bool  `json:"can_pin_messages,omitempty"`
+	CanPostStories      bool  `json:"can_post_stories,omitempty"`
+	CanEditStories      bool  `json:"can_edit_stories,omitempty"`
+	CanDeleteStories    bool  `json:"can_delete_stories,omitempty"`
+	CanManageTopics     bool  `json:"can_manage_topics,omitempty"`
 }
 
 type SetChatAdministratorCustomTitleParams struct {
