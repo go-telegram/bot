@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.8.1 (2023-10-09)
+
+- json tag typo fix (#41) vvok12* 
+
 ## v0.8.0 (2023-09-28)
 
 - support bot api 6.9 
