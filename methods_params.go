@@ -597,7 +597,7 @@ type EditMessageTextParams struct {
 	InlineMessageID       string                 `json:"inline_message_id,omitempty"`
 	Text                  string                 `json:"text"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
-	Entities              []models.MessageEntity `json:"caption_entities,omitempty"`
+	Entities              []models.MessageEntity `json:"entities,omitempty"`
 	DisableWebPagePreview bool                   `json:"disable_web_page_preview,omitempty"`
 	ReplyMarkup           models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }
