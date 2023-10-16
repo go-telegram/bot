@@ -20,6 +20,7 @@ type InputMediaPhoto struct {
 	Caption         string          `json:"caption,omitempty"`
 	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
+	HasSpoiler      bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
@@ -57,6 +58,7 @@ type InputMediaVideo struct {
 	Height            int             `json:"height,omitempty"`
 	Duration          int             `json:"duration,omitempty"`
 	SupportsStreaming bool            `json:"supports_streaming,omitempty"`
+	HasSpoiler        bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
@@ -91,6 +93,7 @@ type InputMediaAnimation struct {
 	Width           int             `json:"width,omitempty"`
 	Height          int             `json:"height,omitempty"`
 	Duration        int             `json:"duration,omitempty"`
+	HasSpoiler      bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
