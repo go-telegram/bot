@@ -9,7 +9,7 @@ import (
 
 // escape special symbols in text for MarkdownV2 parse mode
 
-var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
+var shouldBeEscaped = "_*[]()~`>#+-=|{}.!\\"
 
 // EscapeMarkdown escapes special symbols for Telegram MarkdownV2 syntax
 func EscapeMarkdown(s string) string {
