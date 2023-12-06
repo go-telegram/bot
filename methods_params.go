@@ -414,7 +414,7 @@ type SetChatTitleParams struct {
 
 type SetChatDescriptionParams struct {
 	ChatID      any    `json:"chat_id"`
-	Description string `json:"title"`
+	Description string `json:"description"`
 }
 
 type PinChatMessageParams struct {
