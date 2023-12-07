@@ -142,3 +142,8 @@ func False() *bool {
 	b := false
 	return &b
 }
+
+// FileDownloadLink returns the file download link
+func (b *Bot) FileDownloadLink(f *models.File) string {
+	return fmt.Sprintf("%s/file/bot%s/%s", b.url, b.token, f.FilePath)
+}
