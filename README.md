@@ -335,6 +335,12 @@ p := &bot.SendPollParams{
 b.SendPool(ctx, p)
 ```
 
+### `FileDownloadLink(f *models.File) string`
+
+Returns file download link after call method `GetFile`
+
+See [documentation(https://core.telegram.org/bots/api#getfile)
+
 ## UI Components
 
 In the repo https://github.com/go-telegram/ui you can find a some UI elements for your bot.

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.3 (2023-12-07)
+
+- Fix typo for setChatDescription params (#49)
+- add example handler_match_func
+- add function bot.FileDownloadLink
+
 ## v0.8.2 (2023-10-16)
 
 - add missed field HasSpoiler to InputMedia types
