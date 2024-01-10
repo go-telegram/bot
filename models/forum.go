@@ -43,6 +43,12 @@ type UserShared struct {
 	UserID    int64 `json:"user_id"`
 }
 
+// UsersShared https://core.telegram.org/bots/api#usersshared
+type UsersShared struct {
+	RequestID int     `json:"request_id"`
+	UserIDs   []int64 `json:"users_id"`
+}
+
 // ChatShared https://core.telegram.org/bots/api#chatshared
 type ChatShared struct {
 	RequestID int   `json:"request_id"`

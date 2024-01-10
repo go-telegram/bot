@@ -50,13 +50,14 @@ type ReplyKeyboardMarkup struct {
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
-	Text            string                     `json:"text"`
-	RequestUser     *KeyboardButtonRequestUser `json:"request_user,omitempty"`
-	RequestChat     *KeyboardButtonRequestChat `json:"request_chat,omitempty"`
-	RequestContact  bool                       `json:"request_contact,omitempty"`
-	RequestLocation bool                       `json:"request_location,omitempty"`
-	RequestPoll     *KeyboardButtonPollType    `json:"request_poll,omitempty"`
-	WebApp          *WebAppInfo                `json:"web_app,omitempty"`
+	Text            string                      `json:"text"`
+	RequestUser     *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
+	RequestUsers    *KeyboardButtonRequestUsers `json:"request_users,omitempty"`
+	RequestChat     *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
+	RequestContact  bool                        `json:"request_contact,omitempty"`
+	RequestLocation bool                        `json:"request_location,omitempty"`
+	RequestPoll     *KeyboardButtonPollType     `json:"request_poll,omitempty"`
+	WebApp          *WebAppInfo                 `json:"web_app,omitempty"`
 }
 
 // KeyboardButtonRequestUser https://core.telegram.org/bots/api#keyboardbuttonrequestuser
@@ -64,6 +65,14 @@ type KeyboardButtonRequestUser struct {
 	RequestID     int32 `json:"request_id"`
 	UserIsBot     bool  `json:"user_is_bot,omitempty"`
 	UserIsPremium bool  `json:"user_is_premium,omitempty"`
+}
+
+// KeyboardButtonRequestUsers https://core.telegram.org/bots/api#keyboardbuttonrequestusers
+type KeyboardButtonRequestUsers struct {
+	RequestID     int32 `json:"request_id"`
+	UserIsBot     bool  `json:"user_is_bot,omitempty"`
+	UserIsPremium bool  `json:"user_is_premium,omitempty"`
+	MaxQuantity   int   `json:"max_quantity,omitempty"`
 }
 
 // KeyboardButtonRequestChat https://core.telegram.org/bots/api#keyboardbuttonrequestchat

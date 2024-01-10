@@ -85,6 +85,11 @@ type Chat struct {
 	IsForum                            bool             `json:"is_forum,omitempty"`
 	Photo                              *ChatPhoto       `json:"photo,omitempty"`
 	ActiveUsernames                    []string         `json:"active_usernames,omitempty"`
+	AvailableReactions                 []ReactionType   `json:"available_reactions,omitempty"`
+	AccentColorID                      int              `json:"accent_color_id,omitempty"`
+	BackgroundCustomEmojiID            string           `json:"background_custom_emoji_id,omitempty"`
+	ProfileAccentColorID               int              `json:"profile_accent_color_id,omitempty"`
+	ProfileBackgroundCustomEmojiID     string           `json:"profile_background_custom_emoji_id,omitempty"`
 	EmojiStatusCustomEmojiID           string           `json:"emoji_status_custom_emoji_id,omitempty"`
 	EmojiStatusExpirationDate          int              `json:"emoji_status_expiration_date,omitempty"`
 	Bio                                string           `json:"bio"`
@@ -101,6 +106,7 @@ type Chat struct {
 	HasAggressiveAntiSpamEnabled       bool             `json:"has_aggressive_anti_spam_enabled,omitempty"`
 	HasHiddenMembers                   bool             `json:"has_hidden_members,omitempty"`
 	HasProtectedContent                bool             `json:"has_protected_content,omitempty"`
+	HasVisibleHistory                  bool             `json:"has_visible_history,omitempty"`
 	StickerSetName                     string           `json:"sticker_set_name,omitempty"`
 	CanSetStickerSet                   bool             `json:"can_set_sticker_set,omitempty"`
 	LinkedChatID                       int64            `json:"linked_chat_id,omitempty"`
