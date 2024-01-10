@@ -62,10 +62,24 @@ func (b *Bot) ForwardMessage(ctx context.Context, params *ForwardMessageParams) 
 	return result, err
 }
 
+// ForwardMessages https://core.telegram.org/bots/api#forwardmessages
+func (b *Bot) ForwardMessages(ctx context.Context, params *ForwardMessagesParams) ([]models.Message, error) {
+	var result []models.Message
+	err := b.rawRequest(ctx, "forwardMessages", params, result)
+	return result, err
+}
+
 // CopyMessage https://core.telegram.org/bots/api#copymessage
 func (b *Bot) CopyMessage(ctx context.Context, params *CopyMessageParams) (*models.MessageID, error) {
 	result := &models.MessageID{}
 	err := b.rawRequest(ctx, "copyMessage", params, result)
+	return result, err
+}
+
+// CopyMessages https://core.telegram.org/bots/api#copymessages
+func (b *Bot) CopyMessages(ctx context.Context, params *CopyMessagesParams) ([]models.MessageID, error) {
+	var result []models.MessageID
+	err := b.rawRequest(ctx, "copyMessages", params, result)
 	return result, err
 }
 
@@ -178,6 +192,13 @@ func (b *Bot) SendDice(ctx context.Context, params *SendDiceParams) (*models.Mes
 func (b *Bot) SendChatAction(ctx context.Context, params *SendChatActionParams) (bool, error) {
 	var result bool
 	err := b.rawRequest(ctx, "sendChatAction", params, &result)
+	return result, err
+}
+
+// SetMessageReaction https://core.telegram.org/bots/api#setmessagereaction
+func (b *Bot) SetMessageReaction(ctx context.Context, params *SetMessageReactionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMessageReaction", params, result)
 	return result, err
 }
 
@@ -489,6 +510,13 @@ func (b *Bot) AnswerCallbackQuery(ctx context.Context, params *AnswerCallbackQue
 	return result, err
 }
 
+// GetUserChatBoosts https://core.telegram.org/bots/api#getuserchatboosts
+func (b *Bot) GetUserChatBoosts(ctx context.Context, params *GetUserChatBoostsParams) (*models.UserChatBoosts, error) {
+	result := &models.UserChatBoosts{}
+	err := b.rawRequest(ctx, "getUserChatBoosts", params, &result)
+	return result, err
+}
+
 // SetMyCommands https://core.telegram.org/bots/api#setmycommands
 func (b *Bot) SetMyCommands(ctx context.Context, params *SetMyCommandsParams) (bool, error) {
 	var result bool
@@ -619,6 +647,13 @@ func (b *Bot) StopPoll(ctx context.Context, params *StopPollParams) (*models.Pol
 func (b *Bot) DeleteMessage(ctx context.Context, params *DeleteMessageParams) (bool, error) {
 	var result bool
 	err := b.rawRequest(ctx, "deleteMessage", params, &result)
+	return result, err
+}
+
+// DeleteMessages https://core.telegram.org/bots/api#deletemessages
+func (b *Bot) DeleteMessages(ctx context.Context, params *DeleteMessagesParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteMessages", params, &result)
 	return result, err
 }
 

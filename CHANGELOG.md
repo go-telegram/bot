@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0 (2024-01-10)
+
+- support API v7.0
+
 ## v0.8.3 (2023-12-07)
 
 - Fix typo for setChatDescription params (#49)

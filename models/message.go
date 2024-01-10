@@ -1,5 +1,52 @@
 package models
 
+import (
+	"encoding/json"
+)
+
+// MaybeInaccessibleMessageType https://core.telegram.org/bots/api#maybeinaccessiblemessage
+type MaybeInaccessibleMessageType int
+
+const (
+	MaybeInaccessibleMessageTypeMessage MaybeInaccessibleMessageType = iota
+	MaybeInaccessibleMessageTypeInaccessibleMessage
+)
+
+// MaybeInaccessibleMessage https://core.telegram.org/bots/api#maybeinaccessiblemessage
+type MaybeInaccessibleMessage struct {
+	Type MaybeInaccessibleMessageType
+
+	Message             *Message
+	InaccessibleMessage *InaccessibleMessage
+}
+
+func (mim *MaybeInaccessibleMessage) UnmarshalJSON(data []byte) error {
+	v := struct {
+		Date int `json:"date"`
+	}{}
+	err := json.Unmarshal(data, &v)
+	if err != nil {
+		return err
+	}
+
+	if v.Date == 0 {
+		mim.Type = MaybeInaccessibleMessageTypeInaccessibleMessage
+		mim.InaccessibleMessage = &InaccessibleMessage{}
+		return json.Unmarshal(data, mim.InaccessibleMessage)
+	}
+
+	mim.Type = MaybeInaccessibleMessageTypeMessage
+	mim.Message = &Message{}
+	return json.Unmarshal(data, mim.Message)
+}
+
+// InaccessibleMessage https://core.telegram.org/bots/api#inaccessiblemessage
+type InaccessibleMessage struct {
+	Chat      Chat `json:"chat"`
+	MessageID int  `json:"message_id"`
+	Date      int  `json:"date"`
+}
+
 type MessageID struct {
 	ID int `json:"message_id"`
 }
@@ -17,15 +64,12 @@ type Message struct {
 	SenderChat                    *Chat                          `json:"sender_chat,omitempty"`
 	Date                          int                            `json:"date"`
 	Chat                          Chat                           `json:"chat"`
-	ForwardFrom                   *User                          `json:"forward_from,omitempty"`
-	ForwardFromChat               *Chat                          `json:"forward_from_chat,omitempty"`
-	ForwardFromMessageID          int                            `json:"forward_from_message_id,omitempty"`
-	ForwardSignature              string                         `json:"forward_signature,omitempty"`
-	ForwardSenderName             string                         `json:"forward_sender_name,omitempty"`
-	ForwardDate                   int                            `json:"forward_date,omitempty"`
+	ForwardOrigin                 *MessageOrigin                 `json:"forward_origin,omitempty"`
 	IsTopicMessage                bool                           `json:"is_topic_message,omitempty"`
 	IsAutomaticForward            bool                           `json:"is_automatic_forward,omitempty"`
 	ReplyToMessage                *Message                       `json:"reply_to_message,omitempty"`
+	ExternalReply                 *ExternalReplyInfo             `json:"external_reply,omitempty"`
+	Quote                         *TextQuote                     `json:"quote,omitempty"`
 	ViaBot                        *User                          `json:"via_bot,omitempty"`
 	EditDate                      int                            `json:"edit_date,omitempty"`
 	HasProtectedContent           bool                           `json:"has_protected_content,omitempty"`
@@ -33,6 +77,7 @@ type Message struct {
 	AuthorSignature               string                         `json:"author_signature,omitempty"`
 	Text                          string                         `json:"text,omitempty"`
 	Entities                      []MessageEntity                `json:"entities,omitempty"`
+	LinkPreviewOptions            *LinkPreviewOptions            `json:"link_preview_options,omitempty"`
 	Animation                     *Animation                     `json:"animation,omitempty"`
 	Audio                         *Audio                         `json:"audio,omitempty"`
 	Document                      *Document                      `json:"document,omitempty"`
@@ -62,10 +107,10 @@ type Message struct {
 	MessageAutoDeleteTimerChanged *MessageAutoDeleteTimerChanged `json:"message_auto_delete_timer_changed,omitempty"`
 	MigrateToChatID               int64                          `json:"migrate_to_chat_id,omitempty"`
 	MigrateFromChatID             int64                          `json:"migrate_from_chat_id,omitempty"`
-	PinnedMessage                 *Message                       `json:"pinned_message,omitempty"`
+	PinnedMessage                 MaybeInaccessibleMessage       `json:"pinned_message,omitempty"`
 	Invoice                       *Invoice                       `json:"invoice,omitempty"`
 	SuccessfulPayment             *SuccessfulPayment             `json:"successful_payment,omitempty"`
-	UserShared                    *UserShared                    `json:"user_shared,omitempty"`
+	UsersShared                   *UsersShared                   `json:"users_shared,omitempty"`
 	ChatShared                    *ChatShared                    `json:"chat_shared,omitempty"`
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`
 	WriteAccessAllowed            *WriteAccessAllowed            `json:"write_access_allowed,omitempty"`
@@ -77,6 +122,10 @@ type Message struct {
 	ForumTopicReopened            *ForumTopicReopened            `json:"forum_topic_reopened,omitempty"`
 	GeneralForumTopicHidden       *GeneralForumTopicHidden       `json:"general_forum_topic_hidden,omitempty"`
 	GeneralForumTopicUnhidden     *GeneralForumTopicUnhidden     `json:"general_forum_topic_unhidden,omitempty"`
+	GiveawayCreated               *GiveawayCreated               `json:"giveaway_created,omitempty"`
+	Giveaway                      *Giveaway                      `json:"giveaway,omitempty"`
+	GiveawayWinners               *GiveawayWinners               `json:"giveaway_winners,omitempty"`
+	GiveawayCompleted             *GiveawayCompleted             `json:"giveaway_completed,omitempty"`
 	VoiceChatScheduled            *VoiceChatScheduled            `json:"voice_chat_scheduled,omitempty"`
 	VoiceChatStarted              *VoiceChatStarted              `json:"voice_chat_started,omitempty"`
 	VoiceChatEnded                *VoiceChatEnded                `json:"voice_chat_ended,omitempty"`

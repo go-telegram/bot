@@ -1,7 +1,6 @@
 package models
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -41,32 +40,35 @@ type ChatMember struct {
 }
 
 func (c *ChatMember) UnmarshalJSON(data []byte) error {
-	if bytes.Contains(data, []byte(`"status":"creator"`)) {
+	v := struct {
+		Status string `json:"status"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	switch v.Status {
+	case "creator":
 		c.Type = ChatMemberTypeOwner
 		c.Owner = &ChatMemberOwner{}
 		return json.Unmarshal(data, c.Owner)
-	}
-	if bytes.Contains(data, []byte(`"status":"administrator"`)) {
+	case "administrator":
 		c.Type = ChatMemberTypeAdministrator
 		c.Administrator = &ChatMemberAdministrator{}
 		return json.Unmarshal(data, c.Administrator)
-	}
-	if bytes.Contains(data, []byte(`"status":"member"`)) {
+	case "member":
 		c.Type = ChatMemberTypeMember
 		c.Member = &ChatMemberMember{}
 		return json.Unmarshal(data, c.Member)
-	}
-	if bytes.Contains(data, []byte(`"status":"restricted"`)) {
+	case "restricted":
 		c.Type = ChatMemberTypeRestricted
 		c.Restricted = &ChatMemberRestricted{}
 		return json.Unmarshal(data, c.Restricted)
-	}
-	if bytes.Contains(data, []byte(`"status":"left"`)) {
+	case "left":
 		c.Type = ChatMemberTypeLeft
 		c.Left = &ChatMemberLeft{}
 		return json.Unmarshal(data, c.Left)
-	}
-	if bytes.Contains(data, []byte(`"status":"kicked"`)) {
+	case "kicked":
 		c.Type = ChatMemberTypeBanned
 		c.Banned = &ChatMemberBanned{}
 		return json.Unmarshal(data, c.Banned)

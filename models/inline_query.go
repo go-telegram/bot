@@ -602,10 +602,10 @@ type InputMessageContent interface {
 
 // InputTextMessageContent https://core.telegram.org/bots/api#inputtextmessagecontent
 type InputTextMessageContent struct {
-	MessageText           string          `json:"message_text"`
-	ParseMode             ParseMode       `json:"parse_mode,omitempty"`
-	Entities              []MessageEntity `json:"entities,omitempty"`
-	DisableWebPagePreview bool            `json:"disable_web_page_preview,omitempty"`
+	MessageText        string              `json:"message_text"`
+	ParseMode          ParseMode           `json:"parse_mode,omitempty"`
+	Entities           []MessageEntity     `json:"entities,omitempty"`
+	LinkPreviewOptions *LinkPreviewOptions `json:"link_preview_options,omitempty"`
 }
 
 func (InputTextMessageContent) inputMessageContentTag() {}
