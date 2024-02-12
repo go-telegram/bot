@@ -43,9 +43,13 @@ func (h handler) match(update *models.Update) bool {
 	var data string
 	switch h.handlerType {
 	case HandlerTypeMessageText:
-		data = update.Message.Text
+		if update.Message != nil {
+			data = update.Message.Text
+		}
 	case HandlerTypeCallbackQueryData:
-		data = update.CallbackQuery.Data
+		if update.CallbackQuery != nil {
+			data = update.CallbackQuery.Data
+		}
 	}
 
 	if h.matchType == MatchTypeExact {

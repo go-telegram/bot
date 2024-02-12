@@ -19,31 +19,17 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 
 // ProcessUpdate allows you to process update
 func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
-	h := b.defaultHandlerFunc
-
-	defer func() {
-		applyMiddlewares(h, b.middlewares...)(ctx, b, upd)
-	}()
-
-	if upd.Message != nil {
-		h = b.findHandler(HandlerTypeMessageText, upd)
-		return
-	}
-	if upd.CallbackQuery != nil {
-		h = b.findHandler(HandlerTypeCallbackQueryData, upd)
-		return
-	}
+	h := b.findHandler(upd)
+	applyMiddlewares(h, b.middlewares...)(ctx, b, upd)
 }
 
-func (b *Bot) findHandler(handlerType HandlerType, upd *models.Update) HandlerFunc {
+func (b *Bot) findHandler(upd *models.Update) HandlerFunc {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
 
 	for _, h := range b.handlers {
-		if h.handlerType == handlerType {
-			if h.match(upd) {
-				return h.handler
-			}
+		if h.match(upd) {
+			return h.handler
 		}
 	}
 
