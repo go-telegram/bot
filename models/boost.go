@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+// ChatBoostAdded https://core.telegram.org/bots/api#chatboostadded
+type ChatBoostAdded struct {
+	BoostCount int `json:"boost_count"`
+}
+
 // ChatBoostUpdated https://core.telegram.org/bots/api#chatboostupdated
 type ChatBoostUpdated struct {
 	Chat  Chat      `json:"chat"`

@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0 (2024-02-19)
+
+- support API v7.1
+
 ## v1.0.1 (2024-01-15)
 
 - fix: add 'omitempty' to LinkPreviewOptions.URL
