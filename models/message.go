@@ -62,6 +62,7 @@ type Message struct {
 	MessageThreadID               int                            `json:"message_thread_id,omitempty"`
 	From                          *User                          `json:"from,omitempty"`
 	SenderChat                    *Chat                          `json:"sender_chat,omitempty"`
+	SenderBoostCount              int                            `json:"sender_boost_count,omitempty"`
 	Date                          int                            `json:"date"`
 	Chat                          Chat                           `json:"chat"`
 	ForwardOrigin                 *MessageOrigin                 `json:"forward_origin,omitempty"`
@@ -70,6 +71,7 @@ type Message struct {
 	ReplyToMessage                *Message                       `json:"reply_to_message,omitempty"`
 	ExternalReply                 *ExternalReplyInfo             `json:"external_reply,omitempty"`
 	Quote                         *TextQuote                     `json:"quote,omitempty"`
+	ReplyToStore                  *Story                         `json:"reply_to_store,omitempty"`
 	ViaBot                        *User                          `json:"via_bot,omitempty"`
 	EditDate                      int                            `json:"edit_date,omitempty"`
 	HasProtectedContent           bool                           `json:"has_protected_content,omitempty"`
@@ -116,6 +118,7 @@ type Message struct {
 	WriteAccessAllowed            *WriteAccessAllowed            `json:"write_access_allowed,omitempty"`
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`
 	ProximityAlertTriggered       *ProximityAlertTriggered       `json:"proximity_alert_triggered,omitempty"`
+	BoostAdded                    *ChatBoostAdded                `json:"boost_added,omitempty"`
 	ForumTopicCreated             *ForumTopicCreated             `json:"forum_topic_created,omitempty"`
 	ForumTopicEdited              *ForumTopicEdited              `json:"forum_topic_edited,omitempty"`
 	ForumTopicClosed              *ForumTopicClosed              `json:"forum_topic_closed,omitempty"`
