@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1 (2024-02-21)
+
+- fix typo in json tag `models.UsersShared` for field UserIDs 
+
 ## v1.1.0 (2024-02-19)
 
 - support API v7.1
