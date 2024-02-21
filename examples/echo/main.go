@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 
@@ -30,8 +31,25 @@ func main() {
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   update.Message.Text,
+	_, err := b.SetMessageReaction(ctx, &bot.SetMessageReactionParams{
+		ChatID:    update.Message.Chat.ID,
+		MessageID: update.Message.ID,
+		Reaction: []models.ReactionType{
+			{
+				Type: models.ReactionTypeTypeEmoji,
+				ReactionTypeEmoji: &models.ReactionTypeEmoji{
+					Type:  "emoji",
+					Emoji: "👍",
+				},
+			},
+		},
 	})
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+	}
+
+	//b.SendMessage(ctx, &bot.SendMessageParams{
+	//	ChatID: update.Message.Chat.ID,
+	//	Text:   update.Message.Text,
+	//})
 }

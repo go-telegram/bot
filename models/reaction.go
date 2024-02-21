@@ -21,6 +21,19 @@ type ReactionType struct {
 	ReactionTypeCustomEmoji *ReactionTypeCustomEmoji
 }
 
+func (rt *ReactionType) MarshalJSON() ([]byte, error) {
+	switch rt.Type {
+	case ReactionTypeTypeEmoji:
+		rt.ReactionTypeEmoji.Type = "emoji"
+		return json.Marshal(rt.ReactionTypeEmoji)
+	case ReactionTypeTypeCustomEmoji:
+		rt.ReactionTypeCustomEmoji.Type = "custom_emoji"
+		return json.Marshal(rt.ReactionTypeCustomEmoji)
+	}
+
+	return nil, fmt.Errorf("unsupported ReactionType type")
+}
+
 func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 	v := struct {
 		Type string `json:"type"`

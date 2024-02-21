@@ -198,7 +198,7 @@ func (b *Bot) SendChatAction(ctx context.Context, params *SendChatActionParams) 
 // SetMessageReaction https://core.telegram.org/bots/api#setmessagereaction
 func (b *Bot) SetMessageReaction(ctx context.Context, params *SetMessageReactionParams) (bool, error) {
 	var result bool
-	err := b.rawRequest(ctx, "setMessageReaction", params, result)
+	err := b.rawRequest(ctx, "setMessageReaction", params, &result)
 	return result, err
 }
 
