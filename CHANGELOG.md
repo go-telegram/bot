@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.2 (2024-02-21)
+
+- fix SetMessageReaction marshal func, fix get response for this method
+
 ## v1.1.1 (2024-02-21)
 
 - fix typo in json tag `models.UsersShared` for field UserIDs 
