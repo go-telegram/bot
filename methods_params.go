@@ -680,7 +680,7 @@ type DeleteMessageParams struct {
 // DeleteMessagesParams https://core.telegram.org/bots/api#deletemessages
 type DeleteMessagesParams struct {
 	ChatID     any   `json:"chat_id"`
-	MessageIDs []int `json:"messages_id"`
+	MessageIDs []int `json:"message_ids"`
 }
 
 // SendStickerParams https://core.telegram.org/bots/api#sendsticker
