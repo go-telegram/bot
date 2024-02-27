@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.4 (2024-02-27)
+
+- fix `CallbackQuery.Message` field type from `InaccessibleMessage` to `MaybeInaccessibleMessage`
+
 ## v1.1.3 (2024-02-22)
 
 - fix json tag for DeleteMessagesParams.MessageIDs
