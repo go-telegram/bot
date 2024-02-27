@@ -40,7 +40,7 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		ShowAlert:       false,
 	})
 	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.CallbackQuery.Message.Chat.ID,
+		ChatID: update.CallbackQuery.Message.Message.Chat.ID,
 		Text:   "You selected the button: " + update.CallbackQuery.Data,
 	})
 }
