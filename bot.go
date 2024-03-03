@@ -51,6 +51,8 @@ type Bot struct {
 	isDebug          bool
 	checkInitTimeout time.Duration
 
+	allowedUpdates AllowedUpdates
+
 	updates chan *models.Update
 }
 

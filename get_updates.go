@@ -15,11 +15,13 @@ const (
 )
 
 type getUpdatesParams struct {
-	Offset         int64    `json:"offset,omitempty"`
-	Limit          int      `json:"limit,omitempty"`
-	Timeout        int      `json:"timeout,omitempty"`
-	AllowedUpdates []string `json:"allowed_updates,omitempty"`
+	Offset         int64          `json:"offset,omitempty"`
+	Limit          int            `json:"limit,omitempty"`
+	Timeout        int            `json:"timeout,omitempty"`
+	AllowedUpdates AllowedUpdates `json:"allowed_updates,omitempty"`
 }
+
+type AllowedUpdates []string
 
 // GetUpdates https://core.telegram.org/bots/api#getupdates
 func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
@@ -48,6 +50,10 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 		params := &getUpdatesParams{
 			Timeout: int((b.pollTimeout - time.Second).Seconds()),
 			Offset:  atomic.LoadInt64(&b.lastUpdateID) + 1,
+		}
+
+		if b.allowedUpdates != nil {
+			params.AllowedUpdates = b.allowedUpdates
 		}
 
 		var updates []*models.Update

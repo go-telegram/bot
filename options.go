@@ -86,3 +86,10 @@ func WithSkipGetMe() Option {
 		b.skipGetMe = true
 	}
 }
+
+// WithAllowedUpdates allows to set custom params for getUpdates method
+func WithAllowedUpdates(params AllowedUpdates) Option {
+	return func(b *Bot) {
+		b.allowedUpdates = params
+	}
+}
