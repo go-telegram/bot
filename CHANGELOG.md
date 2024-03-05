@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.6 (2024-03-05)
+
+- ForwardMessages return slice of MessageID (#66)
+
 ## v1.1.5 (2024-03-04)
 
 - add option WithAllowedUpdates (#65)
