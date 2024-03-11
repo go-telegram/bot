@@ -353,6 +353,26 @@ _, err := b.SendMessage(...)
 if errors.Is(err, bot.ErrorForbidden) {
     // your code
 }
+
+if errors.Is(err, bot.ErrorBadRequest) {
+    // your code
+}
+
+if errors.Is(err, bot.ErrorUnauthorized) { 
+	// your code
+}
+
+if errors.Is(err, bot.ErrorTooManyRequests) { 
+	// your code
+}
+
+if errors.Is(err, bot.ErrorNotFound) { 
+	// your code
+}
+
+if errors.Is(err, bot.ErrorConflict) {
+	// your code
+}
 ```
 
 ## UI Components
