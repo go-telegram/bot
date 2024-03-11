@@ -63,9 +63,9 @@ func (b *Bot) ForwardMessage(ctx context.Context, params *ForwardMessageParams) 
 }
 
 // ForwardMessages https://core.telegram.org/bots/api#forwardmessages
-func (b *Bot) ForwardMessages(ctx context.Context, params *ForwardMessagesParams) ([]int, error) {
-	var result []int
-	err := b.rawRequest(ctx, "forwardMessages", params, result)
+func (b *Bot) ForwardMessages(ctx context.Context, params *ForwardMessagesParams) ([]models.MessageID, error) {
+	var result []models.MessageID
+	err := b.rawRequest(ctx, "forwardMessages", params, &result)
 	return result, err
 }
 
