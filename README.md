@@ -338,9 +338,22 @@ b.SendPool(ctx, p)
 
 ### `FileDownloadLink(f *models.File) string`
 
-Returns file download link after call method `GetFile`
+Return file download link after call method `GetFile`
 
 See [documentation(https://core.telegram.org/bots/api#getfile)
+
+## Errors
+
+The library provides error `ErrorForbidden` for error code 403. That code returns when the bot has no access to the action.
+For example, when the user blocked the bot.
+
+```go
+_, err := b.SendMessage(...)
+
+if errors.Is(err, bot.ErrorForbidden) {
+    // your code
+}
+```
 
 ## UI Components
 

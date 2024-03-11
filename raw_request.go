@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -16,7 +17,10 @@ type apiResponse struct {
 	OK          bool            `json:"ok"`
 	Result      json.RawMessage `json:"result,omitempty"`
 	Description string          `json:"description,omitempty"`
+	ErrorCode   int             `json:"error_code,omitempty"`
 }
+
+var ErrorForbidden = errors.New("forbidden")
 
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
 	var httpBody io.Reader = http.NoBody
@@ -69,10 +73,6 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		return fmt.Errorf("error read response body for method %s, %w", method, errReadBody)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected response statusCode %d for method %s, %s", resp.StatusCode, method, body)
-	}
-
 	r := apiResponse{}
 
 	errDecode := json.Unmarshal(body, &r)
@@ -81,7 +81,10 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 
 	if !r.OK {
-		return fmt.Errorf("error response from telegram for method %s, %s", method, r.Description)
+		if r.ErrorCode == 403 {
+			return fmt.Errorf("%w, %s", ErrorForbidden, r.Description)
+		}
+		return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 	}
 
 	if !bytes.Equal(r.Result, []byte("[]")) {
