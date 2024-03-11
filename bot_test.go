@@ -127,7 +127,7 @@ func newServerMock(token string) *serverMock {
 
 func TestNew_error_getMe(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		_, err := rw.Write([]byte(`{"ok":false,"description":"err1"}`))
+		_, err := rw.Write([]byte(`{"ok":false,"description":"err1","error_code":400}`))
 		if err != nil {
 			panic(err)
 		}
@@ -138,7 +138,7 @@ func TestNew_error_getMe(t *testing.T) {
 	if err == nil {
 		t.Fatal("unexpected nil error")
 	}
-	if err.Error() != "error call getMe, error response from telegram for method getMe, err1" {
+	if err.Error() != "error call getMe, error response from telegram for method getMe, 400 err1" {
 		t.Fatalf("wrong error message %q", err.Error())
 	}
 }
