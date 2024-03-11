@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.7 (2024-03-11)
+
+- add error `ErrorForbidden` for responses with error code 403
+- fix CopyMessages capture response Negasus A minute ago
+- ForwardMessages properly unmarshal result (#68) 
+
 ## v1.1.6 (2024-03-05)
 
 - ForwardMessages return slice of MessageID (#66)
