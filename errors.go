@@ -1,6 +1,9 @@
 package bot
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 var (
 	ErrorForbidden       = errors.New("forbidden")
@@ -10,3 +13,17 @@ var (
 	ErrorNotFound        = errors.New("not found")
 	ErrorConflict        = errors.New("conflict")
 )
+
+type TooManyRequestsError struct {
+	Message    string
+	RetryAfter int
+}
+
+func (e *TooManyRequestsError) Error() string {
+	return fmt.Sprintf("%s: retry_after %d", e.Message, e.RetryAfter)
+}
+
+func IsTooManyRequestsError(err error) bool {
+	_, ok := err.(*TooManyRequestsError)
+	return ok
+}
