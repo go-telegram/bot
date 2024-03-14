@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -18,9 +17,10 @@ type apiResponse struct {
 	Result      json.RawMessage `json:"result,omitempty"`
 	Description string          `json:"description,omitempty"`
 	ErrorCode   int             `json:"error_code,omitempty"`
+	Parameters  struct {
+		RetryAfter int `json:"retry_after"`
+	} `json:"parameters,omitempty"`
 }
-
-var ErrorForbidden = errors.New("forbidden")
 
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
 	var httpBody io.Reader = http.NoBody
@@ -83,6 +83,30 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	if !r.OK {
 		if r.ErrorCode == 403 {
 			return fmt.Errorf("%w, %s", ErrorForbidden, r.Description)
+		}
+
+		if r.ErrorCode == 400 {
+			return fmt.Errorf("%w, %s", ErrorBadRequest, r.Description)
+		}
+
+		if r.ErrorCode == 401 {
+			return fmt.Errorf("%w, %s", ErrorUnauthorized, r.Description)
+		}
+
+		if r.ErrorCode == 404 {
+			return fmt.Errorf("%w, %s", ErrorNotFound, r.Description)
+		}
+
+		if r.ErrorCode == 409 {
+			return fmt.Errorf("%w, %s", ErrorConflict, r.Description)
+		}
+
+		if r.ErrorCode == 429 {
+			err := &TooManyRequestsError{
+				Message:    fmt.Sprintf("%w, %s", ErrorTooManyRequests, r.Description),
+				RetryAfter: r.Parameters.RetryAfter,
+			}
+			return err
 		}
 		return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 	}
