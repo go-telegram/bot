@@ -81,34 +81,26 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 
 	if !r.OK {
-		if r.ErrorCode == 403 {
+		switch r.ErrorCode {
+		case 403:
 			return fmt.Errorf("%w, %s", ErrorForbidden, r.Description)
-		}
-
-		if r.ErrorCode == 400 {
+		case 400:
 			return fmt.Errorf("%w, %s", ErrorBadRequest, r.Description)
-		}
-
-		if r.ErrorCode == 401 {
+		case 401:
 			return fmt.Errorf("%w, %s", ErrorUnauthorized, r.Description)
-		}
-
-		if r.ErrorCode == 404 {
+		case 404:
 			return fmt.Errorf("%w, %s", ErrorNotFound, r.Description)
-		}
-
-		if r.ErrorCode == 409 {
+		case 409:
 			return fmt.Errorf("%w, %s", ErrorConflict, r.Description)
-		}
-
-		if r.ErrorCode == 429 {
+		case 429:
 			err := &TooManyRequestsError{
 				Message:    fmt.Sprintf("%w, %s", ErrorTooManyRequests, r.Description),
 				RetryAfter: r.Parameters.RetryAfter,
 			}
 			return err
+		default:
+			return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 		}
-		return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 	}
 
 	if !bytes.Equal(r.Result, []byte("[]")) {
