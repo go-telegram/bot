@@ -18,7 +18,8 @@ type apiResponse struct {
 	Description string          `json:"description,omitempty"`
 	ErrorCode   int             `json:"error_code,omitempty"`
 	Parameters  struct {
-		RetryAfter int `json:"retry_after"`
+		RetryAfter      int `json:"retry_after,omitempty"`
+		MigrateToChatID int `json:"migrate_to_chat_id,omitempty"`
 	} `json:"parameters,omitempty"`
 }
 
@@ -85,6 +86,14 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		case 403:
 			return fmt.Errorf("%w, %s", ErrorForbidden, r.Description)
 		case 400:
+			if r.Parameters.MigrateToChatID != 0 {
+				err := &MigrateError{
+					Message:         fmt.Sprintf("%w: %s", ErrorBadRequest, r.Description),
+					MigrateToChatID: r.Parameters.MigrateToChatID,
+				}
+
+				return err
+			}
 			return fmt.Errorf("%w, %s", ErrorBadRequest, r.Description)
 		case 401:
 			return fmt.Errorf("%w, %s", ErrorUnauthorized, r.Description)
