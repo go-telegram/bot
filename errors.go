@@ -27,3 +27,17 @@ func IsTooManyRequestsError(err error) bool {
 	_, ok := err.(*TooManyRequestsError)
 	return ok
 }
+
+type MigrateError struct {
+	Message         string
+	MigrateToChatID int
+}
+
+func (e *MigrateError) Error() string {
+	return fmt.Sprintf("%s: migrate_to_chat_id %d", e.Message, e.MigrateToChatID)
+}
+
+func IsMigrateError(err error) bool {
+	_, ok := err.(*MigrateError)
+	return ok
+}
