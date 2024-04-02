@@ -88,7 +88,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		case 400:
 			if r.Parameters.MigrateToChatID != 0 {
 				err := &MigrateError{
-					Message:         fmt.Sprintf("%w: %s", ErrorBadRequest, r.Description),
+					Message:         fmt.Sprintf("%s: %s", ErrorBadRequest, r.Description),
 					MigrateToChatID: r.Parameters.MigrateToChatID,
 				}
 
@@ -103,7 +103,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 			return fmt.Errorf("%w, %s", ErrorConflict, r.Description)
 		case 429:
 			err := &TooManyRequestsError{
-				Message:    fmt.Sprintf("%w, %s", ErrorTooManyRequests, r.Description),
+				Message:    fmt.Sprintf("%s, %s", ErrorTooManyRequests, r.Description),
 				RetryAfter: r.Parameters.RetryAfter,
 			}
 			return err
