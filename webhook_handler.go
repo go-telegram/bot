@@ -29,9 +29,10 @@ func (b *Bot) WebhookHandler() http.HandlerFunc {
 		}
 
 		select {
+		case <-req.Context().Done():
+			b.error("some updates lost, ctx done")
+			return
 		case b.updates <- update:
-		default:
-			b.error("error send update to processing, channel is full")
 		}
 	}
 }

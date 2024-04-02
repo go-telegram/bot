@@ -2,6 +2,8 @@ package bot
 
 import (
 	"time"
+
+	"github.com/go-telegram/bot/models"
 )
 
 // Option is a function that configures a bot.
@@ -91,5 +93,12 @@ func WithSkipGetMe() Option {
 func WithAllowedUpdates(params AllowedUpdates) Option {
 	return func(b *Bot) {
 		b.allowedUpdates = params
+	}
+}
+
+// WithUpdatesChannelCap allows setting custom capacity for the Updates channel
+func WithUpdatesChannelCap(cap int) Option {
+	return func(b *Bot) {
+		b.updates = make(chan *models.Update, cap)
 	}
 }

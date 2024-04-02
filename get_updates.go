@@ -73,9 +73,10 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 		for _, upd := range updates {
 			atomic.StoreInt64(&b.lastUpdateID, upd.ID)
 			select {
+			case <-ctx.Done():
+				b.error("some updates lost, ctx done")
+				return
 			case b.updates <- upd:
-			default:
-				b.error("error send update to processing, channel is full")
 			}
 		}
 	}
