@@ -180,6 +180,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithServerURL(serverURL string)` - set server url
 - `WithSkipGetMe()` - skip call GetMe on bot init
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
+- `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
 
 ## Message.Text and CallbackQuery.Data handlers
 
