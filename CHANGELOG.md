@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0 (2024-04-02)
+
+- support API v7.2
+- remove worker pool
+- add option `WithUpdatesChannelCap`
+
 ## v1.1.7 (2024-03-11)
 
 - add error `ErrorForbidden` for responses with error code 403
