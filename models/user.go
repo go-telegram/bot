@@ -19,4 +19,5 @@ type User struct {
 	CanJoinGroups           bool   `json:"can_join_groups,omitempty"`
 	CanReadAllGroupMessages bool   `json:"can_read_all_group_messages,omitempty"`
 	SupportInlineQueries    bool   `json:"support_inline_queries,omitempty"`
+	CanConnectToBusiness    bool   `json:"can_connect_to_business,omitempty"`
 }

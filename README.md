@@ -6,7 +6,7 @@
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
-> Supports Bot API version: [7.1](https://core.telegram.org/bots/api#february-16-2024) from February 16, 2024
+> Supports Bot API version: [7.2](https://core.telegram.org/bots/api#march-31-2024) from March 31, 2024
 
 It's a Go zero-dependencies telegram bot framework
 
@@ -180,6 +180,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithServerURL(serverURL string)` - set server url
 - `WithSkipGetMe()` - skip call GetMe on bot init
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
+- `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
 
 ## Message.Text and CallbackQuery.Data handlers
 
