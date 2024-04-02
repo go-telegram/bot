@@ -69,10 +69,13 @@ type KeyboardButtonRequestUser struct {
 
 // KeyboardButtonRequestUsers https://core.telegram.org/bots/api#keyboardbuttonrequestusers
 type KeyboardButtonRequestUsers struct {
-	RequestID     int32 `json:"request_id"`
-	UserIsBot     bool  `json:"user_is_bot,omitempty"`
-	UserIsPremium bool  `json:"user_is_premium,omitempty"`
-	MaxQuantity   int   `json:"max_quantity,omitempty"`
+	RequestID       int32 `json:"request_id"`
+	UserIsBot       bool  `json:"user_is_bot,omitempty"`
+	UserIsPremium   bool  `json:"user_is_premium,omitempty"`
+	MaxQuantity     int   `json:"max_quantity,omitempty"`
+	RequestName     bool  `json:"request_name,omitempty"`
+	RequestUsername bool  `json:"request_username,omitempty"`
+	RequestPhoto    bool  `json:"request_photo,omitempty"`
 }
 
 // KeyboardButtonRequestChat https://core.telegram.org/bots/api#keyboardbuttonrequestchat
@@ -85,6 +88,9 @@ type KeyboardButtonRequestChat struct {
 	UserAdministratorRights *ChatAdministratorRights `json:"user_administrator_rights,omitempty"`
 	BotAdministratorRights  *ChatAdministratorRights `json:"bot_administrator_rights,omitempty"`
 	BotIsMember             bool                     `json:"bot_is_member,omitempty"`
+	RequestTitle            bool                     `json:"request_title,omitempty"`
+	RequestUsername         bool                     `json:"request_username,omitempty"`
+	RequestPhoto            bool                     `json:"request_photo,omitempty"`
 }
 
 // KeyboardButtonPollType https://core.telegram.org/bots/api#keyboardbuttonpolltype

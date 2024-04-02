@@ -43,16 +43,28 @@ type UserShared struct {
 	UserID    int64 `json:"user_id"`
 }
 
+// SharedUser https://core.telegram.org/bots/api#shareduser
+type SharedUser struct {
+	UserID    int64       `json:"user_id"`
+	FirstName string      `json:"first_name,omitempty"`
+	LastName  string      `json:"last_name,omitempty"`
+	Username  string      `json:"username,omitempty"`
+	Photo     []PhotoSize `json:"photo,omitempty"`
+}
+
 // UsersShared https://core.telegram.org/bots/api#usersshared
 type UsersShared struct {
-	RequestID int     `json:"request_id"`
-	UserIDs   []int64 `json:"user_ids"`
+	RequestID int          `json:"request_id"`
+	Users     []SharedUser `json:"users"`
 }
 
 // ChatShared https://core.telegram.org/bots/api#chatshared
 type ChatShared struct {
-	RequestID int   `json:"request_id"`
-	ChatID    int64 `json:"chat_id"`
+	RequestID int         `json:"request_id"`
+	ChatID    int64       `json:"chat_id"`
+	Title     string      `json:"title,omitempty"`
+	Username  string      `json:"username,omitempty"`
+	Photo     []PhotoSize `json:"photo,omitempty"`
 }
 
 // WriteAccessAllowed https://core.telegram.org/bots/api#writeaccessallowed

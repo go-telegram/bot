@@ -30,6 +30,7 @@ type Sticker struct {
 // InputSticker https://core.telegram.org/bots/api#inputsticker
 type InputSticker struct {
 	Sticker      InputFile    `json:"sticker"`
+	Format       string       `json:"format"`
 	EmojiList    []string     `json:"emoji_list"`
 	MaskPosition MaskPosition `json:"mask_position,omitempty"`
 	Keywords     []string     `json:"keywords,omitempty"`

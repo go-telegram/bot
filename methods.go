@@ -713,6 +713,13 @@ func (b *Bot) DeleteStickerFromSet(ctx context.Context, params *DeleteStickerFro
 	return result, err
 }
 
+// ReplaceStickerInSet https://core.telegram.org/bots/api#replacestickerinset
+func (b *Bot) ReplaceStickerInSet(ctx context.Context, params *ReplaceStickerInSetParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "replaceStickerInSet", params, &result)
+	return result, err
+}
+
 // SetStickerEmojiList https://core.telegram.org/bots/api#setstickeremojilist
 func (b *Bot) SetStickerEmojiList(ctx context.Context, params *SetStickerEmojiListParams) (bool, error) {
 	var result bool
