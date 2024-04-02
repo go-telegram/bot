@@ -63,7 +63,9 @@ type Message struct {
 	From                          *User                          `json:"from,omitempty"`
 	SenderChat                    *Chat                          `json:"sender_chat,omitempty"`
 	SenderBoostCount              int                            `json:"sender_boost_count,omitempty"`
+	SenderBusinessBot             *User                          `json:"sender_business_bot,omitempty"`
 	Date                          int                            `json:"date"`
+	BusinessConnectionID          string                         `json:"business_connection_id,omitempty"`
 	Chat                          Chat                           `json:"chat"`
 	ForwardOrigin                 *MessageOrigin                 `json:"forward_origin,omitempty"`
 	IsTopicMessage                bool                           `json:"is_topic_message,omitempty"`
@@ -75,6 +77,7 @@ type Message struct {
 	ViaBot                        *User                          `json:"via_bot,omitempty"`
 	EditDate                      int                            `json:"edit_date,omitempty"`
 	HasProtectedContent           bool                           `json:"has_protected_content,omitempty"`
+	IsFromOffline                 bool                           `json:"is_from_offline,omitempty"`
 	MediaGroupID                  string                         `json:"media_group_id,omitempty"`
 	AuthorSignature               string                         `json:"author_signature,omitempty"`
 	Text                          string                         `json:"text,omitempty"`
