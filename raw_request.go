@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -18,9 +17,11 @@ type apiResponse struct {
 	Result      json.RawMessage `json:"result,omitempty"`
 	Description string          `json:"description,omitempty"`
 	ErrorCode   int             `json:"error_code,omitempty"`
+	Parameters  struct {
+		RetryAfter      int `json:"retry_after,omitempty"`
+		MigrateToChatID int `json:"migrate_to_chat_id,omitempty"`
+	} `json:"parameters,omitempty"`
 }
-
-var ErrorForbidden = errors.New("forbidden")
 
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
 	var httpBody io.Reader = http.NoBody
@@ -81,10 +82,34 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 
 	if !r.OK {
-		if r.ErrorCode == 403 {
+		switch r.ErrorCode {
+		case 403:
 			return fmt.Errorf("%w, %s", ErrorForbidden, r.Description)
+		case 400:
+			if r.Parameters.MigrateToChatID != 0 {
+				err := &MigrateError{
+					Message:         fmt.Sprintf("%s: %s", ErrorBadRequest, r.Description),
+					MigrateToChatID: r.Parameters.MigrateToChatID,
+				}
+
+				return err
+			}
+			return fmt.Errorf("%w, %s", ErrorBadRequest, r.Description)
+		case 401:
+			return fmt.Errorf("%w, %s", ErrorUnauthorized, r.Description)
+		case 404:
+			return fmt.Errorf("%w, %s", ErrorNotFound, r.Description)
+		case 409:
+			return fmt.Errorf("%w, %s", ErrorConflict, r.Description)
+		case 429:
+			err := &TooManyRequestsError{
+				Message:    fmt.Sprintf("%s, %s", ErrorTooManyRequests, r.Description),
+				RetryAfter: r.Parameters.RetryAfter,
+			}
+			return err
+		default:
+			return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 		}
-		return fmt.Errorf("error response from telegram for method %s, %d %s", method, r.ErrorCode, r.Description)
 	}
 
 	if !bytes.Equal(r.Result, []byte("[]")) {

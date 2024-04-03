@@ -345,14 +345,42 @@ See [documentation(https://core.telegram.org/bots/api#getfile)
 
 ## Errors
 
-The library provides error `ErrorForbidden` for error code 403. That code returns when the bot has no access to the action.
-For example, when the user blocked the bot.
+This library includes error handling. It provides the following error types:
 
+- **ErrorForbidden (403):** This error occurs when the bot has no access to the action, such as when the user has blocked the bot.
+- **ErrorBadRequest (400):** This error indicates a bad request made to the bot's API.
+- **ErrorUnauthorized (401):** This error occurs when the bot's access is unauthorized for the requested action.
+- **TooManyRequestsError: (429)** This error indicates that the bot has received too many requests within a short period. It includes a RetryAfter value indicating when to retry the request.
+- **ErrorNotFound (404):** This error indicates that the requested resource was not found.
+- **ErrorConflict (409):** This error indicates a conflict occurred during the request.
+
+Usage:
 ```go
 _, err := b.SendMessage(...)
 
-if errors.Is(err, bot.ErrorForbidden) {
-    // your code
+if errors.Is(err, mybot.ErrorForbidden) {
+    // Handle the ErrorForbidden (403) case here
+}
+
+if errors.Is(err, mybot.ErrorBadRequest) {
+    // Handle the ErrorBadRequest (400) case here
+}
+
+if errors.Is(err, mybot.ErrorUnauthorized) {
+    // Handle the ErrorUnauthorized (401) case here
+}
+
+if mybot.IsTooManyRequestsError(err) {
+    // Handle the TooManyRequestsError (429) case here
+    fmt.Println("Received TooManyRequestsError with retry_after:", err.(*mybot.TooManyRequestsError).RetryAfter)
+}
+
+if errors.Is(err, mybot.ErrorNotFound) {
+    // Handle the ErrorNotFound (404) case here
+}
+
+if errors.Is(err, mybot.ErrorConflict) {
+    // Handle the ErrorConflict (409) case here
 }
 ```
 
