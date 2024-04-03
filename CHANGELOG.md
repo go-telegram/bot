@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.1 (2024-04-03)
+
+- Added error handling for specific error codes (#69) 
+- fix: exit from waitUpdates function when context is terminated (#75) 
+
 ## v1.2.0 (2024-04-02)
 
 - support API v7.2
@@ -9,7 +14,7 @@
 ## v1.1.7 (2024-03-11)
 
 - add error `ErrorForbidden` for responses with error code 403
-- fix CopyMessages capture response Negasus A minute ago
+- fix CopyMessages capture response 
 - ForwardMessages properly unmarshal result (#68) 
 
 ## v1.1.6 (2024-03-05)
