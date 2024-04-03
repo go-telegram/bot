@@ -12,6 +12,7 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 	for {
 		select {
 		case <-ctx.Done():
+			return
 		case upd := <-b.updates:
 			b.ProcessUpdate(ctx, upd)
 		}
