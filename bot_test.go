@@ -138,7 +138,7 @@ func TestNew_error_getMe(t *testing.T) {
 	if err == nil {
 		t.Fatal("unexpected nil error")
 	}
-	if err.Error() != "error call getMe, error response from telegram for method getMe, 400 err1" {
+	if err.Error() != "error call getMe, bad request, err1" {
 		t.Fatalf("wrong error message %q", err.Error())
 	}
 }
