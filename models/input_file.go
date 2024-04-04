@@ -17,7 +17,7 @@ type InputFileUpload struct {
 	Data     io.Reader
 }
 
-func (InputFileUpload) inputFileTag() {}
+func (*InputFileUpload) inputFileTag() {}
 
 func (i *InputFileUpload) MarshalJSON() ([]byte, error) {
 	return []byte(`"@` + i.Filename + `"`), nil
@@ -27,7 +27,7 @@ type InputFileString struct {
 	Data string
 }
 
-func (InputFileString) inputFileTag() {}
+func (*InputFileString) inputFileTag() {}
 
 func (i *InputFileString) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + i.Data + `"`), nil
