@@ -230,11 +230,11 @@ func TestBot_Methods(t *testing.T) {
 
 	t.Run("SendVideoNote", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `{"text":"bar"}`, reqFields: map[string]string{
-			"thumbnail": `{"Data":"foo"}`,
+			"thumbnail": `foo`,
 		}}
 		b := &Bot{client: c}
 		resp, err := b.SendVideoNote(context.Background(), &SendVideoNoteParams{
-			Thumbnail: models.InputFileString{Data: "foo"},
+			Thumbnail: &models.InputFileString{Data: "foo"},
 		})
 		assertNoErr(t, err)
 		assertEqualString(t, "bar", resp.Text)
