@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.2 (2024-04-25)
+
+- fix race in test 
+- add example inline_keyboard_multiselect 
+
 ## v1.2.1 (2024-04-03)
 
 - Added error handling for specific error codes (#69) 
