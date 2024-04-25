@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -172,13 +173,16 @@ func TestBot_StartWebhook(t *testing.T) {
 		t.Fatalf("unexpected error %q", err)
 	}
 
+	mx := sync.Mutex{}
 	var called bool
 
 	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
 		if update.Message.ID != 1 {
 			t.Errorf("unexpected message id")
 		}
+		mx.Lock()
 		called = true
+		mx.Unlock()
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -200,9 +204,11 @@ func TestBot_StartWebhook(t *testing.T) {
 
 	time.Sleep(time.Millisecond * 100)
 
+	mx.Lock()
 	if !called {
 		t.Errorf("not called default handler")
 	}
+	mx.Unlock()
 }
 
 func TestBot_Start(t *testing.T) {
