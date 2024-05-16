@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"log"
 
 	"github.com/go-telegram/bot/models"
 )
@@ -31,17 +32,26 @@ func (c *ConversationHandler) AddStage(stageId int, sf stageFunction) {
 }
 
 // SetActiveStage sets the active conversation stage.
+// Invalid currentStageId is not checked because if the CallStage function encounters an invalid id,
+// it will not process it, so the stageId is not checked.
+// if stageId <= len(c.stages)
 func (c *ConversationHandler) SetActiveStage(stageId int) {
 	if !c.active {
 		c.active = true
 	}
+
 	c.currentStageId = stageId
 }
 
 // CallStage calls the function of the active conversation stage.
 func (c *ConversationHandler) CallStage(ctx context.Context, b *Bot, update *models.Update) {
-	if function, ok := c.stages[c.currentStageId]; ok && c.active {
-		function(ctx, b, update)
+	if c.active {
+		// sf = stageFunction
+		if sf, ok := c.stages[c.currentStageId]; ok {
+			sf(ctx, b, update)
+		} else {
+			log.Println("Error: Invalid stage id. No matching function found for the current stage id.")
+		}
 	}
 }
 

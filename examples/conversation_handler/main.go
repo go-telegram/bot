@@ -20,7 +20,7 @@ func main() {
 
 	// Bot options
 	opts := []bot.Option{
-		bot.WithDefaultHandler(DefaultHandler),
+		bot.WithDefaultHandler(defaultHandler),
 	}
 
 	// Create the bot
@@ -30,8 +30,8 @@ func main() {
 	}
 
 	// Register commands for the bot
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, Start)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/cancel", bot.MatchTypeExact, Cancel)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, start)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/cancel", bot.MatchTypeExact, cancelConversation)
 
 	// Create a conversation handler and add stages
 	convHandler = bot.NewConversationHandler()
@@ -48,12 +48,12 @@ const (
 )
 
 // Default handler calls the CallStage function of conversation handler
-func DefaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	convHandler.CallStage(ctx, b, update)
 }
 
 // Handle /start command to start getting the user's name
-func Start(ctx context.Context, b *bot.Bot, update *models.Update) {
+func start(ctx context.Context, b *bot.Bot, update *models.Update) {
 	convHandler.SetActiveStage(firstNameStage) //start the first name stage
 
 	// Ask user to enter their name
@@ -89,7 +89,7 @@ func lastNameHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 // Handle /cancel command to end the conversation
-func Cancel(ctx context.Context, b *bot.Bot, update *models.Update) {
+func cancelConversation(ctx context.Context, b *bot.Bot, update *models.Update) {
 	convHandler.End() // end the conversation
 
 	// Send a message to indicate the conversation has been cancelled
