@@ -9,6 +9,11 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+const (
+	firstNameStage = iota // Definition of the first name stage = 0
+	lastNameStage         // Definition of the last name stage = 1
+)
+
 var convHandler *bot.ConversationHandler
 
 var firstName string // Global variable to store user's first name
@@ -41,11 +46,6 @@ func main() {
 	//start the bot
 	b.Start(ctx)
 }
-
-const (
-	firstNameStage = iota // Definition of the first name stage = 0
-	lastNameStage         // Definition of the last name stage = 1
-)
 
 // Default handler calls the CallStage function of conversation handler
 func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
