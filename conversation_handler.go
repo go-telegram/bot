@@ -7,14 +7,11 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-// stageFunction represents a function type for each stage of conversation.
-type stageFunction func(ctx context.Context, b *Bot, update *models.Update)
-
 // ConversationHandler is a structure that manages conversation functions.
 type ConversationHandler struct {
-	active         bool                  // a flag indicating whether the conversation is active
-	currentStageId int                   // the identifier of the active conversation stage
-	stages         map[int]stageFunction // a map of conversation stages
+	active         bool                // a flag indicating whether the conversation is active
+	currentStageId int                 // the identifier of the active conversation stage
+	stages         map[int]HandlerFunc // a map of conversation stages
 }
 
 // NewConversationHandler returns a new instance of ConversationHandler.
@@ -22,13 +19,13 @@ func NewConversationHandler() *ConversationHandler {
 	return &ConversationHandler{
 		active:         false,
 		currentStageId: 0,
-		stages:         make(map[int]stageFunction),
+		stages:         make(map[int]HandlerFunc),
 	}
 }
 
 // AddStage adds a conversation stage to the ConversationHandler.
-func (c *ConversationHandler) AddStage(stageId int, sf stageFunction) {
-	c.stages[stageId] = sf
+func (c *ConversationHandler) AddStage(stageId int, hf HandlerFunc) {
+	c.stages[stageId] = hf
 }
 
 // SetActiveStage sets the active conversation stage.
@@ -46,9 +43,9 @@ func (c *ConversationHandler) SetActiveStage(stageId int) {
 // CallStage calls the function of the active conversation stage.
 func (c *ConversationHandler) CallStage(ctx context.Context, b *Bot, update *models.Update) {
 	if c.active {
-		// sf = stageFunction
-		if sf, ok := c.stages[c.currentStageId]; ok {
-			sf(ctx, b, update)
+		// hf = HandlerFunction
+		if hf, ok := c.stages[c.currentStageId]; ok {
+			hf(ctx, b, update)
 		} else {
 			log.Println("Error: Invalid stage id. No matching function found for the current stage id.")
 		}

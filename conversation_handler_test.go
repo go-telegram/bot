@@ -51,12 +51,12 @@ func Test_ConversationHandler_CallStage(t *testing.T) {
 
 	var state int
 
-	stageFunction := func(ctx context.Context, b *Bot, update *models.Update) {
+	handlerFunction := func(ctx context.Context, b *Bot, update *models.Update) {
 		state = 1
 	}
 
 	// Add a stage to the conversation handler
-	convHandler.AddStage(1, stageFunction)
+	convHandler.AddStage(1, handlerFunction)
 
 	// Set active stage to 1
 	convHandler.SetActiveStage(1)
