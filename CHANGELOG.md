@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.0 (2024-05-20)
+
+- support API v7.3
+
 ## v1.2.2 (2024-04-25)
 
 - fix race in test 

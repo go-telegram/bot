@@ -8,16 +8,25 @@ type PollAnswer struct {
 	OptionIDs []int  `json:"option_ids,omitempty"`
 }
 
+// InputPollOption https://core.telegram.org/bots/api#inputpolloption
+type InputPollOption struct {
+	Text          string          `json:"text"`
+	TextParseMode ParseMode       `json:"text_parse_mode,omitempty"`
+	TextEntities  []MessageEntity `json:"text_entities,omitempty"`
+}
+
 // PollOption https://core.telegram.org/bots/api#polloption
 type PollOption struct {
-	Text       string `json:"text"`
-	VoterCount int    `json:"voter_count"`
+	Text         string          `json:"text"`
+	TextEntities []MessageEntity `json:"text_entities,omitempty"`
+	VoterCount   int             `json:"voter_count"`
 }
 
 // Poll https://core.telegram.org/bots/api#poll
 type Poll struct {
 	ID                    string          `json:"id"`
 	Question              string          `json:"question"`
+	QuestionEntities      []MessageEntity `json:"question_entities,omitempty"`
 	Options               []PollOption    `json:"options"`
 	TotalVoterCount       int             `json:"total_voter_count"`
 	IsClosed              bool            `json:"is_closed"`
