@@ -371,8 +371,8 @@ func (b *Bot) LeaveChat(ctx context.Context, params *LeaveChatParams) (bool, err
 }
 
 // GetChat https://core.telegram.org/bots/api#getchat
-func (b *Bot) GetChat(ctx context.Context, params *GetChatParams) (*models.Chat, error) {
-	var result *models.Chat
+func (b *Bot) GetChat(ctx context.Context, params *GetChatParams) (*models.ChatFullInfo, error) {
+	var result *models.ChatFullInfo
 	err := b.rawRequest(ctx, "getChat", params, &result)
 	return result, err
 }

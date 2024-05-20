@@ -237,6 +237,7 @@ type EditMessageLiveLocationParams struct {
 	InlineMessageID      string             `json:"inline_message_id,omitempty"`
 	Latitude             float64            `json:"latitude"`
 	Longitude            float64            `json:"longitude"`
+	LivePeriod           int                `json:"live_period,omitempty"`
 	HorizontalAccuracy   float64            `json:"horizontal_accuracy,omitempty"`
 	Heading              int                `json:"heading,omitempty"`
 	ProximityAlertRadius int                `json:"proximity_alert_radius,omitempty"`
@@ -286,25 +287,27 @@ type SendContactParams struct {
 
 // SendPollParams https://core.telegram.org/bots/api#sendpoll
 type SendPollParams struct {
-	BusinessConnectionID  string                  `json:"business_connection_id,omitempty"`
-	ChatID                any                     `json:"chat_id"`
-	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
-	Question              string                  `json:"question"`
-	Options               []string                `json:"options"`
-	IsAnonymous           *bool                   `json:"is_anonymous,omitempty"`
-	Type                  string                  `json:"type,omitempty"`
-	AllowsMultipleAnswers bool                    `json:"allows_multiple_answers,omitempty"`
-	CorrectOptionID       int                     `json:"correct_option_id"`
-	Explanation           string                  `json:"explanation,omitempty"`
-	ExplanationParseMode  string                  `json:"explanation_parse_mode,omitempty"`
-	ExplanationEntities   []models.MessageEntity  `json:"explanation_entities,omitempty"`
-	OpenPeriod            int                     `json:"open_period,omitempty"`
-	CloseDate             int                     `json:"close_date,omitempty"`
-	IsClosed              bool                    `json:"is_closed,omitempty"`
-	DisableNotification   bool                    `json:"disable_notification,omitempty"`
-	ProtectContent        bool                    `json:"protect_content,omitempty"`
-	ReplyParameters       *models.ReplyParameters `json:"reply_parameters,omitempty"`
-	ReplyMarkup           models.ReplyMarkup      `json:"reply_markup,omitempty"`
+	BusinessConnectionID  string                   `json:"business_connection_id,omitempty"`
+	ChatID                any                      `json:"chat_id"`
+	MessageThreadID       int                      `json:"message_thread_id,omitempty"`
+	Question              string                   `json:"question"`
+	QuestionParseMode     models.ParseMode         `json:"question_parse_mode,omitempty"`
+	QuestionEntities      []models.MessageEntity   `json:"question_entities,omitempty"`
+	Options               []models.InputPollOption `json:"options"`
+	IsAnonymous           *bool                    `json:"is_anonymous,omitempty"`
+	Type                  string                   `json:"type,omitempty"`
+	AllowsMultipleAnswers bool                     `json:"allows_multiple_answers,omitempty"`
+	CorrectOptionID       int                      `json:"correct_option_id"`
+	Explanation           string                   `json:"explanation,omitempty"`
+	ExplanationParseMode  string                   `json:"explanation_parse_mode,omitempty"`
+	ExplanationEntities   []models.MessageEntity   `json:"explanation_entities,omitempty"`
+	OpenPeriod            int                      `json:"open_period,omitempty"`
+	CloseDate             int                      `json:"close_date,omitempty"`
+	IsClosed              bool                     `json:"is_closed,omitempty"`
+	DisableNotification   bool                     `json:"disable_notification,omitempty"`
+	ProtectContent        bool                     `json:"protect_content,omitempty"`
+	ReplyParameters       *models.ReplyParameters  `json:"reply_parameters,omitempty"`
+	ReplyMarkup           models.ReplyMarkup       `json:"reply_markup,omitempty"`
 }
 
 // SendDiceParams https://core.telegram.org/bots/api#senddice

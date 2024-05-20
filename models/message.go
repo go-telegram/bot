@@ -122,6 +122,7 @@ type Message struct {
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`
 	ProximityAlertTriggered       *ProximityAlertTriggered       `json:"proximity_alert_triggered,omitempty"`
 	BoostAdded                    *ChatBoostAdded                `json:"boost_added,omitempty"`
+	ChatBackgroundSet             *ChatBackground                `json:"chat_background_set,omitempty"`
 	ForumTopicCreated             *ForumTopicCreated             `json:"forum_topic_created,omitempty"`
 	ForumTopicEdited              *ForumTopicEdited              `json:"forum_topic_edited,omitempty"`
 	ForumTopicClosed              *ForumTopicClosed              `json:"forum_topic_closed,omitempty"`
