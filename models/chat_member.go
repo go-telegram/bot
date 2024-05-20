@@ -13,6 +13,7 @@ type ChatMemberUpdated struct {
 	OldChatMember           ChatMember      `json:"old_chat_member"`
 	NewChatMember           ChatMember      `json:"new_chat_member"`
 	InviteLink              *ChatInviteLink `json:"invite_link,omitempty"`
+	ViaJoinRequest          bool            `json:"via_join_request,omitempty"`
 	ViaChatFolderInviteLink bool            `json:"via_chat_folder_invite_link,omitempty"`
 }
 
