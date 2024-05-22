@@ -70,3 +70,48 @@ func TestChatBoostSource_giveaway(t *testing.T) {
 		t.Fatal("invalid user id")
 	}
 }
+
+func TestChatBoostSource_premium_marshal_unmarshal(t *testing.T) {
+	src := `{"source":"premium","user":{"id":123}}`
+
+	cbs := &ChatBoostSource{}
+	err := json.Unmarshal([]byte(src), cbs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if cbs.Source != ChatBoostSourceTypePremium {
+		t.Fatal("invalid type")
+	}
+
+	if cbs.ChatBoostSourcePremium == nil {
+		t.Fatal("invalid ChatBoostSourcePremium")
+	}
+
+	if cbs.ChatBoostSourcePremium.User.ID != 123 {
+		t.Fatal("invalid user id")
+	}
+
+	src2, err2 := json.Marshal(cbs)
+	if err2 != nil {
+		t.Fatal(err2)
+	}
+
+	var cbs2 ChatBoostSource
+	err = json.Unmarshal(src2, &cbs2)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if cbs2.Source != ChatBoostSourceTypePremium {
+		t.Fatal("invalid type")
+	}
+
+	if cbs2.ChatBoostSourcePremium == nil {
+		t.Fatal("invalid ChatBoostSourcePremium")
+	}
+
+	if cbs2.ChatBoostSourcePremium.User.ID != 123 {
+		t.Fatal("invalid user id")
+	}
+}

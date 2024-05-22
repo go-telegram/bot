@@ -48,7 +48,7 @@ type ChatBoostSource struct {
 
 func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Source string `json:"source"`
+		Source ChatBoostSourceType `json:"source"`
 	}{}
 	err := json.Unmarshal(data, &v)
 	if err != nil {
@@ -56,15 +56,15 @@ func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 	}
 
 	switch v.Source {
-	case "premium":
+	case ChatBoostSourceTypePremium:
 		cbs.Source = ChatBoostSourceTypePremium
 		cbs.ChatBoostSourcePremium = &ChatBoostSourcePremium{}
 		return json.Unmarshal(data, cbs.ChatBoostSourcePremium)
-	case "gift_code":
+	case ChatBoostSourceTypeGiftCode:
 		cbs.Source = ChatBoostSourceTypeGiftCode
 		cbs.ChatBoostSourceGiftCode = &ChatBoostSourceGiftCode{}
 		return json.Unmarshal(data, cbs.ChatBoostSourceGiftCode)
-	case "giveaway":
+	case ChatBoostSourceTypeGiveaway:
 		cbs.Source = ChatBoostSourceTypeGiveaway
 		cbs.ChatBoostSourceGiveaway = &ChatBoostSourceGiveaway{}
 		return json.Unmarshal(data, cbs.ChatBoostSourceGiveaway)
@@ -73,29 +73,45 @@ func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported ChatBoostSource type")
 }
 
+func (cbs *ChatBoostSource) MarshalJSON() ([]byte, error) {
+	switch cbs.Source {
+	case ChatBoostSourceTypePremium:
+		cbs.ChatBoostSourcePremium.Source = ChatBoostSourceTypePremium
+		return json.Marshal(cbs.ChatBoostSourcePremium)
+	case ChatBoostSourceTypeGiftCode:
+		cbs.ChatBoostSourceGiftCode.Source = ChatBoostSourceTypeGiftCode
+		return json.Marshal(cbs.ChatBoostSourceGiftCode)
+	case ChatBoostSourceTypeGiveaway:
+		cbs.ChatBoostSourceGiveaway.Source = ChatBoostSourceTypeGiveaway
+		return json.Marshal(cbs.ChatBoostSourceGiveaway)
+	}
+
+	return nil, fmt.Errorf("unsupported ChatBoostSource type")
+}
+
 // ChatBoostSourceType https://core.telegram.org/bots/api#chatboostsource
-type ChatBoostSourceType int
+type ChatBoostSourceType string
 
 const (
-	ChatBoostSourceTypePremium ChatBoostSourceType = iota
-	ChatBoostSourceTypeGiftCode
-	ChatBoostSourceTypeGiveaway
+	ChatBoostSourceTypePremium  ChatBoostSourceType = "premium"
+	ChatBoostSourceTypeGiftCode ChatBoostSourceType = "gift_code"
+	ChatBoostSourceTypeGiveaway ChatBoostSourceType = "giveaway"
 )
 
 // ChatBoostSourcePremium https://core.telegram.org/bots/api#chatboostsourcepremium
 type ChatBoostSourcePremium struct {
-	Source string `json:"source"` // always “premium”
-	User   User   `json:"user"`
+	Source ChatBoostSourceType `json:"source"` // always “premium”
+	User   User                `json:"user"`
 }
 
 // ChatBoostSourceGiftCode https://core.telegram.org/bots/api#chatboostsourcegiftcode
 type ChatBoostSourceGiftCode struct {
-	Source string `json:"source"` // always “gift_code”
-	User   User   `json:"user"`
+	Source ChatBoostSourceType `json:"source"` // always “gift_code”
+	User   User                `json:"user"`
 }
 
 // ChatBoostSourceGiveaway https://core.telegram.org/bots/api#chatboostsourcegiveaway
 type ChatBoostSourceGiveaway struct {
-	Source string `json:"source"` // always “giveaway”
-	User   User   `json:"user"`
+	Source ChatBoostSourceType `json:"source"` // always “giveaway”
+	User   User                `json:"user"`
 }

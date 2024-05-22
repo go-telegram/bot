@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // MaybeInaccessibleMessageType https://core.telegram.org/bots/api#maybeinaccessiblemessage
@@ -38,6 +39,17 @@ func (mim *MaybeInaccessibleMessage) UnmarshalJSON(data []byte) error {
 	mim.Type = MaybeInaccessibleMessageTypeMessage
 	mim.Message = &Message{}
 	return json.Unmarshal(data, mim.Message)
+}
+
+func (mim *MaybeInaccessibleMessage) MarshalJSON() ([]byte, error) {
+	switch mim.Type {
+	case MaybeInaccessibleMessageTypeMessage:
+		return json.Marshal(mim.Message)
+	case MaybeInaccessibleMessageTypeInaccessibleMessage:
+		return json.Marshal(mim.InaccessibleMessage)
+	}
+
+	return nil, fmt.Errorf("unsupported MaybeInaccessibleMessage type")
 }
 
 // InaccessibleMessage https://core.telegram.org/bots/api#inaccessiblemessage

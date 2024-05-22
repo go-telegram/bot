@@ -52,13 +52,13 @@ type ReplyParameters struct {
 }
 
 // MessageOriginType https://core.telegram.org/bots/api#messageorigin
-type MessageOriginType int
+type MessageOriginType string
 
 const (
-	MessageOriginTypeUser MessageOriginType = iota
-	MessageOriginTypeHiddenUser
-	MessageOriginTypeChat
-	MessageOriginTypeChannel
+	MessageOriginTypeUser       MessageOriginType = "user"
+	MessageOriginTypeHiddenUser MessageOriginType = "hidden_user"
+	MessageOriginTypeChat       MessageOriginType = "chat"
+	MessageOriginTypeChannel    MessageOriginType = "channel"
 )
 
 // MessageOrigin https://core.telegram.org/bots/api#messageorigin
@@ -73,26 +73,26 @@ type MessageOrigin struct {
 
 func (mo *MessageOrigin) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type string `json:"type"`
+		Type MessageOriginType `json:"type"`
 	}{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
 	switch v.Type {
-	case "user":
+	case MessageOriginTypeUser:
 		mo.Type = MessageOriginTypeUser
 		mo.MessageOriginUser = &MessageOriginUser{}
 		return json.Unmarshal(data, mo.MessageOriginUser)
-	case "hidden_user":
+	case MessageOriginTypeHiddenUser:
 		mo.Type = MessageOriginTypeHiddenUser
 		mo.MessageOriginHiddenUser = &MessageOriginHiddenUser{}
 		return json.Unmarshal(data, mo.MessageOriginHiddenUser)
-	case "chat":
+	case MessageOriginTypeChat:
 		mo.Type = MessageOriginTypeChat
 		mo.MessageOriginChat = &MessageOriginChat{}
 		return json.Unmarshal(data, mo.MessageOriginChat)
-	case "channel":
+	case MessageOriginTypeChannel:
 		mo.Type = MessageOriginTypeChannel
 		mo.MessageOriginChannel = &MessageOriginChannel{}
 		return json.Unmarshal(data, mo.MessageOriginChannel)
@@ -101,33 +101,52 @@ func (mo *MessageOrigin) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported MessageOrigin type")
 }
 
+func (mo *MessageOrigin) MarshalJSON() ([]byte, error) {
+	switch mo.Type {
+	case MessageOriginTypeUser:
+		mo.MessageOriginUser.Type = MessageOriginTypeUser
+		return json.Marshal(mo.MessageOriginUser)
+	case MessageOriginTypeHiddenUser:
+		mo.MessageOriginHiddenUser.Type = MessageOriginTypeHiddenUser
+		return json.Marshal(mo.MessageOriginHiddenUser)
+	case MessageOriginTypeChat:
+		mo.MessageOriginChat.Type = MessageOriginTypeChat
+		return json.Marshal(mo.MessageOriginChat)
+	case MessageOriginTypeChannel:
+		mo.MessageOriginChannel.Type = MessageOriginTypeChannel
+		return json.Marshal(mo.MessageOriginChannel)
+	}
+
+	return nil, fmt.Errorf("unsupported MessageOrigin type")
+}
+
 // MessageOriginUser https://core.telegram.org/bots/api#messageoriginuser
 type MessageOriginUser struct {
-	Type       string `json:"type"` // always “user”
-	Date       int    `json:"date"`
-	SenderUser User   `json:"sender_user"`
+	Type       MessageOriginType `json:"type"` // always “user”
+	Date       int               `json:"date"`
+	SenderUser User              `json:"sender_user"`
 }
 
 // MessageOriginHiddenUser https://core.telegram.org/bots/api#messageoriginhiddenuser
 type MessageOriginHiddenUser struct {
-	Type           string `json:"type"` // always “hidden_user”
-	Date           int    `json:"date"`
-	SenderUserName string `json:"sender_user_name"`
+	Type           MessageOriginType `json:"type"` // always “hidden_user”
+	Date           int               `json:"date"`
+	SenderUserName string            `json:"sender_user_name"`
 }
 
 // MessageOriginChat https://core.telegram.org/bots/api#messageoriginchat
 type MessageOriginChat struct {
-	Type            string  `json:"type"` // always “chat”
-	Date            int     `json:"date"`
-	SenderChat      Chat    `json:"sender_chat"`
-	AuthorSignature *string `json:"author_signature,omitempty"`
+	Type            MessageOriginType `json:"type"` // always “chat”
+	Date            int               `json:"date"`
+	SenderChat      Chat              `json:"sender_chat"`
+	AuthorSignature *string           `json:"author_signature,omitempty"`
 }
 
 // MessageOriginChannel https://core.telegram.org/bots/api#messageoriginchannel
 type MessageOriginChannel struct {
-	Type            string  `json:"type"` // always “channel”
-	Date            int     `json:"date"`
-	Chat            Chat    `json:"chat"`
-	MessageID       int     `json:"message_id"`
-	AuthorSignature *string `json:"author_signature,omitempty"`
+	Type            MessageOriginType `json:"type"` // always “channel”
+	Date            int               `json:"date"`
+	Chat            Chat              `json:"chat"`
+	MessageID       int               `json:"message_id"`
+	AuthorSignature *string           `json:"author_signature,omitempty"`
 }

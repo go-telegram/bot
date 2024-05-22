@@ -681,7 +681,7 @@ func TestBot_Methods(t *testing.T) {
 			ChatID: 123,
 		})
 		assertNoErr(t, err)
-		assertEqualInt(t, int(models.ChatMemberTypeAdministrator), int(resp.Type))
+		assertEqualString(t, string(models.ChatMemberTypeAdministrator), string(resp.Type))
 	})
 
 	t.Run("SetChatStickerSet", func(t *testing.T) {

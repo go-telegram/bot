@@ -1,17 +1,16 @@
 package models
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
 
-type MenuButtonType int
+type MenuButtonType string
 
 const (
-	MenuButtonTypeCommands MenuButtonType = iota
-	MenuButtonTypeWebApp
-	MenuButtonTypeDefault
+	MenuButtonTypeCommands MenuButtonType = "commands"
+	MenuButtonTypeWebApp   MenuButtonType = "web_app"
+	MenuButtonTypeDefault  MenuButtonType = "default"
 )
 
 type InputMenuButton interface {
@@ -28,17 +27,23 @@ type MenuButton struct {
 }
 
 func (c *MenuButton) UnmarshalJSON(data []byte) error {
-	if bytes.Contains(data, []byte(`"type":"commands"`)) {
+	v := struct {
+		Type MenuButtonType `json:"type"`
+	}{}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	switch v.Type {
+	case MenuButtonTypeCommands:
 		c.Type = MenuButtonTypeCommands
 		c.Commands = &MenuButtonCommands{}
 		return json.Unmarshal(data, c.Commands)
-	}
-	if bytes.Contains(data, []byte(`"type":"web_app"`)) {
+	case MenuButtonTypeWebApp:
 		c.Type = MenuButtonTypeWebApp
 		c.WebApp = &MenuButtonWebApp{}
 		return json.Unmarshal(data, c.WebApp)
-	}
-	if bytes.Contains(data, []byte(`"type":"default"`)) {
+	case MenuButtonTypeDefault:
 		c.Type = MenuButtonTypeDefault
 		c.Default = &MenuButtonDefault{}
 		return json.Unmarshal(data, c.Default)
@@ -47,25 +52,41 @@ func (c *MenuButton) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported MenuButton type")
 }
 
+func (c *MenuButton) MarshalJSON() ([]byte, error) {
+	switch c.Type {
+	case MenuButtonTypeCommands:
+		c.Commands.Type = MenuButtonTypeCommands
+		return json.Marshal(c.Commands)
+	case MenuButtonTypeWebApp:
+		c.WebApp.Type = MenuButtonTypeWebApp
+		return json.Marshal(c.WebApp)
+	case MenuButtonTypeDefault:
+		c.Default.Type = MenuButtonTypeDefault
+		return json.Marshal(c.Default)
+	}
+
+	return nil, fmt.Errorf("unsupported MenuButton type")
+}
+
 // MenuButtonCommands https://core.telegram.org/bots/api#menubuttoncommands
 type MenuButtonCommands struct {
-	Type string `json:"type" rules:"required,equals:commands"`
+	Type MenuButtonType `json:"type" rules:"required,equals:commands"`
 }
 
 func (MenuButtonCommands) menuButtonTag() {}
 
 // MenuButtonWebApp https://core.telegram.org/bots/api#menubuttonwebapp
 type MenuButtonWebApp struct {
-	Type   string     `json:"type" rules:"required,equals:web_app"`
-	Text   string     `json:"text" rules:"required"`
-	WebApp WebAppInfo `json:"web_app" rules:"required"`
+	Type   MenuButtonType `json:"type" rules:"required,equals:web_app"`
+	Text   string         `json:"text" rules:"required"`
+	WebApp WebAppInfo     `json:"web_app" rules:"required"`
 }
 
 func (MenuButtonWebApp) menuButtonTag() {}
 
 // MenuButtonDefault https://core.telegram.org/bots/api#menubuttondefault
 type MenuButtonDefault struct {
-	Type string `json:"type" rules:"required,equals:default"`
+	Type MenuButtonType `json:"type" rules:"required,equals:default"`
 }
 
 func (MenuButtonDefault) menuButtonTag() {}

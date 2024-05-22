@@ -6,11 +6,11 @@ import (
 )
 
 // ReactionTypeType https://core.telegram.org/bots/api#reactiontype
-type ReactionTypeType int
+type ReactionTypeType string
 
 const (
-	ReactionTypeTypeEmoji ReactionTypeType = iota
-	ReactionTypeTypeCustomEmoji
+	ReactionTypeTypeEmoji       ReactionTypeType = "emoji"
+	ReactionTypeTypeCustomEmoji ReactionTypeType = "custom_emoji"
 )
 
 // ReactionType https://core.telegram.org/bots/api#reactiontype
@@ -24,10 +24,10 @@ type ReactionType struct {
 func (rt *ReactionType) MarshalJSON() ([]byte, error) {
 	switch rt.Type {
 	case ReactionTypeTypeEmoji:
-		rt.ReactionTypeEmoji.Type = "emoji"
+		rt.ReactionTypeEmoji.Type = ReactionTypeTypeEmoji
 		return json.Marshal(rt.ReactionTypeEmoji)
 	case ReactionTypeTypeCustomEmoji:
-		rt.ReactionTypeCustomEmoji.Type = "custom_emoji"
+		rt.ReactionTypeCustomEmoji.Type = ReactionTypeTypeCustomEmoji
 		return json.Marshal(rt.ReactionTypeCustomEmoji)
 	}
 
@@ -59,14 +59,14 @@ func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 
 // ReactionTypeEmoji https://core.telegram.org/bots/api#reactiontypeemoji
 type ReactionTypeEmoji struct {
-	Type  string `json:"type"`
-	Emoji string `json:"emoji"`
+	Type  ReactionTypeType `json:"type"`
+	Emoji string           `json:"emoji"`
 }
 
 // ReactionTypeCustomEmoji https://core.telegram.org/bots/api#reactiontypecustomemoji
 type ReactionTypeCustomEmoji struct {
-	Type          string `json:"type"`
-	CustomEmojiID string `json:"custom_emoji_id"`
+	Type          ReactionTypeType `json:"type"`
+	CustomEmojiID string           `json:"custom_emoji_id"`
 }
 
 // MessageReactionUpdated https://core.telegram.org/bots/api#messagereactionupdated
