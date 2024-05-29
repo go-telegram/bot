@@ -53,7 +53,7 @@ type InlineQueryResultArticle struct {
 	ThumbnailHeight     int                 `json:"thumbnail_height,omitempty"`
 }
 
-func (InlineQueryResultArticle) inlineQueryResultTag() {}
+func (*InlineQueryResultArticle) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultArticle) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -69,21 +69,22 @@ func (m *InlineQueryResultArticle) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultPhoto https://core.telegram.org/bots/api#inlinequeryresultphoto
 type InlineQueryResultPhoto struct {
-	ID                  string              `json:"id"`
-	PhotoURL            string              `json:"photo_url"`
-	ThumbnailURL        string              `json:"thumbnail_url"`
-	PhotoWidth          int                 `json:"photo_width,omitempty"`
-	PhotoHeight         int                 `json:"photo_height,omitempty"`
-	Title               string              `json:"title,omitempty"`
-	Description         string              `json:"description,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	PhotoURL              string              `json:"photo_url"`
+	ThumbnailURL          string              `json:"thumbnail_url"`
+	PhotoWidth            int                 `json:"photo_width,omitempty"`
+	PhotoHeight           int                 `json:"photo_height,omitempty"`
+	Title                 string              `json:"title,omitempty"`
+	Description           string              `json:"description,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultPhoto) inlineQueryResultTag() {}
+func (*InlineQueryResultPhoto) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultPhoto) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -99,22 +100,23 @@ func (m *InlineQueryResultPhoto) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultGif https://core.telegram.org/bots/api#inlinequeryresultgif
 type InlineQueryResultGif struct {
-	ID                  string              `json:"id"`
-	GifURL              string              `json:"gif_url"`
-	GifWidth            int                 `json:"gif_width,omitempty"`
-	GifHeight           int                 `json:"gif_height,omitempty"`
-	GifDuration         int                 `json:"gif_duration,omitempty"`
-	ThumbnailURL        string              `json:"thumbnail_url"`
-	ThumbnailMimeType   string              `json:"thumbnail_mime_type,omitempty"`
-	Title               string              `json:"title,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	GifURL                string              `json:"gif_url"`
+	GifWidth              int                 `json:"gif_width,omitempty"`
+	GifHeight             int                 `json:"gif_height,omitempty"`
+	GifDuration           int                 `json:"gif_duration,omitempty"`
+	ThumbnailURL          string              `json:"thumbnail_url"`
+	ThumbnailMimeType     string              `json:"thumbnail_mime_type,omitempty"`
+	Title                 string              `json:"title,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultGif) inlineQueryResultTag() {}
+func (*InlineQueryResultGif) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultGif) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -130,22 +132,23 @@ func (m *InlineQueryResultGif) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultMpeg4Gif https://core.telegram.org/bots/api#inlinequeryresultmpeg4gif
 type InlineQueryResultMpeg4Gif struct {
-	ID                  string              `json:"id"`
-	Mpeg4URL            string              `json:"mpeg4_url"`
-	Mpeg4Width          int                 `json:"mpeg4_width,omitempty"`
-	Mpeg4Height         int                 `json:"mpeg4_height,omitempty"`
-	Mpeg4Duration       int                 `json:"mpeg4_duration,omitempty"`
-	ThumbnailURL        string              `json:"thumbnail_url"`
-	ThumbnailMimeType   string              `json:"thumbnail_mime_type,omitempty"`
-	Title               string              `json:"title,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	Mpeg4URL              string              `json:"mpeg4_url"`
+	Mpeg4Width            int                 `json:"mpeg4_width,omitempty"`
+	Mpeg4Height           int                 `json:"mpeg4_height,omitempty"`
+	Mpeg4Duration         int                 `json:"mpeg4_duration,omitempty"`
+	ThumbnailURL          string              `json:"thumbnail_url"`
+	ThumbnailMimeType     string              `json:"thumbnail_mime_type,omitempty"`
+	Title                 string              `json:"title,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultMpeg4Gif) inlineQueryResultTag() {}
+func (*InlineQueryResultMpeg4Gif) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultMpeg4Gif) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -161,23 +164,24 @@ func (m *InlineQueryResultMpeg4Gif) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultVideo https://core.telegram.org/bots/api#inlinequeryresultvideo
 type InlineQueryResultVideo struct {
-	ID                  string              `json:"id"`
-	VideoURL            string              `json:"video_url"`
-	MimeType            string              `json:"mime_type,omitempty"`
-	ThumbnailURL        string              `json:"thumbnail_url"`
-	Title               string              `json:"title,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	VideoWidth          int                 `json:"video_width,omitempty"`
-	VideoHeight         int                 `json:"video_height,omitempty"`
-	VideoDuration       int                 `json:"video_duration,omitempty"`
-	Description         string              `json:"description,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	VideoURL              string              `json:"video_url"`
+	MimeType              string              `json:"mime_type,omitempty"`
+	ThumbnailURL          string              `json:"thumbnail_url"`
+	Title                 string              `json:"title,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	VideoWidth            int                 `json:"video_width,omitempty"`
+	VideoHeight           int                 `json:"video_height,omitempty"`
+	VideoDuration         int                 `json:"video_duration,omitempty"`
+	Description           string              `json:"description,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultVideo) inlineQueryResultTag() {}
+func (*InlineQueryResultVideo) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultVideo) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -205,7 +209,7 @@ type InlineQueryResultAudio struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultAudio) inlineQueryResultTag() {}
+func (*InlineQueryResultAudio) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultAudio) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -232,7 +236,7 @@ type InlineQueryResultVoice struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultVoice) inlineQueryResultTag() {}
+func (*InlineQueryResultVoice) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultVoice) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -263,7 +267,7 @@ type InlineQueryResultDocument struct {
 	ThumbnailHeight     int                 `json:"thumbnail_height,omitempty"`
 }
 
-func (InlineQueryResultDocument) inlineQueryResultTag() {}
+func (*InlineQueryResultDocument) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultDocument) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -294,7 +298,7 @@ type InlineQueryResultLocation struct {
 	ThumbnailHeight      int                 `json:"thumbnail_height,omitempty"`
 }
 
-func (InlineQueryResultLocation) inlineQueryResultTag() {}
+func (*InlineQueryResultLocation) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultLocation) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -326,7 +330,7 @@ type InlineQueryResultVenue struct {
 	ThumbnailHeight     int                 `json:"thumbnail_height,omitempty"`
 }
 
-func (InlineQueryResultVenue) inlineQueryResultTag() {}
+func (*InlineQueryResultVenue) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultVenue) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -354,7 +358,7 @@ type InlineQueryResultContact struct {
 	ThumbnailHeight     int                 `json:"thumbnail_height,omitempty"`
 }
 
-func (InlineQueryResultContact) inlineQueryResultTag() {}
+func (*InlineQueryResultContact) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultContact) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -375,7 +379,7 @@ type InlineQueryResultGame struct {
 	ReplyMarkup   ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-func (InlineQueryResultGame) inlineQueryResultTag() {}
+func (*InlineQueryResultGame) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultGame) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -391,18 +395,19 @@ func (m *InlineQueryResultGame) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultCachedPhoto https://core.telegram.org/bots/api#inlinequeryresultcachedphoto
 type InlineQueryResultCachedPhoto struct {
-	ID                  string              `json:"id"`
-	PhotoFileID         string              `json:"photo_file_id"`
-	Title               string              `json:"title,omitempty"`
-	Description         string              `json:"description,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	PhotoFileID           string              `json:"photo_file_id"`
+	Title                 string              `json:"title,omitempty"`
+	Description           string              `json:"description,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedPhoto) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedPhoto) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedPhoto) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -418,17 +423,18 @@ func (m *InlineQueryResultCachedPhoto) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultCachedGif https://core.telegram.org/bots/api#inlinequeryresultcachedgif
 type InlineQueryResultCachedGif struct {
-	ID                  string              `json:"id"`
-	GifFileID           string              `json:"gif_file_id"`
-	Title               string              `json:"title,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	GifFileID             string              `json:"gif_file_id"`
+	Title                 string              `json:"title,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedGif) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedGif) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedGif) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -444,17 +450,18 @@ func (m *InlineQueryResultCachedGif) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultCachedMpeg4Gif https://core.telegram.org/bots/api#inlinequeryresultcachedmpeg4gif
 type InlineQueryResultCachedMpeg4Gif struct {
-	ID                  string              `json:"id"`
-	Mpeg4FileID         string              `json:"mpeg4_file_id"`
-	Title               string              `json:"title,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	Mpeg4FileID           string              `json:"mpeg4_file_id"`
+	Title                 string              `json:"title,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedMpeg4Gif) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedMpeg4Gif) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedMpeg4Gif) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -476,7 +483,7 @@ type InlineQueryResultCachedSticker struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedSticker) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedSticker) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedSticker) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -503,7 +510,7 @@ type InlineQueryResultCachedDocument struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedDocument) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedDocument) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedDocument) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -519,18 +526,19 @@ func (m *InlineQueryResultCachedDocument) MarshalCustom() ([]byte, error) {
 
 // InlineQueryResultCachedVideo https://core.telegram.org/bots/api#inlinequeryresultcachedvideo
 type InlineQueryResultCachedVideo struct {
-	ID                  string              `json:"id"`
-	VideoFileID         string              `json:"video_file_id"`
-	Title               string              `json:"title,omitempty"`
-	Description         string              `json:"description,omitempty"`
-	Caption             string              `json:"caption,omitempty"`
-	ParseMode           ParseMode           `json:"parse_mode,omitempty"`
-	CaptionEntities     []MessageEntity     `json:"caption_entities,omitempty"`
-	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
-	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
+	ID                    string              `json:"id"`
+	VideoFileID           string              `json:"video_file_id"`
+	Title                 string              `json:"title,omitempty"`
+	Description           string              `json:"description,omitempty"`
+	Caption               string              `json:"caption,omitempty"`
+	ParseMode             ParseMode           `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity     `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                `json:"show_caption_above_media,omitempty"`
+	ReplyMarkup           ReplyMarkup         `json:"reply_markup,omitempty"`
+	InputMessageContent   InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedVideo) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedVideo) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedVideo) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -556,7 +564,7 @@ type InlineQueryResultCachedVoice struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedVoice) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedVoice) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedVoice) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -581,7 +589,7 @@ type InlineQueryResultCachedAudio struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 }
 
-func (InlineQueryResultCachedAudio) inlineQueryResultTag() {}
+func (*InlineQueryResultCachedAudio) inlineQueryResultTag() {}
 
 func (m *InlineQueryResultCachedAudio) MarshalCustom() ([]byte, error) {
 	ret := struct {
@@ -657,7 +665,7 @@ type InputInvoiceMessageContent struct {
 	Title                     string         `json:"title"`
 	Description               string         `json:"description"`
 	Payload                   string         `json:"payload"`
-	ProviderToken             string         `json:"provider_token"`
+	ProviderToken             string         `json:"provider_token,omitempty"`
 	Currency                  string         `json:"currency"`
 	Prices                    []LabeledPrice `json:"prices"`
 	MaxTipAmount              int            `json:"max_tip_amount,omitempty"`

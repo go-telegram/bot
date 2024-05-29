@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.2 (2024-05-29)
+
+- support API v7.4
+
 ## v1.3.1 (2024-05-22)
 
 - add Marshal functions for struct with many types
