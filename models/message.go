@@ -95,6 +95,7 @@ type Message struct {
 	Text                          string                         `json:"text,omitempty"`
 	Entities                      []MessageEntity                `json:"entities,omitempty"`
 	LinkPreviewOptions            *LinkPreviewOptions            `json:"link_preview_options,omitempty"`
+	EffectID                      string                         `json:"effect_id,omitempty"`
 	Animation                     *Animation                     `json:"animation,omitempty"`
 	Audio                         *Audio                         `json:"audio,omitempty"`
 	Document                      *Document                      `json:"document,omitempty"`
