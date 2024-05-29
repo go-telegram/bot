@@ -29,6 +29,7 @@ type SendMessageParams struct {
 	LinkPreviewOptions   *models.LinkPreviewOptions `json:"link_preview_options,omitempty"`
 	DisableNotification  bool                       `json:"disable_notification,omitempty"`
 	ProtectContent       bool                       `json:"protect_content,omitempty"`
+	MessageEffectID      string                     `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters    `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup         `json:"reply_markup,omitempty"`
 }
@@ -91,6 +92,7 @@ type SendPhotoParams struct {
 	HasSpoiler           bool                    `json:"has_spoiler,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -110,6 +112,7 @@ type SendAudioParams struct {
 	Thumbnail            models.InputFile        `json:"thumbnail,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -127,6 +130,7 @@ type SendDocumentParams struct {
 	DisableContentTypeDetection bool                    `json:"disable_content_type_detection,omitempty"`
 	DisableNotification         bool                    `json:"disable_notification,omitempty"`
 	ProtectContent              bool                    `json:"protect_content,omitempty"`
+	MessageEffectID             string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters             *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup                 models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -148,6 +152,7 @@ type SendVideoParams struct {
 	SupportsStreaming    bool                    `json:"supports_streaming,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -168,6 +173,7 @@ type SendAnimationParams struct {
 	HasSpoiler           bool                    `json:"has_spoiler,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -184,6 +190,7 @@ type SendVoiceParams struct {
 	Duration             int                     `json:"duration,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -199,6 +206,7 @@ type SendVideoNoteParams struct {
 	Thumbnail            models.InputFile        `json:"thumbnail,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -211,6 +219,7 @@ type SendMediaGroupParams struct {
 	Media                []models.InputMedia     `json:"media"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 }
 
@@ -227,6 +236,7 @@ type SendLocationParams struct {
 	ProximityAlertRadius int                     `json:"proximity_alert_radius,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -266,6 +276,7 @@ type SendVenueParams struct {
 	GooglePlaceType      string                  `json:"google_place_type,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -281,6 +292,7 @@ type SendContactParams struct {
 	VCard                string                  `json:"vcard,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -306,6 +318,7 @@ type SendPollParams struct {
 	IsClosed              bool                     `json:"is_closed,omitempty"`
 	DisableNotification   bool                     `json:"disable_notification,omitempty"`
 	ProtectContent        bool                     `json:"protect_content,omitempty"`
+	MessageEffectID       string                   `json:"message_effect_id,omitempty"`
 	ReplyParameters       *models.ReplyParameters  `json:"reply_parameters,omitempty"`
 	ReplyMarkup           models.ReplyMarkup       `json:"reply_markup,omitempty"`
 }
@@ -318,6 +331,7 @@ type SendDiceParams struct {
 	Emoji                string                  `json:"emoji,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -710,6 +724,7 @@ type SendStickerParams struct {
 	Emoji                string                  `json:"emoji,omitempty"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -835,6 +850,7 @@ type SendInvoiceParams struct {
 	IsFlexible                bool                    `json:"is_flexible,omitempty"`
 	DisableNotification       bool                    `json:"disable_notification,omitempty"`
 	ProtectContent            bool                    `json:"protect_content,omitempty"`
+	MessageEffectID           string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters           *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup               models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
@@ -893,6 +909,7 @@ type SendGameParams struct {
 	GameShorName         string                  `json:"game_short_name"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
 	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
