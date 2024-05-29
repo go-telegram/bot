@@ -811,6 +811,13 @@ func (b *Bot) AnswerPreCheckoutQuery(ctx context.Context, params *AnswerPreCheck
 	return result, err
 }
 
+// RefundStarPayment https://core.telegram.org/bots/api#refundstarpayment
+func (b *Bot) RefundStarPayment(ctx context.Context, params *RefundStarPaymentParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "refundStarPayment", params, &result)
+	return result, err
+}
+
 // SetPassportDataErrors https://core.telegram.org/bots/api#setpassportdataerrors
 func (b *Bot) SetPassportDataErrors(ctx context.Context, params *SetPassportDataErrorsParams) (bool, error) {
 	var result bool

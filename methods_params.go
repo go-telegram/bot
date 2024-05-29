@@ -875,6 +875,11 @@ type AnswerPreCheckoutQueryParams struct {
 	ErrorMessage       string `json:"error_message,omitempty"`
 }
 
+type RefundStarPaymentParams struct {
+	UserID                  int64  `json:"user_id"`
+	TelegramPaymentChargeID string `json:"telegram_payment_charge_id"`
+}
+
 type SetPassportDataErrorsParams struct {
 	UserID int64                         `json:"user_id"`
 	Errors []models.PassportElementError `json:"errors"`
