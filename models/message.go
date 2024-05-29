@@ -107,6 +107,7 @@ type Message struct {
 	Voice                         *Voice                         `json:"voice,omitempty"`
 	Caption                       string                         `json:"caption,omitempty"`
 	CaptionEntities               []MessageEntity                `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia         bool                           `json:"show_caption_above_media,omitempty"`
 	HasMediaSpoiler               bool                           `json:"has_media_spoiler,omitempty"`
 	Contact                       *Contact                       `json:"contact,omitempty"`
 	Dice                          *Dice                          `json:"dice,omitempty"`

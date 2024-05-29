@@ -16,11 +16,12 @@ type InputMedia interface {
 
 // InputMediaPhoto https://core.telegram.org/bots/api#inputmediaphoto
 type InputMediaPhoto struct {
-	Media           string          `json:"media"`
-	Caption         string          `json:"caption,omitempty"`
-	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
-	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
-	HasSpoiler      bool            `json:"has_spoiler,omitempty"`
+	Media                 string          `json:"media"`
+	Caption               string          `json:"caption,omitempty"`
+	ParseMode             ParseMode       `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool            `json:"show_caption_above_media,omitempty"`
+	HasSpoiler            bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
@@ -49,16 +50,17 @@ func (InputMediaPhoto) inputMediaTag() {}
 
 // InputMediaVideo https://core.telegram.org/bots/api#inputmediavideo
 type InputMediaVideo struct {
-	Media             string          `json:"media"`
-	Thumbnail         InputFile       `json:"thumbnail,omitempty"`
-	Caption           string          `json:"caption,omitempty"`
-	ParseMode         ParseMode       `json:"parse_mode,omitempty"`
-	CaptionEntities   []MessageEntity `json:"caption_entities,omitempty"`
-	Width             int             `json:"width,omitempty"`
-	Height            int             `json:"height,omitempty"`
-	Duration          int             `json:"duration,omitempty"`
-	SupportsStreaming bool            `json:"supports_streaming,omitempty"`
-	HasSpoiler        bool            `json:"has_spoiler,omitempty"`
+	Media                 string          `json:"media"`
+	Thumbnail             InputFile       `json:"thumbnail,omitempty"`
+	Caption               string          `json:"caption,omitempty"`
+	ParseMode             ParseMode       `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool            `json:"show_caption_above_media,omitempty"`
+	Width                 int             `json:"width,omitempty"`
+	Height                int             `json:"height,omitempty"`
+	Duration              int             `json:"duration,omitempty"`
+	SupportsStreaming     bool            `json:"supports_streaming,omitempty"`
+	HasSpoiler            bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
@@ -85,15 +87,16 @@ func (InputMediaVideo) inputMediaTag() {}
 
 // InputMediaAnimation https://core.telegram.org/bots/api#inputmediaanimation
 type InputMediaAnimation struct {
-	Media           string          `json:"media"`
-	Thumbnail       InputFile       `json:"thumbnail,omitempty"`
-	Caption         string          `json:"caption,omitempty"`
-	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
-	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
-	Width           int             `json:"width,omitempty"`
-	Height          int             `json:"height,omitempty"`
-	Duration        int             `json:"duration,omitempty"`
-	HasSpoiler      bool            `json:"has_spoiler,omitempty"`
+	Media                 string          `json:"media"`
+	Thumbnail             InputFile       `json:"thumbnail,omitempty"`
+	Caption               string          `json:"caption,omitempty"`
+	ParseMode             ParseMode       `json:"parse_mode,omitempty"`
+	CaptionEntities       []MessageEntity `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool            `json:"show_caption_above_media,omitempty"`
+	Width                 int             `json:"width,omitempty"`
+	Height                int             `json:"height,omitempty"`
+	Duration              int             `json:"duration,omitempty"`
+	HasSpoiler            bool            `json:"has_spoiler,omitempty"`
 
 	MediaAttachment io.Reader `json:"-"`
 }
