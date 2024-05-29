@@ -657,7 +657,7 @@ type InputInvoiceMessageContent struct {
 	Title                     string         `json:"title"`
 	Description               string         `json:"description"`
 	Payload                   string         `json:"payload"`
-	ProviderToken             string         `json:"provider_token"`
+	ProviderToken             string         `json:"provider_token,omitempty"`
 	Currency                  string         `json:"currency"`
 	Prices                    []LabeledPrice `json:"prices"`
 	MaxTipAmount              int            `json:"max_tip_amount,omitempty"`
