@@ -924,14 +924,14 @@ type SetGameScoreParams struct {
 	Score              int   `json:"score"`
 	Force              bool  `json:"force,omitempty"`
 	DisableEditMessage bool  `json:"disable_edit_message,omitempty"`
-	ChatID             int   `json:"chat_id,omitempty"`
+	ChatID             any   `json:"chat_id,omitempty"`
 	MessageID          int   `json:"message_id,omitempty"`
 	InlineMessageID    int   `json:"inline_message_id,omitempty"`
 }
 
 type GetGameHighScoresParams struct {
 	UserID          int64 `json:"user_id"`
-	ChatID          int   `json:"chat_id,omitempty"`
+	ChatID          any   `json:"chat_id,omitempty"`
 	MessageID       int   `json:"message_id,omitempty"`
 	InlineMessageID int   `json:"inline_message_id,omitempty"`
 }
