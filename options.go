@@ -102,3 +102,10 @@ func WithUpdatesChannelCap(cap int) Option {
 		b.updates = make(chan *models.Update, cap)
 	}
 }
+
+// WithWebhookSecretToken allows setting X-Telegram-Bot-Api-Secret-Token sent from Telegram servers
+func WithWebhookSecretToken(webhookSecretToken string) Option {
+	return func(b *Bot) {
+		b.webhookSecretToken = webhookSecretToken
+	}
+}

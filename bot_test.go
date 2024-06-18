@@ -168,7 +168,8 @@ func TestBot_StartWebhook(t *testing.T) {
 	s := newServerMock("xxx")
 	defer s.Close()
 
-	b, err := New("xxx", WithServerURL(s.URL()))
+	opts := []Option{WithServerURL(s.URL()), WithWebhookSecretToken("zzzz")}
+	b, err := New("xxx", opts...)
 	if err != nil {
 		t.Fatalf("unexpected error %q", err)
 	}
@@ -197,6 +198,7 @@ func TestBot_StartWebhook(t *testing.T) {
 		t.Error(errReq)
 		return
 	}
+	req.Header.Set("X-Telegram-Bot-Api-Secret-Token", "zzzz")
 
 	b.WebhookHandler().ServeHTTP(nil, req)
 
