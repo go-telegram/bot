@@ -1377,7 +1377,7 @@ func TestBot_Methods(t *testing.T) {
 	})
 
 	t.Run("GetGameHighScores", func(t *testing.T) {
-		c := &httpClient{t: t, resp: `{"score":42}`, reqFields: map[string]string{
+		c := &httpClient{t: t, resp: `[{"score":42}]`, reqFields: map[string]string{
 			"chat_id": "123",
 		}}
 		b := &Bot{client: c}
@@ -1385,7 +1385,7 @@ func TestBot_Methods(t *testing.T) {
 			ChatID: 123,
 		})
 		assertNoErr(t, err)
-		assertEqualInt(t, 42, resp.Score)
+		assertEqualInt(t, 42, resp[0].Score)
 	})
 
 }
