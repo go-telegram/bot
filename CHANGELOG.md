@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.4.1 (2024-06-19)
+
+- fix: getGameHighScores returns an array of high scores instead of a single object (#94)  
+- Use any type for ChatID in SetGameScoreParams and GetGameHighScoreParams (#88)
+
 ## v1.4.0 (2024-05-29)
 
 - support API v7.4
