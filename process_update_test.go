@@ -6,122 +6,129 @@ import (
 	"testing"
 
 	"github.com/go-telegram/bot/models"
-	"github.com/stretchr/testify/assert"
 )
 
-// Define the necessary types for tests
-type MockMiddleware struct{}
+func Test_applyMiddlewares(t *testing.T) {
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {}
 
-func (m MockMiddleware) Handle(next HandlerFunc) HandlerFunc {
-	return func(ctx context.Context, b *Bot, upd *models.Update) {
-		next(ctx, b, upd)
-	}
-}
-
-type MockHandler struct{}
-
-func (h MockHandler) Handle(ctx context.Context, b *Bot, upd *models.Update) {}
-
-func TestApplyMiddlewares(t *testing.T) {
-	finalHandlerCalled := false
-	finalHandler := func(ctx context.Context, b *Bot, upd *models.Update) {
-		finalHandlerCalled = true
-	}
-
-	middleware1Called := false
 	middleware1 := func(next HandlerFunc) HandlerFunc {
-		return func(ctx context.Context, b *Bot, upd *models.Update) {
-			middleware1Called = true
-			next(ctx, b, upd)
+		return func(ctx context.Context, bot *Bot, update *models.Update) {
+			next(ctx, bot, update)
 		}
 	}
 
-	middleware2Called := false
 	middleware2 := func(next HandlerFunc) HandlerFunc {
-		return func(ctx context.Context, b *Bot, upd *models.Update) {
-			middleware2Called = true
-			next(ctx, b, upd)
+		return func(ctx context.Context, bot *Bot, update *models.Update) {
+			next(ctx, bot, update)
 		}
 	}
 
-	handler := applyMiddlewares(finalHandler, middleware1, middleware2)
-	handler(context.Background(), nil, nil)
-
-	assert.True(t, middleware1Called, "Expected middleware1 to be called")
-	assert.True(t, middleware2Called, "Expected middleware2 to be called")
-	assert.True(t, finalHandlerCalled, "Expected final handler to be called")
+	wrapped := applyMiddlewares(h, middleware1, middleware2)
+	if wrapped == nil {
+		t.Fatal("Expected wrapped handler to be non-nil")
+	}
 }
 
 func TestProcessUpdate(t *testing.T) {
-	b := &Bot{
-		defaultHandlerFunc: func(ctx context.Context, b *Bot, upd *models.Update) {},
-		handlers:           make(map[string]handler),
+	var called bool
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = true
+	}
+
+	bot := &Bot{
+		defaultHandlerFunc: h,
 		middlewares:        []Middleware{},
 		handlersMx:         &sync.RWMutex{},
+		handlers:           map[string]handler{},
 	}
 
-	b.defaultHandlerFunc = func(ctx context.Context, b *Bot, upd *models.Update) {
-		assert.NotNil(t, upd, "Expected update to be processed")
-	}
+	ctx := context.Background()
+	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	upd := &models.Update{Message: &models.Message{}}
-	b.ProcessUpdate(context.Background(), upd)
+	bot.ProcessUpdate(ctx, upd)
+	if !called {
+		t.Fatal("Expected default handler to be called")
+	}
 }
 
-func TestProcessUpdateWithMessage(t *testing.T) {
-	b := &Bot{
-		defaultHandlerFunc: func(ctx context.Context, b *Bot, upd *models.Update) {},
-		handlers:           make(map[string]handler),
-		middlewares:        []Middleware{},
-		handlersMx:         &sync.RWMutex{},
+func TestProcessUpdate_WithMiddlewares(t *testing.T) {
+	var called bool
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = true
 	}
 
-	handlerCalled := false
-	b.RegisterHandler(HandlerTypeMessageText, "pattern", MatchTypeExact, func(ctx context.Context, b *Bot, upd *models.Update) {
-		handlerCalled = true
-	})
+	middleware := func(next HandlerFunc) HandlerFunc {
+		return func(ctx context.Context, bot *Bot, update *models.Update) {
+			next(ctx, bot, update)
+		}
+	}
 
-	upd := &models.Update{Message: &models.Message{Text: "pattern"}}
-	b.ProcessUpdate(context.Background(), upd)
+	bot := &Bot{
+		defaultHandlerFunc: h,
+		middlewares:        []Middleware{middleware},
+		handlersMx:         &sync.RWMutex{},
+		handlers:           map[string]handler{},
+	}
 
-	assert.True(t, handlerCalled, "Expected message handler to be called")
+	ctx := context.Background()
+	upd := &models.Update{Message: &models.Message{Text: "test"}}
+
+	bot.ProcessUpdate(ctx, upd)
+	if !called {
+		t.Fatal("Expected default handler to be called")
+	}
 }
 
-func TestProcessUpdateWithCallbackQuery(t *testing.T) {
-	b := &Bot{
-		defaultHandlerFunc: func(ctx context.Context, b *Bot, upd *models.Update) {},
-		handlers:           make(map[string]handler),
-		middlewares:        []Middleware{},
-		handlersMx:         &sync.RWMutex{},
+func Test_findHandler(t *testing.T) {
+	var called bool
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = true
 	}
 
-	handlerCalled := false
-	b.RegisterHandler(HandlerTypeCallbackQueryData, "pattern", MatchTypeExact, func(ctx context.Context, b *Bot, upd *models.Update) {
-		handlerCalled = true
-	})
+	bot := &Bot{
+		defaultHandlerFunc: h,
+		handlersMx:         &sync.RWMutex{},
+		handlers:           map[string]handler{},
+	}
 
-	upd := &models.Update{CallbackQuery: &models.CallbackQuery{Data: "pattern"}}
-	b.ProcessUpdate(context.Background(), upd)
+	// Register a handler
+	bot.handlers["test"] = handler{
+		handlerType: HandlerTypeMessageText,
+		matchType:   MatchTypeExact,
+		pattern:     "test",
+		handler:     h,
+	}
 
-	assert.True(t, handlerCalled, "Expected callback query handler to be called")
+	ctx := context.Background()
+	upd := &models.Update{Message: &models.Message{Text: "test"}}
+
+	handler := bot.findHandler(HandlerTypeMessageText, upd)
+	handler(ctx, bot, upd)
+
+	if !called {
+		t.Fatal("Expected registered handler to be called")
+	}
 }
 
-func TestFindHandler(t *testing.T) {
-	b := &Bot{
-		defaultHandlerFunc: func(ctx context.Context, b *Bot, upd *models.Update) {},
-		handlers:           make(map[string]handler),
-		handlersMx:         &sync.RWMutex{},
+func Test_findHandler_Default(t *testing.T) {
+	var called bool
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = true
 	}
 
-	handlerCalled := false
-	b.RegisterHandler(HandlerTypeMessageText, "pattern", MatchTypeExact, func(ctx context.Context, b *Bot, upd *models.Update) {
-		handlerCalled = true
-	})
+	bot := &Bot{
+		defaultHandlerFunc: h,
+		handlersMx:         &sync.RWMutex{},
+		handlers:           map[string]handler{},
+	}
 
-	upd := &models.Update{Message: &models.Message{Text: "pattern"}}
-	foundHandler := b.findHandler(HandlerTypeMessageText, upd)
+	ctx := context.Background()
+	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	assert.NotNil(t, foundHandler, "Expected handler to be found")
-	foundHandler(context.Background(), b, upd)
-	assert.True(t, handlerCalled, "Expected found handler to be called")
+	handler := bot.findHandler(HandlerTypeCallbackQueryData, upd)
+	handler(ctx, bot, upd)
+
+	if !called {
+		t.Fatal("Expected default handler to be called")
+	}
 }

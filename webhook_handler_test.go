@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/go-telegram/bot/models"
-	"github.com/stretchr/testify/assert"
 )
 
 type mockDebugHandler struct {
@@ -30,15 +29,34 @@ func (h *mockErrorsHandler) Handle(err error) {
 	h.errors = append(h.errors, err)
 }
 
+type errReaderStruct struct {
+	err error
+}
+
+func (e *errReaderStruct) Read(p []byte) (int, error) {
+	return 0, e.err
+}
+
+func (e *errReaderStruct) Close() error {
+	return nil
+}
+
+func errReader(err error) io.ReadCloser {
+	return &errReaderStruct{err: err}
+}
+
 func TestWebhookHandler_Success(t *testing.T) {
+	debugHandler := &mockDebugHandler{}
+	errorsHandler := &mockErrorsHandler{}
+
 	bot := &Bot{
 		updates: make(chan *models.Update, 1),
 		isDebug: true,
 		debugHandler: func(format string, args ...interface{}) {
-			// Mock debug handler
+			debugHandler.Handle(format, args...)
 		},
 		errorsHandler: func(err error) {
-			// Mock error handler
+			errorsHandler.Handle(err)
 		},
 	}
 
@@ -55,17 +73,24 @@ func TestWebhookHandler_Success(t *testing.T) {
 
 	select {
 	case upd := <-bot.updates:
-		assert.Equal(t, update.ID, upd.ID)
+		if upd.ID != update.ID {
+			t.Fatalf("Expected update ID %d, got %d", update.ID, upd.ID)
+		}
 	default:
 		t.Fatal("Expected update to be sent to bot.updates channel")
 	}
 }
 
 func TestWebhookHandler_ReadBodyError(t *testing.T) {
-	var capturedError error
+	debugHandler := &mockDebugHandler{}
+	errorsHandler := &mockErrorsHandler{}
+
 	bot := &Bot{
+		debugHandler: func(format string, args ...interface{}) {
+			debugHandler.Handle(format, args...)
+		},
 		errorsHandler: func(err error) {
-			capturedError = err
+			errorsHandler.Handle(err)
 		},
 	}
 
@@ -75,15 +100,25 @@ func TestWebhookHandler_ReadBodyError(t *testing.T) {
 	handler := bot.WebhookHandler()
 	handler(w, req)
 
-	assert.Error(t, capturedError)
-	assert.Contains(t, capturedError.Error(), "read error")
+	if len(errorsHandler.errors) == 0 {
+		t.Fatal("Expected an error, but none occurred")
+	}
+
+	if capturedError := errorsHandler.errors[0]; capturedError == nil || !containsString(capturedError.Error(), "read error") {
+		t.Fatalf("Expected read body error, got %v", capturedError)
+	}
 }
 
 func TestWebhookHandler_DecodeError(t *testing.T) {
-	var capturedError error
+	debugHandler := &mockDebugHandler{}
+	errorsHandler := &mockErrorsHandler{}
+
 	bot := &Bot{
+		debugHandler: func(format string, args ...interface{}) {
+			debugHandler.Handle(format, args...)
+		},
 		errorsHandler: func(err error) {
-			capturedError = err
+			errorsHandler.Handle(err)
 		},
 	}
 
@@ -94,16 +129,26 @@ func TestWebhookHandler_DecodeError(t *testing.T) {
 	handler := bot.WebhookHandler()
 	handler(w, req)
 
-	assert.Error(t, capturedError)
-	assert.Contains(t, capturedError.Error(), "error decode request body")
+	if len(errorsHandler.errors) == 0 {
+		t.Fatal("Expected an error, but none occurred")
+	}
+
+	if capturedError := errorsHandler.errors[0]; capturedError == nil || !containsString(capturedError.Error(), "error decode request body") {
+		t.Fatalf("Expected decode error, got %v", capturedError)
+	}
 }
 
 func TestWebhookHandler_ContextDone(t *testing.T) {
-	var capturedError error
+	debugHandler := &mockDebugHandler{}
+	errorsHandler := &mockErrorsHandler{}
+
 	bot := &Bot{
 		updates: make(chan *models.Update, 1),
+		debugHandler: func(format string, args ...interface{}) {
+			debugHandler.Handle(format, args...)
+		},
 		errorsHandler: func(err error) {
-			capturedError = err
+			errorsHandler.Handle(err)
 		},
 	}
 
@@ -127,22 +172,15 @@ func TestWebhookHandler_ContextDone(t *testing.T) {
 	default:
 	}
 
-	assert.Error(t, capturedError)
-	assert.Contains(t, capturedError.Error(), "some updates lost, ctx done")
+	if len(errorsHandler.errors) == 0 {
+		t.Fatal("Expected an error, but none occurred")
+	}
+
+	if capturedError := errorsHandler.errors[0]; capturedError == nil || !containsString(capturedError.Error(), "some updates lost, ctx done") {
+		t.Fatalf("Expected context done error, got %v", capturedError)
+	}
 }
 
-func errReader(err error) io.ReadCloser {
-	return &errReaderStruct{err: err}
-}
-
-type errReaderStruct struct {
-	err error
-}
-
-func (e *errReaderStruct) Read(p []byte) (int, error) {
-	return 0, e.err
-}
-
-func (e *errReaderStruct) Close() error {
-	return nil
+func containsString(s, substr string) bool {
+	return bytes.Contains([]byte(s), []byte(substr))
 }
