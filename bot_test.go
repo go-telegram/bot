@@ -164,7 +164,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestBot_StartWebhook(t *testing.T) {
+func TestBot_StartWebhookWithCorrectSecret(t *testing.T) {
 	s := newServerMock("xxx")
 	defer s.Close()
 
@@ -209,6 +209,103 @@ func TestBot_StartWebhook(t *testing.T) {
 	mx.Lock()
 	if !called {
 		t.Errorf("not called default handler")
+	}
+	mx.Unlock()
+}
+
+func TestBot_StartWebhookWithNoSecret(t *testing.T) {
+	s := newServerMock("xxx")
+	defer s.Close()
+
+	opts := []Option{WithServerURL(s.URL())}
+	b, err := New("xxx", opts...)
+	if err != nil {
+		t.Fatalf("unexpected error %q", err)
+	}
+
+	mx := sync.Mutex{}
+	var called bool
+
+	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
+		if update.Message.ID != 1 {
+			t.Errorf("unexpected message id")
+		}
+		mx.Lock()
+		called = true
+		mx.Unlock()
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go b.StartWebhook(ctx)
+
+	time.Sleep(time.Millisecond * 100)
+
+	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
+	if errReq != nil {
+		t.Error(errReq)
+		return
+	}
+
+	b.WebhookHandler().ServeHTTP(nil, req)
+
+	cancel()
+
+	time.Sleep(time.Millisecond * 100)
+
+	mx.Lock()
+	if !called {
+		t.Errorf("not called default handler")
+	}
+	mx.Unlock()
+}
+
+func TestBot_StartWebhookWithWrongSecret(t *testing.T) {
+	s := newServerMock("xxx")
+	defer s.Close()
+
+	opts := []Option{WithServerURL(s.URL()), WithWebhookSecretToken("zzzz")}
+	b, err := New("xxx", opts...)
+	if err != nil {
+		t.Fatalf("unexpected error %q", err)
+	}
+
+	mx := sync.Mutex{}
+	var called bool
+
+	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
+		if update.Message.ID != 1 {
+			t.Errorf("unexpected message id")
+		}
+		mx.Lock()
+		called = true
+		mx.Unlock()
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go b.StartWebhook(ctx)
+
+	time.Sleep(time.Millisecond * 100)
+
+	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
+	if errReq != nil {
+		t.Error(errReq)
+		return
+	}
+	req.Header.Set("X-Telegram-Bot-Api-Secret-Token", "wrong_secret")
+
+	b.WebhookHandler().ServeHTTP(nil, req)
+
+	cancel()
+
+	time.Sleep(time.Millisecond * 100)
+
+	mx.Lock()
+	if called {
+		t.Errorf("not supposed to call the default handler with wrong token")
 	}
 	mx.Unlock()
 }
