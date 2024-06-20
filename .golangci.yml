@@ -1,0 +1,37 @@
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - gocritic
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  gocritic:
+    check:
+      - range-loop-ref
+      - ifElseChain
+      - typeSwitchVar
+      - wrapperFunc
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-use-default: false
+  include:
+    - EXC0001
+
+exclude-rules:
+  - path: _test\.go
+    linters:
+      - errcheck
