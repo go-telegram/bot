@@ -170,6 +170,7 @@ func TestWebhookHandler_ContextDone(t *testing.T) {
 	case <-bot.updates:
 		t.Fatal("Did not expect update to be sent to bot.updates channel")
 	default:
+		// Expected outcome, context was cancelled before sending the update
 	}
 
 	if len(errorsHandler.errors) == 0 {
