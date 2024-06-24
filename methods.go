@@ -811,6 +811,13 @@ func (b *Bot) AnswerPreCheckoutQuery(ctx context.Context, params *AnswerPreCheck
 	return result, err
 }
 
+// GetStarTransactions https://core.telegram.org/bots/api#getstartransactions
+func (b *Bot) GetStarTransactions(ctx context.Context, params *GetStarTransactionsParams) (*models.StarTransactions, error) {
+	result := models.StarTransactions{}
+	err := b.rawRequest(ctx, "getStarTransactions", params, &result)
+	return &result, err
+}
+
 // RefundStarPayment https://core.telegram.org/bots/api#refundstarpayment
 func (b *Bot) RefundStarPayment(ctx context.Context, params *RefundStarPaymentParams) (bool, error) {
 	var result bool
