@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.0 (2024-06-24)
+
+- support API v7.5
+
 ## v1.4.1 (2024-06-19)
 
 - fix: getGameHighScores returns an array of high scores instead of a single object (#94)  
