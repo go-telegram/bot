@@ -52,7 +52,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 You can find more examples in the [examples](examples) folder.
 
-For test examples, you should set environment variable `EXAMPLE_TELEGRAM_BOT_TOKEN` to your bot token.
+To run the examples, set the `EXAMPLE_TELEGRAM_BOT_TOKEN` environment variable to your bot token.
 
 ## Getting started
 
@@ -75,7 +75,7 @@ b.Start(context.TODO())
 On create bot will call the `getMe` method (with 5 sec timeout). And returns error on fail.
 If you want to change this timeout, use option `bot.WithCheckInitTimeout`
 
-You can to define default handler for the bot:
+You can define a default handler for the bot:
 
 ```go
 b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", bot.WithDefaultHandler(handler))
@@ -87,8 +87,8 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 ## Webhooks
 
-If you want to use webhooks, instead `bot.Start` you should use `bot.StartWebhook` method for start the bot.
-Also, you should to use `bot.WebhookHandler()` method as http handler for your server.
+If you want to use webhooks, instead of using `bot.Start`, you should use the `bot.StartWebhook` method to start the bot.
+Also, you should use `bot.WebhookHandler()` method as HTTP handler for your server.
 
 ```go
 func main() {
@@ -239,7 +239,7 @@ b.RegisterHandlerMatchFunc(bot.HandlerTypeMessageText, matchFunc, myHandler)
 
 For some methods, like `SendPhoto`, `SendAudio` etc, you can send file by file path or file contents.
 
-For send file by URL or FileID, you can use `&models.InputFileString{Data: string}`:
+To send a file by URL or FileID, you can use `&models.InputFileString{Data: string}`:
 
 ```go
 // file id of uploaded image 
@@ -257,7 +257,7 @@ bot.SendPhoto(ctx, params)
 
 [Demo in examples](examples/send_photo/main.go)
 
-For send image file by file contents, you can use `&models.InputFileUpload{Filename: string, Data: io.Reader}`:
+To send an image file by its contents, you can use `&models.InputFileUpload{Filename: string, Data: io.Reader}`:
 
 ```go
 fileContent, _ := os.ReadFile("/path/to/image.png")
@@ -283,7 +283,7 @@ For methods like `SendMediaGroup` or `EditMessageMedia` you can send media by fi
 If you want to use `attach://` format, you should to define `MediaAttachment` field with file content reader.
 
 ```go
-fileConetent, _ := os.ReadFile("/path/to/image.png")
+fileContent, _ := os.ReadFile("/path/to/image.png")
 
 media1 := &models.InputMediaPhoto{
 	Media: "https://telegram.org/img/t_logo.png",
@@ -292,7 +292,7 @@ media1 := &models.InputMediaPhoto{
 media2 := &models.InputMediaPhoto{
 	Media: "attach://image.png", 
 	Caption: "2",
-	MediaAttachment: bytes.NewReader(fileConetent),
+	MediaAttachment: bytes.NewReader(fileContent),
 }
 
 params := &bot.SendMediaGroupParams{
@@ -324,7 +324,7 @@ Returns fast random a-zA-Z string with n length
 
 ### `True() bool`, `False() bool`
 
-Allows you to define *bool values for params, which require `*bool`, like `SendPoolParams`
+Allows you to define `*bool` values for params, which require `*bool`, like `SendPollParams`
 
 ```go
 p := &bot.SendPollParams{
@@ -334,7 +334,7 @@ p := &bot.SendPollParams{
     IsAnonymous: bot.False(),
 }
 
-b.SendPool(ctx, p)
+b.SendPoll(ctx, p)
 ```
 
 ### `FileDownloadLink(f *models.File) string`
