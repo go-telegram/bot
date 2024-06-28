@@ -11,7 +11,7 @@ import (
 
 func assertFormData(t *testing.T, data, expect string) {
 	if !strings.Contains(expect, "\r\n") {
-		expect = strings.Replace(expect, "\n", "\r\n", -1)
+		expect = strings.ReplaceAll(expect, "\n", "\r\n")
 	}
 
 	if data != expect {
@@ -60,7 +60,9 @@ func Test_buildRequestForm(t *testing.T) {
 		t.Error(errBuild)
 		return
 	}
-	form.Close()
+	if err := form.Close(); err != nil {
+		t.Errorf("failed to close form: %v", err)
+	}
 
 	expect := `--XXX
 Content-Disposition: form-data; name="string"
