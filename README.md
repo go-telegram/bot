@@ -97,6 +97,7 @@ func main() {
 
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
+		bot.WithWebhookSecretToken(os.Getenv("EXAMPLE_TELEGRAM_WEBHOOK_SECRET_TOKEN"))
 	}
 
 	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
@@ -181,6 +182,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithSkipGetMe()` - skip call GetMe on bot init
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
 - `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
+- `WithWebhookSecretToken(webhookSecretToken string)` - set X-Telegram-Bot-Api-Secret-Token header sent from telegram servers to confirm validity of update
 
 ## Message.Text and CallbackQuery.Data handlers
 

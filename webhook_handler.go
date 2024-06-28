@@ -10,6 +10,11 @@ import (
 
 func (b *Bot) WebhookHandler() http.HandlerFunc {
 	return func(_ http.ResponseWriter, req *http.Request) {
+		if b.webhookSecretToken != "" && req.Header.Get("X-Telegram-Bot-Api-Secret-Token") != b.webhookSecretToken {
+			b.error("invalid webhook secret token received from update")
+			return
+		}
+
 		body, errReadBody := io.ReadAll(req.Body)
 		if errReadBody != nil {
 			b.error("error read request body, %w", errReadBody)

@@ -30,10 +30,11 @@ type MatchFunc func(update *models.Update) bool
 
 // Bot represents Telegram Bot main object
 type Bot struct {
-	url         string
-	token       string
-	pollTimeout time.Duration
-	skipGetMe   bool
+	url                string
+	token              string
+	pollTimeout        time.Duration
+	skipGetMe          bool
+	webhookSecretToken string
 
 	defaultHandlerFunc HandlerFunc
 
