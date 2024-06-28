@@ -37,7 +37,13 @@ func (b *Bot) WebhookHandler() http.HandlerFunc {
 		case <-req.Context().Done():
 			b.error("some updates lost, ctx done")
 			return
+		default:
+		}
+
+		select {
 		case b.updates <- update:
+		case <-req.Context().Done():
+			b.error("failed to send update, ctx done")
 		}
 	}
 }
