@@ -46,7 +46,11 @@ func (s *serverMock) handler(rw http.ResponseWriter, req *http.Request) {
 	if errReadBody != nil {
 		panic(errReadBody)
 	}
-	defer req.Body.Close()
+	defer func() {
+		if err := req.Body.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	hook, okHook := s.hooks[req.URL.String()]
 	if okHook {
