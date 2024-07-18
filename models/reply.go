@@ -22,6 +22,7 @@ type ExternalReplyInfo struct {
 	Animation          *Animation          `json:"animation,omitempty"`
 	Audio              *Audio              `json:"audio,omitempty"`
 	Document           *Document           `json:"document,omitempty"`
+	PaidMedia          *PaidMediaInfo      `json:"paid_media,omitempty"`
 	Photo              []PhotoSize         `json:"photo,omitempty"`
 	Sticker            *Sticker            `json:"sticker,omitempty"`
 	Story              *Story              `json:"story,omitempty"`
