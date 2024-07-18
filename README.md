@@ -6,7 +6,7 @@
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
-> Supports Bot API version: [7.5](https://core.telegram.org/bots/api#june-18-2024) from June 18, 2024
+> Supports Bot API version: [7.7](https://core.telegram.org/bots/api#july-7-2024) from July 7, 2024
 
 It's a Go zero-dependencies telegram bot framework
 
@@ -343,7 +343,7 @@ b.SendPoll(ctx, p)
 
 Return file download link after call method `GetFile`
 
-See [documentation(https://core.telegram.org/bots/api#getfile)
+See [documentation](https://core.telegram.org/bots/api#getfile)
 
 ## Errors
 

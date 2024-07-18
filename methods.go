@@ -132,6 +132,13 @@ func (b *Bot) SendVideoNote(ctx context.Context, params *SendVideoNoteParams) (*
 	return result, err
 }
 
+// SendPaidMedia https://core.telegram.org/bots/api#sendpaidmedia
+func (b *Bot) SendPaidMedia(ctx context.Context, params *SendPaidMediaParams) (*models.Message, error) {
+	var result models.Message
+	err := b.rawRequest(ctx, "sendPaidMedia", params, &result)
+	return &result, err
+}
+
 // SendMediaGroup https://core.telegram.org/bots/api#sendmediagroup
 func (b *Bot) SendMediaGroup(ctx context.Context, params *SendMediaGroupParams) ([]*models.Message, error) {
 	var result []*models.Message

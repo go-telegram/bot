@@ -99,6 +99,7 @@ type Message struct {
 	Animation                     *Animation                     `json:"animation,omitempty"`
 	Audio                         *Audio                         `json:"audio,omitempty"`
 	Document                      *Document                      `json:"document,omitempty"`
+	PaidMedia                     *PaidMediaInfo                 `json:"paid_media,omitempty"`
 	Photo                         []PhotoSize                    `json:"photo,omitempty"`
 	Sticker                       *Sticker                       `json:"sticker,omitempty"`
 	Story                         *Story                         `json:"story,omitempty"`
@@ -129,6 +130,7 @@ type Message struct {
 	PinnedMessage                 MaybeInaccessibleMessage       `json:"pinned_message,omitempty"`
 	Invoice                       *Invoice                       `json:"invoice,omitempty"`
 	SuccessfulPayment             *SuccessfulPayment             `json:"successful_payment,omitempty"`
+	RefundedPayment               *RefundedPayment               `json:"refunded_payment,omitempty"`
 	UsersShared                   *UsersShared                   `json:"users_shared,omitempty"`
 	ChatShared                    *ChatShared                    `json:"chat_shared,omitempty"`
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`

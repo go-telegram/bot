@@ -215,6 +215,21 @@ type SendVideoNoteParams struct {
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
 
+// SendPaidMediaParams https://core.telegram.org/bots/api#sendpaidmedia
+type SendPaidMediaParams struct {
+	ChatID                any                     `json:"chat_id"`
+	StarCount             int                     `json:"star_count"`
+	Media                 []models.InputPaidMedia `json:"media"`
+	Caption               string                  `json:"caption,omitempty"`
+	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
+	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                    `json:"show_caption_above_media,omitempty"`
+	DisableNotification   bool                    `json:"disable_notification,omitempty"`
+	ProtectContent        bool                    `json:"protect_content,omitempty"`
+	ReplyParameters       *models.ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup           models.ReplyMarkup      `json:"reply_markup,omitempty"`
+}
+
 // SendMediaGroupParams https://core.telegram.org/bots/api#sendmediagroup
 type SendMediaGroupParams struct {
 	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`

@@ -57,8 +57,9 @@ type TransactionPartnerFragment struct {
 
 // TransactionPartnerUser https://core.telegram.org/bots/api#transactionpartneruser
 type TransactionPartnerUser struct {
-	Type TransactionPartnerType `json:"type"`
-	User User                   `json:"user"`
+	Type           TransactionPartnerType `json:"type"`
+	User           User                   `json:"user"`
+	InvoicePayload string                 `json:"invoice_payload,omitempty"`
 }
 
 // TransactionPartnerOther https://core.telegram.org/bots/api#transactionpartnerother
@@ -139,4 +140,9 @@ type StarTransaction struct {
 // StarTransactions https://core.telegram.org/bots/api#startransactions
 type StarTransactions struct {
 	Transactions []StarTransaction `json:"transactions"`
+}
+
+// TransactionPartnerTelegramAds https://core.telegram.org/bots/api#transactionpartnertelegramads
+type TransactionPartnerTelegramAds struct {
+	Type string `json:"type"`
 }
