@@ -11,12 +11,18 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+type inputMedia interface {
+	MarshalInputMedia() ([]byte, error)
+	Attachment() io.Reader
+	GetMedia() string
+}
+
 type customMarshal interface {
 	MarshalCustom() ([]byte, error)
 }
 
 var customMarshalInterface = reflect.TypeOf(new(customMarshal)).Elem()
-var inputMediaInterface = reflect.TypeOf(new(models.InputMedia)).Elem()
+var inputMediaInterface = reflect.TypeOf(new(inputMedia)).Elem()
 
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file. Also, for InputMedia attachments
@@ -46,7 +52,7 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 			continue
 		}
 		if v.Field(i).Type().Implements(inputMediaInterface) {
-			err := addFormFieldInputMedia(form, fieldName, v.Field(i).Interface().(models.InputMedia))
+			err := addFormFieldInputMedia(form, fieldName, v.Field(i).Interface().(inputMedia))
 			if err != nil {
 				return 0, err
 			}
@@ -64,7 +70,17 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 		case *models.InputFileString:
 			err = addFormFieldString(form, fieldName, vv.Data)
 		case []models.InputMedia:
-			err = addFormFieldInputMediaSlice(form, fieldName, vv)
+			var ss []inputMedia
+			for _, m := range vv {
+				ss = append(ss, m)
+			}
+			err = addFormFieldInputMediaSlice(form, fieldName, ss)
+		case []models.InputPaidMedia:
+			var ss []inputMedia
+			for _, m := range vv {
+				ss = append(ss, m)
+			}
+			err = addFormFieldInputMediaSlice(form, fieldName, ss)
 		case []models.InlineQueryResult:
 			err = addFormFieldInlineQueryResultSlice(form, fieldName, vv)
 		default:
@@ -89,7 +105,7 @@ func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value
 	return errCopy
 }
 
-func addFormFieldInputMediaItem(form *multipart.Writer, value models.InputMedia) ([]byte, error) {
+func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byte, error) {
 	if strings.HasPrefix(value.GetMedia(), "attach://") {
 		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
 		mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
@@ -117,7 +133,7 @@ func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value c
 	return errCopy
 }
 
-func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value models.InputMedia) error {
+func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value inputMedia) error {
 	line, err := addFormFieldInputMediaItem(form, value)
 	if err != nil {
 		return err
@@ -131,7 +147,7 @@ func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value mode
 	return errCopy
 }
 
-func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value []models.InputMedia) error {
+func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value []inputMedia) error {
 	var lines []string
 	for _, media := range value {
 		line, err := addFormFieldInputMediaItem(form, media)
