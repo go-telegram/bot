@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.0 (2024-07-18)
+
+- support API v7.6, 7.7
+- add const `models.ParseModeMarkdownV1`
+
 ## v1.5.0 (2024-06-24)
 
 - support API v7.5
