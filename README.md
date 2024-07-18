@@ -343,7 +343,7 @@ b.SendPoll(ctx, p)
 
 Return file download link after call method `GetFile`
 
-See [documentation(https://core.telegram.org/bots/api#getfile)
+See [documentation](https://core.telegram.org/bots/api#getfile)
 
 ## Errors
 
