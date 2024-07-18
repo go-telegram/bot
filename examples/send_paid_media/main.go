@@ -46,18 +46,15 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 	media1 := &models.InputPaidMediaPhoto{
 		Media: "https://telegram.org/img/t_logo.png",
-		// Caption: "Telegram Logo",
 	}
 
 	media2 := &models.InputPaidMediaPhoto{
-		Media: "attach://facebook.png",
-		// Caption:         "Facebook Logo",
+		Media:           "attach://facebook.png",
 		MediaAttachment: bytes.NewReader(fileDataFacebook),
 	}
 
 	media3 := &models.InputPaidMediaPhoto{
-		Media: "attach://youtube.png",
-		// Caption:         "Youtube Logo",
+		Media:           "attach://youtube.png",
 		MediaAttachment: bytes.NewReader(fileDataYoutube),
 	}
 
