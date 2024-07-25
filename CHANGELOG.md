@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.1 (2024-07-25)
+
+- add ValidateWebappRequest func for validate MiniApp requests
+
 ## v1.6.0 (2024-07-18)
 
 - support API v7.6, 7.7
