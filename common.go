@@ -1,10 +1,18 @@
 package bot
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/json"
+	"fmt"
 	"math/rand"
+	"net/url"
+	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/go-telegram/bot/models"
 )
 
 // escape special symbols in text for MarkdownV2 parse mode
@@ -79,4 +87,45 @@ func RandomString(n int) string {
 	}
 
 	return string(b)
+}
+
+// ValidateWebappRequest validates request from webapp
+func ValidateWebappRequest(values url.Values, token string) (user *models.User, ok bool) {
+	h := values.Get("hash")
+	values.Del("hash")
+
+	var vals []string
+
+	var u models.User
+
+	for k, v := range values {
+		vv, _ := url.QueryUnescape(v[0])
+		vals = append(vals, k+"="+vv)
+		if k == "user" {
+			errDecodeUser := json.Unmarshal([]byte(vv), &u)
+			if errDecodeUser != nil {
+				return nil, false
+			}
+		}
+	}
+
+	sort.Slice(vals, func(i, j int) bool {
+		return vals[i] < vals[j]
+	})
+
+	hmac1 := hmac.New(sha256.New, []byte("WebAppData"))
+	hmac1.Write([]byte(token))
+	r1 := hmac1.Sum(nil)
+
+	data := []byte(strings.Join(vals, "\n"))
+
+	hmac2 := hmac.New(sha256.New, r1)
+	hmac2.Write(data)
+	r2 := hmac2.Sum(nil)
+
+	if h != fmt.Sprintf("%x", r2) {
+		return nil, false
+	}
+
+	return &u, true
 }

@@ -339,6 +339,23 @@ p := &bot.SendPollParams{
 b.SendPoll(ctx, p)
 ```
 
+### `ValidateWebappRequest(values url.Values, token string) (user *models.User, ok bool)`
+
+Validate request from Telegram Webapp
+
+https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+
+```go
+// get url values from request
+values := req.URL.Query()
+
+user, ok := bot.ValidateWebappRequest(values, os.Getenv("TELEGRAM_BOT_TOKEN"))
+if !ok {
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+}
+```
+
 ### `FileDownloadLink(f *models.File) string`
 
 Return file download link after call method `GetFile`
