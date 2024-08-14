@@ -300,6 +300,20 @@ func (b *Bot) EditChatInviteLink(ctx context.Context, params *EditChatInviteLink
 	return result, err
 }
 
+// CreateChatSubscriptionInviteLink https://core.telegram.org/bots/api#createchatsubscriptioninvitelink
+func (b *Bot) CreateChatSubscriptionInviteLink(ctx context.Context, params *CreateChatSubscriptionInviteLinkParams) (*models.ChatInviteLink, error) {
+	result := &models.ChatInviteLink{}
+	err := b.rawRequest(ctx, "createChatSubscriptionInviteLink", params, &result)
+	return result, err
+}
+
+// EditChatSubscriptionInviteLink https://core.telegram.org/bots/api#editchatsubscriptioninvitelink
+func (b *Bot) EditChatSubscriptionInviteLink(ctx context.Context, params *EditChatSubscriptionInviteLinkParams) (*models.ChatInviteLink, error) {
+	result := &models.ChatInviteLink{}
+	err := b.rawRequest(ctx, "editChatSubscriptionInviteLink", params, &result)
+	return result, err
+}
+
 // RevokeChatInviteLink https://core.telegram.org/bots/api#revokechatinvitelink
 func (b *Bot) RevokeChatInviteLink(ctx context.Context, params *RevokeChatInviteLinkParams) (*models.ChatInviteLink, error) {
 	result := &models.ChatInviteLink{}

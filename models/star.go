@@ -60,6 +60,7 @@ type TransactionPartnerUser struct {
 	Type           TransactionPartnerType `json:"type"`
 	User           User                   `json:"user"`
 	InvoicePayload string                 `json:"invoice_payload,omitempty"`
+	PaidMedia      []*PaidMedia           `json:"paid_media,omitempty"`
 }
 
 // TransactionPartnerOther https://core.telegram.org/bots/api#transactionpartnerother
