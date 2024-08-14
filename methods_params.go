@@ -217,6 +217,7 @@ type SendVideoNoteParams struct {
 
 // SendPaidMediaParams https://core.telegram.org/bots/api#sendpaidmedia
 type SendPaidMediaParams struct {
+	BusinessConnectionID  string                  `json:"business_connection_id,omitempty"`
 	ChatID                any                     `json:"chat_id"`
 	StarCount             int                     `json:"star_count"`
 	Media                 []models.InputPaidMedia `json:"media"`
@@ -464,6 +465,19 @@ type EditChatInviteLinkParams struct {
 	ExpireDate         int    `json:"expire_date,omitempty"`
 	MemberLimit        int    `json:"member_limit,omitempty"`
 	CreatesJoinRequest bool   `json:"creates_join_request,omitempty"`
+}
+
+type CreateChatSubscriptionInviteLinkParams struct {
+	ChatID             any    `json:"chat_id"`
+	Name               string `json:"name,omitempty"`
+	SubscriptionPeriod int    `json:"subscription_period"`
+	SubscriptionPrice  int    `json:"subscription_price"`
+}
+
+type EditChatSubscriptionInviteLinkParams struct {
+	ChatID     any    `json:"chat_id"`
+	InviteLink string `json:"invite_link"`
+	Name       string `json:"name,omitempty"`
 }
 
 type RevokeChatInviteLinkParams struct {

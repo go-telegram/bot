@@ -136,8 +136,9 @@ type ChatMemberAdministrator struct {
 
 // ChatMemberMember https://core.telegram.org/bots/api#chatmembermember
 type ChatMemberMember struct {
-	Status ChatMemberType `json:"status"` // The member's status in the chat, always “member”
-	User   *User          `json:"user"`
+	Status    ChatMemberType `json:"status"` // The member's status in the chat, always “member”
+	User      *User          `json:"user"`
+	UntilDate int            `json:"until_date,omitempty"`
 }
 
 // ChatMemberRestricted https://core.telegram.org/bots/api#chatmemberrestricted

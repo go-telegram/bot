@@ -45,3 +45,21 @@ func TestUnmarshalReactionType_custom_emoji(t *testing.T) {
 		t.Fatal("wrong custom emoji id")
 	}
 }
+
+func TestUnmarshalReactionType_paid(t *testing.T) {
+	src := `{"type":"paid"}`
+
+	var rt ReactionType
+	err := rt.UnmarshalJSON([]byte(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if rt.Type != ReactionTypeTypePaid {
+		t.Fatal("wrong type")
+	}
+
+	if rt.ReactionTypePaid == nil {
+		t.Fatal("ReactionTypePaid is nil")
+	}
+}

@@ -11,6 +11,7 @@ type ReactionTypeType string
 const (
 	ReactionTypeTypeEmoji       ReactionTypeType = "emoji"
 	ReactionTypeTypeCustomEmoji ReactionTypeType = "custom_emoji"
+	ReactionTypeTypePaid        ReactionTypeType = "paid"
 )
 
 // ReactionType https://core.telegram.org/bots/api#reactiontype
@@ -19,6 +20,7 @@ type ReactionType struct {
 
 	ReactionTypeEmoji       *ReactionTypeEmoji
 	ReactionTypeCustomEmoji *ReactionTypeCustomEmoji
+	ReactionTypePaid        *ReactionTypePaid
 }
 
 func (rt *ReactionType) MarshalJSON() ([]byte, error) {
@@ -52,6 +54,10 @@ func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 		rt.Type = ReactionTypeTypeCustomEmoji
 		rt.ReactionTypeCustomEmoji = &ReactionTypeCustomEmoji{}
 		return json.Unmarshal(data, rt.ReactionTypeCustomEmoji)
+	case "paid":
+		rt.Type = ReactionTypeTypePaid
+		rt.ReactionTypePaid = &ReactionTypePaid{}
+		return json.Unmarshal(data, rt.ReactionTypePaid)
 	}
 
 	return fmt.Errorf("unsupported ReactionType type")
@@ -67,6 +73,11 @@ type ReactionTypeEmoji struct {
 type ReactionTypeCustomEmoji struct {
 	Type          ReactionTypeType `json:"type"`
 	CustomEmojiID string           `json:"custom_emoji_id"`
+}
+
+// ReactionTypePaid https://core.telegram.org/bots/api#reactiontypepaid
+type ReactionTypePaid struct {
+	Type string `json:"type"`
 }
 
 // MessageReactionUpdated https://core.telegram.org/bots/api#messagereactionupdated
