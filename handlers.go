@@ -63,7 +63,7 @@ func (h handler) match(update *models.Update) bool {
 	return false
 }
 
-func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc) string {
+func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
@@ -72,7 +72,7 @@ func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc) strin
 	h := handler{
 		matchType: matchTypeFunc,
 		matchFunc: matchFunc,
-		handler:   f,
+		handler:   applyMiddlewares(f, m...),
 	}
 
 	b.handlers[id] = h
@@ -80,7 +80,7 @@ func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc) strin
 	return id
 }
 
-func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc) string {
+func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
@@ -90,7 +90,7 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 		handlerType: handlerType,
 		matchType:   matchTypeRegexp,
 		re:          re,
-		handler:     f,
+		handler:     applyMiddlewares(f, m...),
 	}
 
 	b.handlers[id] = h
@@ -98,7 +98,7 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 	return id
 }
 
-func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc) string {
+func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
@@ -108,7 +108,7 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 		handlerType: handlerType,
 		matchType:   matchType,
 		pattern:     pattern,
-		handler:     f,
+		handler:     applyMiddlewares(f, m...),
 	}
 
 	b.handlers[id] = h
