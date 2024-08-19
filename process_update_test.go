@@ -79,6 +79,35 @@ func TestProcessUpdate_WithMiddlewares(t *testing.T) {
 	}
 }
 
+func TestProcessUpdate_WithMatchTypeFunc(t *testing.T) {
+	var called string
+	h1 := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = "h1"
+	}
+	h2 := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = "h2"
+	}
+	m := func(update *models.Update) bool {
+		return update.CallbackQuery.GameShortName == "game"
+	}
+
+	bot := &Bot{
+		defaultHandlerFunc: h1,
+		handlersMx:         &sync.RWMutex{},
+		handlers:           map[string]handler{},
+	}
+
+	bot.RegisterHandlerMatchFunc(m, h2)
+
+	ctx := context.Background()
+	upd := &models.Update{ID: 42, CallbackQuery: &models.CallbackQuery{ID: "test", GameShortName: "game"}}
+
+	bot.ProcessUpdate(ctx, upd)
+	if called != "h2" {
+		t.Fatalf("Expected h2 handler to be called but %s handler was called", called)
+	}
+}
+
 func Test_findHandler(t *testing.T) {
 	var called bool
 	h := func(ctx context.Context, bot *Bot, update *models.Update) {
@@ -102,7 +131,7 @@ func Test_findHandler(t *testing.T) {
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	handler := bot.findHandler(HandlerTypeMessageText, upd)
+	handler := bot.findHandler(upd)
 	handler(ctx, bot, upd)
 
 	if !called {
@@ -125,7 +154,7 @@ func Test_findHandler_Default(t *testing.T) {
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	handler := bot.findHandler(HandlerTypeCallbackQueryData, upd)
+	handler := bot.findHandler(upd)
 	handler(ctx, bot, upd)
 
 	if !called {
