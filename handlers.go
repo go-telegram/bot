@@ -12,6 +12,7 @@ type HandlerType int
 const (
 	HandlerTypeMessageText HandlerType = iota
 	HandlerTypeCallbackQueryData
+	HandlerTypeCallbackQueryGameShortName
 )
 
 type MatchType int
@@ -46,6 +47,8 @@ func (h handler) match(update *models.Update) bool {
 		data = update.Message.Text
 	case HandlerTypeCallbackQueryData:
 		data = update.CallbackQuery.Data
+	case HandlerTypeCallbackQueryGameShortName:
+		data = update.CallbackQuery.GameShortName
 	}
 
 	if h.matchType == MatchTypeExact {
