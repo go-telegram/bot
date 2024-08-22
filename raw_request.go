@@ -48,7 +48,11 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		}
 	}
 
-	u := b.url + "/bot" + b.token + "/" + method
+	u := b.url + "/bot" + b.token + "/"
+	if b.testEnvironment {
+		u += "test/"
+	}
+	u += method
 
 	if b.isDebug && strings.ToLower(method) != "getupdates" {
 		requestDebugData, _ := json.Marshal(params)

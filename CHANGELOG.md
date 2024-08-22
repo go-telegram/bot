@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.1 (2024-08-22)
+
+- add option `UseTestEnvironment` for use test environment in API requests
+
 ## v1.7.0 (2024-08-14)
 
 - support API v7.9
