@@ -183,6 +183,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
 - `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
 - `WithWebhookSecretToken(webhookSecretToken string)` - set X-Telegram-Bot-Api-Secret-Token header sent from telegram servers to confirm validity of update
+- `UseTestEnvironment()` - use test environment
 
 ## Message.Text and CallbackQuery.Data handlers
 
