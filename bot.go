@@ -16,6 +16,7 @@ const (
 	defaultPollTimeout      = time.Minute
 	defaultUpdatesChanCap   = 1024
 	defaultCheckInitTimeout = time.Second * 5
+	defaultWorkers          = 1
 )
 
 type HttpClient interface {
@@ -36,6 +37,7 @@ type Bot struct {
 	skipGetMe          bool
 	webhookSecretToken string
 	testEnvironment    bool
+	workers            int
 
 	defaultHandlerFunc HandlerFunc
 
@@ -79,6 +81,7 @@ func New(token string, options ...Option) (*Bot, error) {
 		errorsHandler:      defaultErrorsHandler,
 		debugHandler:       defaultDebugHandler,
 		checkInitTimeout:   defaultCheckInitTimeout,
+		workers:            defaultWorkers,
 
 		updates: make(chan *models.Update, defaultUpdatesChanCap),
 	}
@@ -104,8 +107,10 @@ func New(token string, options ...Option) (*Bot, error) {
 func (b *Bot) StartWebhook(ctx context.Context) {
 	wg := &sync.WaitGroup{}
 
-	wg.Add(1)
-	go b.waitUpdates(ctx, wg)
+	wg.Add(b.workers)
+	for i := 0; i < b.workers; i++ {
+		go b.waitUpdates(ctx, wg)
+	}
 
 	wg.Wait()
 }
@@ -114,9 +119,13 @@ func (b *Bot) StartWebhook(ctx context.Context) {
 func (b *Bot) Start(ctx context.Context) {
 	wg := &sync.WaitGroup{}
 
-	wg.Add(2)
-	go b.waitUpdates(ctx, wg)
+	wg.Add(1)
 	go b.getUpdates(ctx, wg)
+
+	wg.Add(b.workers)
+	for i := 0; i < b.workers; i++ {
+		go b.waitUpdates(ctx, wg)
+	}
 
 	wg.Wait()
 }
