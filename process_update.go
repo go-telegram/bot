@@ -26,24 +26,22 @@ func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 	}()
 
 	if upd.Message != nil {
-		h = b.findHandler(HandlerTypeMessageText, upd)
+		h = b.findHandler(upd)
 		return
 	}
 	if upd.CallbackQuery != nil {
-		h = b.findHandler(HandlerTypeCallbackQueryData, upd)
+		h = b.findHandler(upd)
 		return
 	}
 }
 
-func (b *Bot) findHandler(handlerType HandlerType, upd *models.Update) HandlerFunc {
+func (b *Bot) findHandler(upd *models.Update) HandlerFunc {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
 
 	for _, h := range b.handlers {
-		if h.handlerType == handlerType {
-			if h.match(upd) {
-				return h.handler
-			}
+		if h.match(upd) {
+			return h.handler
 		}
 	}
 
