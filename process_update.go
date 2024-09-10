@@ -25,14 +25,7 @@ func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 		applyMiddlewares(h, b.middlewares...)(ctx, b, upd)
 	}()
 
-	if upd.Message != nil {
-		h = b.findHandler(upd)
-		return
-	}
-	if upd.CallbackQuery != nil {
-		h = b.findHandler(upd)
-		return
-	}
+	h = b.findHandler(upd)
 }
 
 func (b *Bot) findHandler(upd *models.Update) HandlerFunc {
