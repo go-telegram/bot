@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.8.0 (2024-09-13)
+
+- support API v7.10
+- change type for field Type in models.Chat and models.ChatFullInfo from `string` to `models.ChatType`
+- add consts for ChatType
+  - models.ChatTypePrivate
+  - models.ChatTypeGroup
+  - models.ChatTypeSupergroup
+  - models.ChatTypeChannel
+
+
 ## v1.7.3 (2024-09-10)
 
 - Fix findHandler behavior

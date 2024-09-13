@@ -221,6 +221,7 @@ type SendPaidMediaParams struct {
 	ChatID                any                     `json:"chat_id"`
 	StarCount             int                     `json:"star_count"`
 	Media                 []models.InputPaidMedia `json:"media"`
+	Payload               string                  `json:"payload,omitempty"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`

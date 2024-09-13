@@ -80,21 +80,30 @@ type Birthdate struct {
 	Year  int `json:"year,omitempty"`
 }
 
+type ChatType string
+
+const (
+	ChatTypePrivate    ChatType = "private"
+	ChatTypeGroup      ChatType = "group"
+	ChatTypeSupergroup ChatType = "supergroup"
+	ChatTypeChannel    ChatType = "channel"
+)
+
 // Chat https://core.telegram.org/bots/api#chat
 type Chat struct {
-	ID        int64  `json:"id"`
-	Type      string `json:"type"`
-	Title     string `json:"title,omitempty"`
-	Username  string `json:"username,omitempty"`
-	FirstName string `json:"first_name,omitempty"`
-	LastName  string `json:"last_name,omitempty"`
-	IsForum   bool   `json:"is_forum,omitempty"`
+	ID        int64    `json:"id"`
+	Type      ChatType `json:"type"`
+	Title     string   `json:"title,omitempty"`
+	Username  string   `json:"username,omitempty"`
+	FirstName string   `json:"first_name,omitempty"`
+	LastName  string   `json:"last_name,omitempty"`
+	IsForum   bool     `json:"is_forum,omitempty"`
 }
 
 // ChatFullInfo https://core.telegram.org/bots/api#chatfullinfo
 type ChatFullInfo struct {
 	ID                                 int64                 `json:"id"`
-	Type                               string                `json:"type"`
+	Type                               ChatType              `json:"type"`
 	Title                              string                `json:"title,omitempty"`
 	Username                           string                `json:"username,omitempty"`
 	FirstName                          string                `json:"first_name,omitempty"`
