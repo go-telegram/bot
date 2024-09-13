@@ -148,3 +148,9 @@ type PaidMediaInfo struct {
 	StarCount int         `json:"star_count"`
 	PaidMedia []PaidMedia `json:"paid_media"`
 }
+
+// PaidMediaPurchased https://core.telegram.org/bots/api#paidmediapurchased
+type PaidMediaPurchased struct {
+	From             User   `json:"from"`
+	PaidMediaPayload string `json:"paid_media_payload"`
+}
