@@ -109,3 +109,10 @@ func WithWebhookSecretToken(webhookSecretToken string) Option {
 		b.webhookSecretToken = webhookSecretToken
 	}
 }
+
+// UseTestEnvironment allows to use test environment
+func UseTestEnvironment() Option {
+	return func(b *Bot) {
+		b.testEnvironment = true
+	}
+}

@@ -35,6 +35,7 @@ type Bot struct {
 	pollTimeout        time.Duration
 	skipGetMe          bool
 	webhookSecretToken string
+	testEnvironment    bool
 
 	defaultHandlerFunc HandlerFunc
 

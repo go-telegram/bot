@@ -112,6 +112,9 @@ type ChatBoostSourceGiftCode struct {
 
 // ChatBoostSourceGiveaway https://core.telegram.org/bots/api#chatboostsourcegiveaway
 type ChatBoostSourceGiveaway struct {
-	Source ChatBoostSourceType `json:"source"` // always “giveaway”
-	User   User                `json:"user"`
+	Source            ChatBoostSourceType `json:"source"` // always “giveaway”
+	GiveawayMessageID int                 `json:"giveaway_message_id"`
+	User              User                `json:"user"`
+	PrizeStarCount    int                 `json:"prize_star_count,omitempty"`
+	IsUnclaimed       bool                `json:"is_unclaimed,omitempty"`
 }

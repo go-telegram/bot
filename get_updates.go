@@ -63,7 +63,7 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			if errors.Is(errRequest, context.Canceled) {
 				return
 			}
-			b.error("error get updates, %v", errRequest)
+			b.error("error get updates, %w", errRequest)
 			timeoutAfterError = incErrTimeout(timeoutAfterError)
 			continue
 		}

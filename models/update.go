@@ -18,6 +18,7 @@ type Update struct {
 	CallbackQuery           *CallbackQuery               `json:"callback_query,omitempty"`
 	ShippingQuery           *ShippingQuery               `json:"shipping_query,omitempty"`
 	PreCheckoutQuery        *PreCheckoutQuery            `json:"pre_checkout_query,omitempty"`
+	PurchasedPaidMedia      *PaidMediaPurchased          `json:"purchased_paid_media,omitempty"`
 	Poll                    *Poll                        `json:"poll,omitempty"`
 	PollAnswer              *PollAnswer                  `json:"poll_answer,omitempty"`
 	MyChatMember            *ChatMemberUpdated           `json:"my_chat_member,omitempty"`
