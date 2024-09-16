@@ -167,3 +167,26 @@ func TestBot_RegisterUnregisterHandler(t *testing.T) {
 		t.Fatalf("handler not found")
 	}
 }
+
+func Test_match_exact_game(t *testing.T) {
+	b := &Bot{
+		handlersMx: &sync.RWMutex{},
+		handlers:   map[string]handler{},
+	}
+
+	id := b.RegisterHandler(HandlerTypeCallbackQueryGameShortName, "xxx", MatchTypeExact, nil)
+
+	h := b.handlers[id]
+	u := models.Update{
+		ID: 42,
+		CallbackQuery: &models.CallbackQuery{
+			ID:            "1000",
+			GameShortName: "xxx",
+		},
+	}
+
+	res := h.match(&u)
+	if !res {
+		t.Error("unexpected true result")
+	}
+}
