@@ -103,7 +103,7 @@ func main() {
 	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 
 	// call methods.SetWebhook if needed
-	
+
 	go b.StartWebhook(ctx)
 
 	http.ListenAndServe(":2000", b.WebhookHandler())
@@ -183,6 +183,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
 - `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
 - `WithWebhookSecretToken(webhookSecretToken string)` - set X-Telegram-Bot-Api-Secret-Token header sent from telegram servers to confirm validity of update
+- `WithWorkers` - set the number of workers that are processing the Updates channel, by default 1
 - `UseTestEnvironment()` - use test environment
 
 ## Message.Text and CallbackQuery.Data handlers
@@ -215,8 +216,8 @@ b.UnregisterHandler(handlerID)
 ```
 
 Match Types:
-- `MatchTypeExact` 
-- `MatchTypePrefix` 
+- `MatchTypeExact`
+- `MatchTypePrefix`
 - `MatchTypeContains`
 
 You can use `RegisterHandlerRegexp` to match by regular expression.
@@ -245,7 +246,7 @@ For some methods, like `SendPhoto`, `SendAudio` etc, you can send file by file p
 To send a file by URL or FileID, you can use `&models.InputFileString{Data: string}`:
 
 ```go
-// file id of uploaded image 
+// file id of uploaded image
 inputFileData := "AgACAgIAAxkDAAIBOWJimnCJHQJiJ4P3aasQCPNyo6mlAALDuzEbcD0YSxzjB-vmkZ6BAQADAgADbQADJAQ"
 // or URL image path
 // inputFileData := "https://example.com/image.png"
@@ -293,7 +294,7 @@ media1 := &models.InputMediaPhoto{
 }
 
 media2 := &models.InputMediaPhoto{
-	Media: "attach://image.png", 
+	Media: "attach://image.png",
 	Caption: "2",
 	MediaAttachment: bytes.NewReader(fileContent),
 }
@@ -315,11 +316,11 @@ bot.SendMediaGroup(ctx, params)
 
 ### `EscapeMarkdown(s string) string`
 
-Escape special symbols for Telegram MarkdownV2 syntax 
+Escape special symbols for Telegram MarkdownV2 syntax
 
 ### `EscapeMarkdownUnescaped(s string) string`
 
-Escape only unescaped special symbols for Telegram MarkdownV2 syntax 
+Escape only unescaped special symbols for Telegram MarkdownV2 syntax
 
 ### `RandomString(n int) string`
 

@@ -110,6 +110,13 @@ func WithWebhookSecretToken(webhookSecretToken string) Option {
 	}
 }
 
+// WithWorkers allows setting the number of workers that are processing the Updates channel
+func WithWorkers(workers int) Option {
+	return func(b *Bot) {
+		b.workers = workers
+	}
+}
+
 // UseTestEnvironment allows to use test environment
 func UseTestEnvironment() Option {
 	return func(b *Bot) {
