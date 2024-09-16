@@ -44,11 +44,11 @@ type Bot struct {
 	errorsHandler ErrorsHandler
 	debugHandler  DebugHandler
 
-	middlewaresMx *sync.RWMutex
+	middlewaresMx sync.RWMutex
 	middlewares   []Middleware
 
-	handlersMx *sync.RWMutex
-	handlers   map[string]handler
+	handlersMx sync.RWMutex
+	handlers   []handler
 
 	client           HttpClient
 	lastUpdateID     int64
@@ -67,13 +67,9 @@ func New(token string, options ...Option) (*Bot, error) {
 	}
 
 	b := &Bot{
-		url:           "https://api.telegram.org",
-		token:         token,
-		pollTimeout:   defaultPollTimeout,
-		middlewaresMx: &sync.RWMutex{},
-		middlewares:   []Middleware{},
-		handlersMx:    &sync.RWMutex{},
-		handlers:      map[string]handler{},
+		url:         "https://api.telegram.org",
+		token:       token,
+		pollTimeout: defaultPollTimeout,
 		client: &http.Client{
 			Timeout: defaultPollTimeout,
 		},
@@ -105,11 +101,11 @@ func New(token string, options ...Option) (*Bot, error) {
 
 // StartWebhook starts the Bot with webhook mode
 func (b *Bot) StartWebhook(ctx context.Context) {
-	wg := &sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 
 	wg.Add(b.workers)
 	for i := 0; i < b.workers; i++ {
-		go b.waitUpdates(ctx, wg)
+		go b.waitUpdates(ctx, &wg)
 	}
 
 	wg.Wait()
@@ -117,14 +113,14 @@ func (b *Bot) StartWebhook(ctx context.Context) {
 
 // Start the bot
 func (b *Bot) Start(ctx context.Context) {
-	wg := &sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 
 	wg.Add(1)
-	go b.getUpdates(ctx, wg)
+	go b.getUpdates(ctx, &wg)
 
 	wg.Add(b.workers)
 	for i := 0; i < b.workers; i++ {
-		go b.waitUpdates(ctx, wg)
+		go b.waitUpdates(ctx, &wg)
 	}
 
 	wg.Wait()
