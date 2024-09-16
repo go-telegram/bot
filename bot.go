@@ -44,8 +44,7 @@ type Bot struct {
 	errorsHandler ErrorsHandler
 	debugHandler  DebugHandler
 
-	middlewaresMx sync.RWMutex
-	middlewares   []Middleware
+	middlewares []Middleware
 
 	handlersMx sync.RWMutex
 	handlers   []handler
