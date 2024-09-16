@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.8.1 (2024-09-16)
+
+- change handlers map to slice (#115) 
+- feat: Ability to process updates across multiple gorutines (#112)
+- add 'HandlerTypeCallbackQueryGameShortName' (#108)
+- feat: add middlewares for handler (#105)
+
 ## v1.8.0 (2024-09-13)
 
 - support API v7.10
