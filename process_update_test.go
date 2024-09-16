@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"sync"
 	"testing"
 
 	"github.com/go-telegram/bot/models"
@@ -38,8 +37,6 @@ func TestProcessUpdate(t *testing.T) {
 	bot := &Bot{
 		defaultHandlerFunc: h,
 		middlewares:        []Middleware{},
-		handlersMx:         &sync.RWMutex{},
-		handlers:           map[string]handler{},
 	}
 
 	ctx := context.Background()
@@ -66,8 +63,6 @@ func TestProcessUpdate_WithMiddlewares(t *testing.T) {
 	bot := &Bot{
 		defaultHandlerFunc: h,
 		middlewares:        []Middleware{middleware},
-		handlersMx:         &sync.RWMutex{},
-		handlers:           map[string]handler{},
 	}
 
 	ctx := context.Background()
@@ -93,8 +88,6 @@ func TestProcessUpdate_WithMatchTypeFunc(t *testing.T) {
 
 	bot := &Bot{
 		defaultHandlerFunc: h1,
-		handlersMx:         &sync.RWMutex{},
-		handlers:           map[string]handler{},
 	}
 
 	bot.RegisterHandlerMatchFunc(m, h2)
@@ -116,17 +109,16 @@ func Test_findHandler(t *testing.T) {
 
 	bot := &Bot{
 		defaultHandlerFunc: h,
-		handlersMx:         &sync.RWMutex{},
-		handlers:           map[string]handler{},
 	}
 
 	// Register a handler
-	bot.handlers["test"] = handler{
+	bot.handlers = append(bot.handlers, handler{
+		id:          "test",
 		handlerType: HandlerTypeMessageText,
 		matchType:   MatchTypeExact,
 		pattern:     "test",
 		handler:     h,
-	}
+	})
 
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Text: "test"}}
@@ -147,8 +139,6 @@ func Test_findHandler_Default(t *testing.T) {
 
 	bot := &Bot{
 		defaultHandlerFunc: h,
-		handlersMx:         &sync.RWMutex{},
-		handlers:           map[string]handler{},
 	}
 
 	ctx := context.Background()

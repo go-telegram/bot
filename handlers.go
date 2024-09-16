@@ -27,6 +27,7 @@ const (
 )
 
 type handler struct {
+	id          string
 	handlerType HandlerType
 	matchType   MatchType
 	handler     HandlerFunc
@@ -80,12 +81,13 @@ func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...
 	id := RandomString(16)
 
 	h := handler{
+		id:        id,
 		matchType: matchTypeFunc,
 		matchFunc: matchFunc,
 		handler:   applyMiddlewares(f, m...),
 	}
 
-	b.handlers[id] = h
+	b.handlers = append(b.handlers, h)
 
 	return id
 }
@@ -97,13 +99,14 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 	id := RandomString(16)
 
 	h := handler{
+		id:          id,
 		handlerType: handlerType,
 		matchType:   matchTypeRegexp,
 		re:          re,
 		handler:     applyMiddlewares(f, m...),
 	}
 
-	b.handlers[id] = h
+	b.handlers = append(b.handlers, h)
 
 	return id
 }
@@ -115,13 +118,14 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 	id := RandomString(16)
 
 	h := handler{
+		id:          id,
 		handlerType: handlerType,
 		matchType:   matchType,
 		pattern:     pattern,
 		handler:     applyMiddlewares(f, m...),
 	}
 
-	b.handlers[id] = h
+	b.handlers = append(b.handlers, h)
 
 	return id
 }
@@ -130,5 +134,10 @@ func (b *Bot) UnregisterHandler(id string) {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
 
-	delete(b.handlers, id)
+	for i, h := range b.handlers {
+		if h.id == id {
+			b.handlers = append(b.handlers[:i], b.handlers[i+1:]...)
+			return
+		}
+	}
 }
