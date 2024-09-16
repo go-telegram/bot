@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -28,6 +29,10 @@ func main() {
 		panic(err)
 	}
 
+	b.RegisterHandler(bot.HandlerTypeCallbackQueryData, "", bot.MatchTypeExact, func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		log.Printf("callback query data: %s", update.CallbackQuery.Data)
+	}, singleFlight)
+
 	b.Start(ctx)
 }
 
@@ -46,6 +51,21 @@ func showMessageWithUserName(next bot.HandlerFunc) bot.HandlerFunc {
 			log.Printf("%s say: %s", update.Message.From.FirstName, update.Message.Text)
 		}
 		next(ctx, b, update)
+	}
+}
+
+// singleFlight is a middleware that ensures that only one callback query is processed at a time.
+func singleFlight(next bot.HandlerFunc) bot.HandlerFunc {
+	sf := sync.Map{}
+	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		if update.CallbackQuery != nil {
+			key := update.CallbackQuery.Message.Message.ID
+			if _, loaded := sf.LoadOrStore(key, struct{}{}); loaded {
+				return
+			}
+			defer sf.Delete(key)
+			next(ctx, b, update)
+		}
 	}
 }
 
