@@ -36,29 +36,29 @@ type SendMessageParams struct {
 
 // ForwardMessageParams https://core.telegram.org/bots/api#forwardmessage
 type ForwardMessageParams struct {
-	ChatID              any    `json:"chat_id"`
-	MessageThreadID     int    `json:"message_thread_id,omitempty"`
-	FromChatID          string `json:"from_chat_id"`
-	DisableNotification bool   `json:"disable_notification,omitempty"`
-	ProtectContent      bool   `json:"protect_content,omitempty"`
-	MessageID           int    `json:"message_id"`
+	ChatID              any  `json:"chat_id"`
+	MessageThreadID     int  `json:"message_thread_id,omitempty"`
+	FromChatID          any  `json:"from_chat_id"`
+	DisableNotification bool `json:"disable_notification,omitempty"`
+	ProtectContent      bool `json:"protect_content,omitempty"`
+	MessageID           int  `json:"message_id"`
 }
 
 // ForwardMessagesParams https://core.telegram.org/bots/api#forwardmessages
 type ForwardMessagesParams struct {
-	ChatID              any    `json:"chat_id"`
-	MessageThreadID     int    `json:"message_thread_id,omitempty"`
-	FromChatID          string `json:"from_chat_id"`
-	MessageIDs          []int  `json:"message_ids"`
-	DisableNotification bool   `json:"disable_notification,omitempty"`
-	ProtectContent      bool   `json:"protect_content,omitempty"`
+	ChatID              any   `json:"chat_id"`
+	MessageThreadID     int   `json:"message_thread_id,omitempty"`
+	FromChatID          any   `json:"from_chat_id"`
+	MessageIDs          []int `json:"message_ids"`
+	DisableNotification bool  `json:"disable_notification,omitempty"`
+	ProtectContent      bool  `json:"protect_content,omitempty"`
 }
 
 // CopyMessageParams https://core.telegram.org/bots/api#copymessage
 type CopyMessageParams struct {
 	ChatID                any                     `json:"chat_id"`
 	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
-	FromChatID            string                  `json:"from_chat_id"`
+	FromChatID            any                     `json:"from_chat_id"`
 	MessageID             int                     `json:"message_id"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
@@ -72,13 +72,13 @@ type CopyMessageParams struct {
 
 // CopyMessagesParams https://core.telegram.org/bots/api#copymessages
 type CopyMessagesParams struct {
-	ChatID              any    `json:"chat_id"`
-	MessageThreadID     int    `json:"message_thread_id,omitempty"`
-	FromChatID          string `json:"from_chat_id"`
-	MessageIDs          []int  `json:"message_ids"`
-	DisableNotification bool   `json:"disable_notification,omitempty"`
-	ProtectContent      bool   `json:"protect_content,omitempty"`
-	RemoveCaption       bool   `json:"remove_caption,omitempty"`
+	ChatID              any   `json:"chat_id"`
+	MessageThreadID     int   `json:"message_thread_id,omitempty"`
+	FromChatID          any   `json:"from_chat_id"`
+	MessageIDs          []int `json:"message_ids"`
+	DisableNotification bool  `json:"disable_notification,omitempty"`
+	ProtectContent      bool  `json:"protect_content,omitempty"`
+	RemoveCaption       bool  `json:"remove_caption,omitempty"`
 }
 
 // SendPhotoParams https://core.telegram.org/bots/api#sendphoto
