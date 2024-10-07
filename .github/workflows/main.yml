@@ -11,17 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: 1.18
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.49.0
+          version: v6.1.1
           args: --config .golangci.yml
 
       - name: Run tests
@@ -29,7 +29,7 @@ jobs:
           go test -coverprofile=coverage.txt -covermode=atomic ./...
 
       - name: Publish coverage
-        uses: codecov/codecov-action@v1.0.6
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.txt
