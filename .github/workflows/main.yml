@@ -21,7 +21,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v6.1.1
+          version: v1.60
           args: --config .golangci.yml
 
       - name: Run tests
