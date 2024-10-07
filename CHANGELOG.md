@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.8.3 (2024-10-07)
+
+- add function `bot.SetToken`
+- update GitHub action versions
+
 ## v1.8.2 (2024-09-23)
 
 - change field type `FromChatID` from string to any for `ForwardMessageParams`, `ForwardMessagesParams`, `CopyMessageParams` and `CopyMessagesParams` params  
