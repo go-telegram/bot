@@ -538,6 +538,13 @@ func (b *Bot) GetUserChatBoosts(ctx context.Context, params *GetUserChatBoostsPa
 	return result, err
 }
 
+// GetBusinessConnection https://core.telegram.org/bots/api#getBusinessConnection
+func (b *Bot) GetBusinessConnection(ctx context.Context, params *GetBusinessConnectionParams) (*models.BusinessConnection, error) {
+	result := &models.BusinessConnection{}
+	err := b.rawRequest(ctx, "getBusinessConnection", params, &result)
+	return result, err
+}
+
 // SetMyCommands https://core.telegram.org/bots/api#setmycommands
 func (b *Bot) SetMyCommands(ctx context.Context, params *SetMyCommandsParams) (bool, error) {
 	var result bool
