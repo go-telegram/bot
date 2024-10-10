@@ -538,7 +538,7 @@ func (b *Bot) GetUserChatBoosts(ctx context.Context, params *GetUserChatBoostsPa
 	return result, err
 }
 
-// GetBusinessConnection https://core.telegram.org/bots/api#getBusinessConnection
+// GetBusinessConnection https://core.telegram.org/bots/api#getbusinessconnection
 func (b *Bot) GetBusinessConnection(ctx context.Context, params *GetBusinessConnectionParams) (*models.BusinessConnection, error) {
 	result := &models.BusinessConnection{}
 	err := b.rawRequest(ctx, "getBusinessConnection", params, &result)
