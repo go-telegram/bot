@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.8.4 (2024-10-10)
+
+- add method GetBusinessConnection (#123)
+
 ## v1.8.3 (2024-10-07)
 
 - add function `bot.SetToken`
