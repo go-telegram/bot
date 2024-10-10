@@ -634,7 +634,7 @@ type GetUserChatBoostsParams struct {
 	UserID int `json:"user_id"`
 }
 
-// GetUserChatBoostsParams https://core.telegram.org/bots/api#getbusinessconnection
+// GetBusinessConnectionParams https://core.telegram.org/bots/api#getbusinessconnection
 type GetBusinessConnectionParams struct {
 	BusinessConnectionID any `json:"business_connection_id"`
 }
