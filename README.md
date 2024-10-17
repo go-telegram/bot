@@ -185,6 +185,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithWebhookSecretToken(webhookSecretToken string)` - set X-Telegram-Bot-Api-Secret-Token header sent from telegram servers to confirm validity of update
 - `WithWorkers` - set the number of workers that are processing the Updates channel, by default 1
 - `UseTestEnvironment()` - use test environment
+- `WithNotAsyncHandlers()` - allows to run handlers in the main goroutine
 
 ## Message.Text and CallbackQuery.Data handlers
 
