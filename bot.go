@@ -38,6 +38,7 @@ type Bot struct {
 	webhookSecretToken string
 	testEnvironment    bool
 	workers            int
+	notAsyncHandlers   bool
 
 	defaultHandlerFunc HandlerFunc
 

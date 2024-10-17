@@ -37,6 +37,7 @@ func TestProcessUpdate(t *testing.T) {
 	bot := &Bot{
 		defaultHandlerFunc: h,
 		middlewares:        []Middleware{},
+		notAsyncHandlers:   true,
 	}
 
 	ctx := context.Background()
@@ -63,6 +64,7 @@ func TestProcessUpdate_WithMiddlewares(t *testing.T) {
 	bot := &Bot{
 		defaultHandlerFunc: h,
 		middlewares:        []Middleware{middleware},
+		notAsyncHandlers:   true,
 	}
 
 	ctx := context.Background()
@@ -88,6 +90,7 @@ func TestProcessUpdate_WithMatchTypeFunc(t *testing.T) {
 
 	bot := &Bot{
 		defaultHandlerFunc: h1,
+		notAsyncHandlers:   true,
 	}
 
 	bot.RegisterHandlerMatchFunc(m, h2)

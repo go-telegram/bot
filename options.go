@@ -123,3 +123,10 @@ func UseTestEnvironment() Option {
 		b.testEnvironment = true
 	}
 }
+
+// WithNotAsyncHandlers allows to run handlers in the main goroutine
+func WithNotAsyncHandlers() Option {
+	return func(b *Bot) {
+		b.notAsyncHandlers = true
+	}
+}

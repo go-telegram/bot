@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.0 (2024-10-17)
+
+- IMPORTANT! New option `WithNotAsyncHandlers` allows to run handlers in the main goroutine. Now, by default, all handlers are run in separate goroutines.
+
 ## v1.8.4 (2024-10-10)
 
 - add method GetBusinessConnection (#123)
