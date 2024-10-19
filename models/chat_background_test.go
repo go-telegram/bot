@@ -6,7 +6,7 @@ import (
 )
 
 func TestChatBackground_UnmarshalJSON_fill(t *testing.T) {
-	src := `{"type":"fill","fill":{"type":"solid","color":123},"dark_theme_dimming":2}`
+	src := `{"type":{"type":"fill","fill":{"type":"solid","color":123},"dark_theme_dimming":2}}`
 
 	var cb ChatBackground
 	err := json.Unmarshal([]byte(src), &cb)
@@ -36,7 +36,10 @@ func TestChatBackground_UnmarshalJSON_fill(t *testing.T) {
 }
 
 func TestChatBackground_UnmarshalJSON_wallpaper(t *testing.T) {
-	src := `{"type":"wallpaper","document":{"file_id":"test","file_unique_id":"test2"},"dark_theme_dimming":2,"is_blurred":true,"is_moving":true}`
+	src := `{"type":{"type":"wallpaper","document":{"file_name":"BG_1.jpg","mime_type":"image/jpeg",
+	"thumbnail":{"file_id":"test","file_unique_id":"test","file_size":4260,"width":156,"height":320},
+	"thumb":{"file_id":"test","file_unique_id":"test","file_size":4260,"width":156,"height":320},
+	"file_id":"test","file_unique_id":"test","file_size":299202},"dark_theme_dimming":0}}`
 
 	var cb ChatBackground
 	err := json.Unmarshal([]byte(src), &cb)
@@ -58,7 +61,7 @@ func TestChatBackground_UnmarshalJSON_wallpaper(t *testing.T) {
 }
 
 func TestChatBackground_UnmarshalJSON_pattern(t *testing.T) {
-	src := `{"type":"pattern","document":{"file_id":"test","file_unique_id":"test","file_size":123,"file_path":"test"},"fill":{"type":"solid","solid":{"color":123}},"intensity":1,"is_inverted":true,"is_moving":true}`
+	src := `{"type":{"type":"pattern","document":{"file_id":"test","file_unique_id":"test","file_size":123,"file_path":"test"},"fill":{"type":"solid","solid":{"color":123}},"intensity":1,"is_inverted":true,"is_moving":true}}`
 
 	var cb ChatBackground
 	err := json.Unmarshal([]byte(src), &cb)
@@ -80,7 +83,7 @@ func TestChatBackground_UnmarshalJSON_pattern(t *testing.T) {
 }
 
 func TestChatBackground_UnmarshalJSON_chat_theme(t *testing.T) {
-	src := `{"type":"chat_theme","theme_name":"test"}`
+	src := `{"type":{"type":"chat_theme","theme_name":"test"}}`
 
 	var cb ChatBackground
 	err := json.Unmarshal([]byte(src), &cb)
