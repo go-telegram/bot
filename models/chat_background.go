@@ -26,29 +26,59 @@ type ChatBackground struct {
 
 func (cb *ChatBackground) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type BackgroundType `json:"type"`
+		Type struct {
+			Type BackgroundType `json:"type"`
+		} `json:"type"`
 	}{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
-	switch v.Type {
+	switch v.Type.Type {
 	case ChatBackgroundTypeFill:
 		cb.Type = ChatBackgroundTypeFill
-		cb.Fill = &BackgroundTypeFill{}
-		return json.Unmarshal(data, cb.Fill)
+		fillContainer := &struct {
+			Type BackgroundTypeFill `json:"type"`
+		}{}
+		err := json.Unmarshal(data, fillContainer)
+		if err != nil {
+			return err
+		}
+		cb.Fill = &fillContainer.Type
+		return nil
 	case ChatBackgroundTypeWallpaper:
 		cb.Type = ChatBackgroundTypeWallpaper
-		cb.Wallpaper = &BackgroundTypeWallpaper{}
-		return json.Unmarshal(data, cb.Wallpaper)
+		wallpaperContainer := &struct {
+			Type BackgroundTypeWallpaper `json:"type"`
+		}{}
+		err := json.Unmarshal(data, wallpaperContainer)
+		if err != nil {
+			return err
+		}
+		cb.Wallpaper = &wallpaperContainer.Type
+		return nil
 	case ChatBackgroundTypePattern:
 		cb.Type = ChatBackgroundTypePattern
-		cb.Pattern = &BackgroundTypePattern{}
-		return json.Unmarshal(data, cb.Pattern)
+		patternContainer := &struct {
+			Type BackgroundTypePattern `json:"type"`
+		}{}
+		err := json.Unmarshal(data, patternContainer)
+		if err != nil {
+			return err
+		}
+		cb.Pattern = &patternContainer.Type
+		return nil
 	case ChatBackgroundTypeChatTheme:
 		cb.Type = ChatBackgroundTypeChatTheme
-		cb.Theme = &BackgroundTypeChatTheme{}
-		return json.Unmarshal(data, cb.Theme)
+		chatThemeContainer := &struct {
+			Type BackgroundTypeChatTheme `json:"type"`
+		}{}
+		err := json.Unmarshal(data, chatThemeContainer)
+		if err != nil {
+			return err
+		}
+		cb.Theme = &chatThemeContainer.Type
+		return nil
 	}
 
 	return fmt.Errorf("unsupported ChatBackground type")
