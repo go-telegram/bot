@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.1 (2024-10-21)
+
+- fix unmarshal `ChatBackground` type (#126)
+
 ## v1.9.0 (2024-10-17)
 
 - IMPORTANT! New option `WithNotAsyncHandlers` allows to run handlers in the main goroutine. Now, by default, all handlers are run in separate goroutines.
