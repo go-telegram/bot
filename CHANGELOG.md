@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.10.0 (2024-10-31)
+
+- support API v7.11
+
 ## v1.9.1 (2024-10-21)
 
 - fix unmarshal `ChatBackground` type (#126)
