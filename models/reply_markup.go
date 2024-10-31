@@ -24,6 +24,11 @@ type SwitchInlineQueryChosenChat struct {
 	AllowChannelChats bool   `json:"allow_channel_chats,omitempty"`
 }
 
+// CopyTextButton https://core.telegram.org/bots/api#copytextbutton
+type CopyTextButton struct {
+	Text string `json:"text"`
+}
+
 // InlineKeyboardButton https://core.telegram.org/bots/api#inlinekeyboardbutton
 type InlineKeyboardButton struct {
 	Text                         string                       `json:"text"`
@@ -34,6 +39,7 @@ type InlineKeyboardButton struct {
 	SwitchInlineQuery            string                       `json:"switch_inline_query,omitempty"`
 	SwitchInlineQueryCurrentChat string                       `json:"switch_inline_query_current_chat,omitempty"`
 	SwitchInlineQueryChosenChat  *SwitchInlineQueryChosenChat `json:"switch_inline_query_chosen_chat,omitempty"`
+	CopyText                     CopyTextButton               `json:"copy_text,omitempty"`
 	CallbackGame                 *CallbackGame                `json:"callback_game,omitempty"`
 	Pay                          bool                         `json:"pay,omitempty"`
 }
