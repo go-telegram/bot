@@ -31,7 +31,7 @@ type MatchFunc func(update *models.Update) bool
 
 // Bot represents Telegram Bot main object
 type Bot struct {
-	lastUpdateID     int64
+	lastUpdateID int64
 
 	url                string
 	token              string
