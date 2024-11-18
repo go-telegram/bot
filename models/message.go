@@ -156,3 +156,9 @@ type Message struct {
 	WebAppData                    *WebAppData                    `json:"web_app_data,omitempty"`
 	ReplyMarkup                   InlineKeyboardMarkup           `json:"reply_markup,omitempty"`
 }
+
+// PreparedInlineMessage https://core.telegram.org/bots/api#preparedinlinemessage
+type PreparedInlineMessage struct {
+	ID             string `json:"id"`
+	ExpirationDate int    `json:"expiration_date"`
+}

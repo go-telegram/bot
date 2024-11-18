@@ -216,6 +216,13 @@ func (b *Bot) GetUserProfilePhotos(ctx context.Context, params *GetUserProfilePh
 	return result, err
 }
 
+// SetUserEmojiStatus https://core.telegram.org/bots/api#setuseremojistatus
+func (b *Bot) SetUserEmojiStatus(ctx context.Context, params *SetUserEmojiStatusParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setUserEmojiStatus", params, &result)
+	return result, err
+}
+
 // GetFile https://core.telegram.org/bots/api#getfile
 func (b *Bot) GetFile(ctx context.Context, params *GetFileParams) (*models.File, error) {
 	result := &models.File{}
@@ -811,6 +818,13 @@ func (b *Bot) AnswerWebAppQuery(ctx context.Context, params *AnswerWebAppQueryPa
 	return result, err
 }
 
+// SavePreparedInlineMessage https://core.telegram.org/bots/api#savepreparedinlinemessage
+func (b *Bot) SavePreparedInlineMessage(ctx context.Context, params *SavePreparedInlineMessageParams) (*models.PreparedInlineMessage, error) {
+	result := &models.PreparedInlineMessage{}
+	err := b.rawRequest(ctx, "savePreparedInlineMessage", params, result)
+	return result, err
+}
+
 // SendInvoice https://core.telegram.org/bots/api#sendinvoice
 func (b *Bot) SendInvoice(ctx context.Context, params *SendInvoiceParams) (*models.Message, error) {
 	result := &models.Message{}
@@ -853,6 +867,13 @@ func (b *Bot) RefundStarPayment(ctx context.Context, params *RefundStarPaymentPa
 	return result, err
 }
 
+// EditUserStarSubscription https://core.telegram.org/bots/api#edituserstarsubscription
+func (b *Bot) EditUserStarSubscription(ctx context.Context, params *EditUserStarSubscriptionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editUserStarSubscription", params, &result)
+	return result, err
+}
+
 // SetPassportDataErrors https://core.telegram.org/bots/api#setpassportdataerrors
 func (b *Bot) SetPassportDataErrors(ctx context.Context, params *SetPassportDataErrorsParams) (bool, error) {
 	var result bool
@@ -878,5 +899,19 @@ func (b *Bot) SetGameScore(ctx context.Context, params *SetGameScoreParams) (*mo
 func (b *Bot) GetGameHighScores(ctx context.Context, params *GetGameHighScoresParams) ([]*models.GameHighScore, error) {
 	var result []*models.GameHighScore
 	err := b.rawRequest(ctx, "getGameHighScores", params, &result)
+	return result, err
+}
+
+// GetAvailableGifts https://core.telegram.org/bots/api#getavailablegifts
+func (b *Bot) GetAvailableGifts(ctx context.Context) (*models.Gifts, error) {
+	result := &models.Gifts{}
+	err := b.rawRequest(ctx, "getAvailableGifts", nil, result)
+	return result, err
+}
+
+// SendGift https://core.telegram.org/bots/api#sendgift
+func (b *Bot) SendGift(ctx context.Context, params *SendGiftParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "sendGift", params, &result)
 	return result, err
 }

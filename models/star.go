@@ -63,11 +63,13 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 
 // TransactionPartnerUser https://core.telegram.org/bots/api#transactionpartneruser
 type TransactionPartnerUser struct {
-	Type             TransactionPartnerType `json:"type"`
-	User             User                   `json:"user"`
-	InvoicePayload   string                 `json:"invoice_payload,omitempty"`
-	PaidMedia        []*PaidMedia           `json:"paid_media,omitempty"`
-	PaidMediaPayload string                 `json:"paid_media_payload,omitempty"`
+	Type               TransactionPartnerType `json:"type"`
+	User               User                   `json:"user"`
+	InvoicePayload     string                 `json:"invoice_payload,omitempty"`
+	SubscriptionPeriod int                    `json:"subscription_period,omitempty"`
+	PaidMedia          []*PaidMedia           `json:"paid_media,omitempty"`
+	PaidMediaPayload   string                 `json:"paid_media_payload,omitempty"`
+	Gift               string                 `json:"gift,omitempty"`
 }
 
 // TransactionPartnerFragment https://core.telegram.org/bots/api#transactionpartnerfragment
