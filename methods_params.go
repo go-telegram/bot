@@ -396,6 +396,13 @@ type GetUserProfilePhotosParams struct {
 	Limit  int   `json:"limit,omitempty"`
 }
 
+// SetUserEmojiStatusParams https://core.telegram.org/bots/api#setuseremojistatus
+type SetUserEmojiStatusParams struct {
+	UserID                    int64  `json:"user_id"`
+	EmojiStatusCustomEmojiID  string `json:"emoji_status_custom_emoji_id,omitempty"`
+	EmojiStatusExpirationDate int    `json:"emoji_status_expiration_date,omitempty"`
+}
+
 type GetFileParams struct {
 	FileID string `json:"file_id"`
 }
@@ -887,6 +894,16 @@ type AnswerWebAppQueryParams struct {
 	Result        models.InlineQueryResult `json:"result"`
 }
 
+// SavePreparedInlineMessageParams https://core.telegram.org/bots/api#savepreparedinlinemessage
+type SavePreparedInlineMessageParams struct {
+	UserID            int64                    `json:"user_id"`
+	Result            models.InlineQueryResult `json:"result"`
+	AllowUserChats    bool                     `json:"allow_user_chats,omitempty"`
+	AllowBotChats     bool                     `json:"allow_bot_chats,omitempty"`
+	AllowGroupChats   bool                     `json:"allow_group_chats,omitempty"`
+	AllowChannelChats bool                     `json:"allow_channel_chats,omitempty"`
+}
+
 // SendInvoiceParams https://core.telegram.org/bots/api#sendinvoice
 type SendInvoiceParams struct {
 	ChatID                    any                     `json:"chat_id"`
@@ -921,12 +938,14 @@ type SendInvoiceParams struct {
 }
 
 type CreateInvoiceLinkParams struct {
+	BusinessConnectionID      string                `json:"business_connection_id,omitempty"`
 	Title                     string                `json:"title"`
 	Description               string                `json:"description"`
 	Payload                   string                `json:"payload"`
 	ProviderToken             string                `json:"provider_token,omitempty"`
 	Currency                  string                `json:"currency"`
 	Prices                    []models.LabeledPrice `json:"prices"`
+	SubscriptionPeriod        int                   `json:"subscription_period,omitempty"`
 	MaxTipAmount              int                   `json:"max_tip_amount,omitempty"`
 	SuggestedTipAmounts       []int                 `json:"suggested_tip_amounts,omitempty"`
 	ProviderData              string                `json:"provider_data,omitempty"`
@@ -966,6 +985,13 @@ type RefundStarPaymentParams struct {
 	TelegramPaymentChargeID string `json:"telegram_payment_charge_id"`
 }
 
+// EditUserStarSubscriptionParams https://core.telegram.org/bots/api#edituserstarsubscription
+type EditUserStarSubscriptionParams struct {
+	UserID                  int64  `json:"user_id"`
+	TelegramPaymentChargeID string `json:"telegram_payment_charge_id"`
+	IsCanceled              bool   `json:"is_canceled"`
+}
+
 type SetPassportDataErrorsParams struct {
 	UserID int64                         `json:"user_id"`
 	Errors []models.PassportElementError `json:"errors"`
@@ -1000,4 +1026,13 @@ type GetGameHighScoresParams struct {
 	ChatID          any   `json:"chat_id,omitempty"`
 	MessageID       int   `json:"message_id,omitempty"`
 	InlineMessageID int   `json:"inline_message_id,omitempty"`
+}
+
+// SendGiftParams https://core.telegram.org/bots/api#sendgift
+type SendGiftParams struct {
+	UserID        int64                  `json:"user_id"`
+	GiftID        string                 `json:"gift_id"`
+	Text          string                 `json:"text,omitempty"`
+	TextParseMode models.ParseMode       `json:"text_parse_mode,omitempty"`
+	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
 }
