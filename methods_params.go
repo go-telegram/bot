@@ -817,7 +817,7 @@ type CreateNewStickerSetParams struct {
 	UserID          int64            `json:"user_id"`
 	Name            string           `json:"name"`
 	Title           string           `json:"title"`
-	Sticker         models.InputFile `json:"sticker"`
+	Stickers        []models.Sticker `json:"stickers"`
 	StickerType     string           `json:"sticker_type,omitempty"`
 	NeedsRepainting bool             `json:"needs_repainting,omitempty"`
 }
