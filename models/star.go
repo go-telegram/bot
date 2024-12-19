@@ -8,22 +8,24 @@ import (
 type TransactionPartnerType string
 
 const (
-	TransactionPartnerTypeUser        TransactionPartnerType = "user"
-	TransactionPartnerTypeFragment    TransactionPartnerType = "fragment"
-	TransactionPartnerTypeTelegramAds TransactionPartnerType = "telegram_ads"
-	TransactionPartnerTypeTelegramApi TransactionPartnerType = "telegram_api"
-	TransactionPartnerTypeOther       TransactionPartnerType = "other"
+	TransactionPartnerTypeUser             TransactionPartnerType = "user"
+	TransactionPartnerTypeAffiliateProgram TransactionPartnerType = "affiliate_program"
+	TransactionPartnerTypeFragment         TransactionPartnerType = "fragment"
+	TransactionPartnerTypeTelegramAds      TransactionPartnerType = "telegram_ads"
+	TransactionPartnerTypeTelegramApi      TransactionPartnerType = "telegram_api"
+	TransactionPartnerTypeOther            TransactionPartnerType = "other"
 )
 
 // TransactionPartner https://core.telegram.org/bots/api#transactionpartner
 type TransactionPartner struct {
 	Type TransactionPartnerType
 
-	User        *TransactionPartnerUser        `json:"user,omitempty"`
-	Fragment    *TransactionPartnerFragment    `json:"fragment,omitempty"`
-	TelegramAds *TransactionPartnerTelegramAds `json:"telegram_ads,omitempty"`
-	TelegramApi *TransactionPartnerTelegramApi `json:"telegram_api,omitempty"`
-	Other       *TransactionPartnerOther       `json:"other,omitempty"`
+	User             *TransactionPartnerUser             `json:"user,omitempty"`
+	AffiliateProgram *TransactionPartnerAffiliateProgram `json:"affiliate_program,omitempty"`
+	Fragment         *TransactionPartnerFragment         `json:"fragment,omitempty"`
+	TelegramAds      *TransactionPartnerTelegramAds      `json:"telegram_ads,omitempty"`
+	TelegramApi      *TransactionPartnerTelegramApi      `json:"telegram_api,omitempty"`
+	Other            *TransactionPartnerOther            `json:"other,omitempty"`
 }
 
 func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
@@ -40,6 +42,10 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 		m.Type = TransactionPartnerTypeUser
 		m.User = &TransactionPartnerUser{}
 		return json.Unmarshal(data, m.User)
+	case TransactionPartnerTypeAffiliateProgram:
+		m.Type = TransactionPartnerTypeAffiliateProgram
+		m.AffiliateProgram = &TransactionPartnerAffiliateProgram{}
+		return json.Unmarshal(data, m.AffiliateProgram)
 	case TransactionPartnerTypeFragment:
 		m.Type = TransactionPartnerTypeFragment
 		m.Fragment = &TransactionPartnerFragment{}
@@ -61,15 +67,32 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported TransactionPartner type")
 }
 
+// AffiliateInfo https://core.telegram.org/bots/api#affiliateinfo
+type AffiliateInfo struct {
+	AffiliateUser      *User `json:"affiliate_user,omitempty"`
+	AffiliateChat      *Chat `json:"affiliate_chat,omitempty"`
+	CommissionPerMille int   `json:"commission_per_mille"`
+	Amount             int   `json:"amount"`
+	NanostarAmount     int   `json:"nanostar_amount"`
+}
+
 // TransactionPartnerUser https://core.telegram.org/bots/api#transactionpartneruser
 type TransactionPartnerUser struct {
 	Type               TransactionPartnerType `json:"type"`
 	User               User                   `json:"user"`
+	Affiliate          *AffiliateInfo         `json:"affiliate,omitempty"`
 	InvoicePayload     string                 `json:"invoice_payload,omitempty"`
 	SubscriptionPeriod int                    `json:"subscription_period,omitempty"`
 	PaidMedia          []*PaidMedia           `json:"paid_media,omitempty"`
 	PaidMediaPayload   string                 `json:"paid_media_payload,omitempty"`
 	Gift               string                 `json:"gift,omitempty"`
+}
+
+// TransactionPartnerAffiliateProgram https://core.telegram.org/bots/api#transactionpartneraffiliateprogram
+type TransactionPartnerAffiliateProgram struct {
+	Type               TransactionPartnerType `json:"type"`
+	SponsorUser        *User                  `json:"sponsor_user,omitempty"`
+	CommissionPerMille int                    `json:"commission_per_mille"`
 }
 
 // TransactionPartnerFragment https://core.telegram.org/bots/api#transactionpartnerfragment
@@ -157,11 +180,12 @@ type RevenueWithdrawalStateFailed struct {
 
 // StarTransaction https://core.telegram.org/bots/api#startransaction
 type StarTransaction struct {
-	ID       string              `json:"id"`
-	Amount   int                 `json:"amount"`
-	Date     int                 `json:"date"`
-	Source   *TransactionPartner `json:"source,omitempty"`
-	Receiver *TransactionPartner `json:"receiver,omitempty"`
+	ID             string              `json:"id"`
+	Amount         int                 `json:"amount"`
+	NanostarAmount int                 `json:"nanostar_amount,omitempty"`
+	Date           int                 `json:"date"`
+	Source         *TransactionPartner `json:"source,omitempty"`
+	Receiver       *TransactionPartner `json:"receiver,omitempty"`
 }
 
 // StarTransactions https://core.telegram.org/bots/api#startransactions
