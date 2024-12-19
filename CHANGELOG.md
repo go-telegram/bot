@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.12.0 (2024-12-19)
+
+- support API v8.1
+
 ## v1.11.1 (2024-11-21)
 
 - fix CreateNewStickerSetParams (#132) 
