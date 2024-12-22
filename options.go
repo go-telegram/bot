@@ -39,6 +39,14 @@ func WithCallbackQueryDataHandler(pattern string, matchType MatchType, handler H
 	}
 }
 
+// WithPhotoCaptionHandler allows to set handler for incoming photos with caption
+// Also you can use *bot.RegisterHandler function after bot creation
+func WithPhotoCaptionHandler(pattern string, matchType MatchType, handler HandlerFunc) Option {
+	return func(b *Bot) {
+		b.RegisterHandler(HandlerTypePhotoCaption, pattern, matchType, handler)
+	}
+}
+
 // WithDefaultHandler allows to set default handler for incoming updates
 func WithDefaultHandler(handler HandlerFunc) Option {
 	return func(b *Bot) {

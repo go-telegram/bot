@@ -134,6 +134,36 @@ func Test_findHandler(t *testing.T) {
 	}
 }
 
+func Test_findPhotoCaptionHandler(t *testing.T) {
+	var called bool
+	h := func(ctx context.Context, bot *Bot, update *models.Update) {
+		called = true
+	}
+
+	bot := &Bot{
+		defaultHandlerFunc: h,
+	}
+
+	// Register a handler
+	bot.handlers = append(bot.handlers, handler{
+		id:          "test",
+		handlerType: HandlerTypePhotoCaption,
+		matchType:   MatchTypeExact,
+		pattern:     "test",
+		handler:     h,
+	})
+
+	ctx := context.Background()
+	upd := &models.Update{Message: &models.Message{Caption: "test"}}
+
+	handler := bot.findHandler(upd)
+	handler(ctx, bot, upd)
+
+	if !called {
+		t.Fatal("Expected registered handler to be called")
+	}
+}
+
 func Test_findHandler_Default(t *testing.T) {
 	var called bool
 	h := func(ctx context.Context, bot *Bot, update *models.Update) {

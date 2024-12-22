@@ -209,6 +209,7 @@ In this example, the handler will be called when the user sends `/start` message
 Handler Types:
 - `HandlerTypeMessageText` - for Update.Message.Text field
 - `HandlerTypeCallbackQueryData` - for Update.CallbackQuery.Data field
+- `HandlerTypePhotoCaption` - for Update.Message.Caption field
 
 RegisterHandler returns a handler ID string. You can use it to remove the handler later.
 
