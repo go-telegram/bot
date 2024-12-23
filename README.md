@@ -173,6 +173,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithMiddlewares(middlewares ...Middleware)` - add middlewares
 - `WithMessageTextHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for Message.Text field
 - `WithCallbackQueryDataHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for CallbackQuery.Data field
+- `WithPhotoCaptionHandler` - add handler for Message.Caption field
 - `WithDefaultHandler(handler HandlerFunc)` - add default handler
 - `WithDebug()` - enable debug mode
 - `WithErrorsHandler(handler ErrorsHandler)` - add errors handler
@@ -189,7 +190,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 
 ## Message.Text and CallbackQuery.Data handlers
 
-For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handlers.
+For your convenience, you can use `Message.Text`, `CallbackQuery.Data` and `Message.Caption` handlers.
 
 An example:
 
@@ -209,6 +210,7 @@ In this example, the handler will be called when the user sends `/start` message
 Handler Types:
 - `HandlerTypeMessageText` - for Update.Message.Text field
 - `HandlerTypeCallbackQueryData` - for Update.CallbackQuery.Data field
+- `HandlerTypePhotoCaption` - for Update.Message.Caption field
 
 RegisterHandler returns a handler ID string. You can use it to remove the handler later.
 

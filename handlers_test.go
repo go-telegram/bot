@@ -62,6 +62,24 @@ func Test_match_exact(t *testing.T) {
 	}
 }
 
+func Test_match_caption_exact(t *testing.T) {
+	b := &Bot{}
+
+	id := b.RegisterHandler(HandlerTypePhotoCaption, "xxx", MatchTypeExact, nil)
+
+	h := findHandler(b, id)
+
+	res := h.match(&models.Update{Message: &models.Message{Caption: "zzz"}})
+	if res {
+		t.Error("unexpected true result")
+	}
+
+	res = h.match(&models.Update{Message: &models.Message{Caption: "xxx"}})
+	if !res {
+		t.Error("unexpected false result")
+	}
+}
+
 func Test_match_prefix(t *testing.T) {
 	b := &Bot{}
 
