@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.12.1 (2024-12-19)
+
+- add handler type for photo captions (#138)
+
 ## v1.12.0 (2024-12-19)
 
 - support API v8.1
