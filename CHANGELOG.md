@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.13.0 (2025-01-10)
+
+- support API 8.2 (#144)
+- fix unmarshal ChatBackground 
+- ValidateWebappRequest - now returns model WebAppUser (#143)
+
 ## v1.12.1 (2024-12-19)
 
 - add handler type for photo captions (#138)
