@@ -5,86 +5,57 @@ import (
 	"fmt"
 )
 
-// BackgroundType https://core.telegram.org/bots/api#backgroundtype
-type BackgroundType string
+type BackgroundTypeType string
 
 const (
-	ChatBackgroundTypeFill      BackgroundType = "fill"
-	ChatBackgroundTypeWallpaper BackgroundType = "wallpaper"
-	ChatBackgroundTypePattern   BackgroundType = "pattern"
-	ChatBackgroundTypeChatTheme BackgroundType = "chat_theme"
+	ChatBackgroundTypeFill      BackgroundTypeType = "fill"
+	ChatBackgroundTypeWallpaper BackgroundTypeType = "wallpaper"
+	ChatBackgroundTypePattern   BackgroundTypeType = "pattern"
+	ChatBackgroundTypeChatTheme BackgroundTypeType = "chat_theme"
 )
 
 // ChatBackground https://core.telegram.org/bots/api#chatbackground
 type ChatBackground struct {
-	Type      BackgroundType
+	Type BackgroundType `json:"type"`
+}
+
+// BackgroundType https://core.telegram.org/bots/api#backgroundtype
+type BackgroundType struct {
+	Type      BackgroundTypeType
 	Fill      *BackgroundTypeFill
 	Wallpaper *BackgroundTypeWallpaper
 	Pattern   *BackgroundTypePattern
 	Theme     *BackgroundTypeChatTheme
 }
 
-func (cb *ChatBackground) UnmarshalJSON(data []byte) error {
+func (cb *BackgroundType) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type struct {
-			Type BackgroundType `json:"type"`
-		} `json:"type"`
+		Type BackgroundTypeType `json:"type"`
 	}{}
+
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
-	switch v.Type.Type {
+	switch v.Type {
 	case ChatBackgroundTypeFill:
 		cb.Type = ChatBackgroundTypeFill
-		fillContainer := &struct {
-			Type BackgroundTypeFill `json:"type"`
-		}{}
-		err := json.Unmarshal(data, fillContainer)
-		if err != nil {
-			return err
-		}
-		cb.Fill = &fillContainer.Type
-		return nil
+		return json.Unmarshal(data, &cb.Fill)
 	case ChatBackgroundTypeWallpaper:
 		cb.Type = ChatBackgroundTypeWallpaper
-		wallpaperContainer := &struct {
-			Type BackgroundTypeWallpaper `json:"type"`
-		}{}
-		err := json.Unmarshal(data, wallpaperContainer)
-		if err != nil {
-			return err
-		}
-		cb.Wallpaper = &wallpaperContainer.Type
-		return nil
+		return json.Unmarshal(data, &cb.Wallpaper)
 	case ChatBackgroundTypePattern:
 		cb.Type = ChatBackgroundTypePattern
-		patternContainer := &struct {
-			Type BackgroundTypePattern `json:"type"`
-		}{}
-		err := json.Unmarshal(data, patternContainer)
-		if err != nil {
-			return err
-		}
-		cb.Pattern = &patternContainer.Type
-		return nil
+		return json.Unmarshal(data, &cb.Pattern)
 	case ChatBackgroundTypeChatTheme:
 		cb.Type = ChatBackgroundTypeChatTheme
-		chatThemeContainer := &struct {
-			Type BackgroundTypeChatTheme `json:"type"`
-		}{}
-		err := json.Unmarshal(data, chatThemeContainer)
-		if err != nil {
-			return err
-		}
-		cb.Theme = &chatThemeContainer.Type
-		return nil
+		return json.Unmarshal(data, &cb.Theme)
 	}
 
 	return fmt.Errorf("unsupported ChatBackground type")
 }
 
-func (cb *ChatBackground) MarshalJSON() ([]byte, error) {
+func (cb *BackgroundType) MarshalJSON() ([]byte, error) {
 	switch cb.Type {
 	case ChatBackgroundTypeFill:
 		cb.Fill.Type = ChatBackgroundTypeFill
@@ -105,34 +76,34 @@ func (cb *ChatBackground) MarshalJSON() ([]byte, error) {
 
 // BackgroundTypeFill https://core.telegram.org/bots/api#backgroundtypefill
 type BackgroundTypeFill struct {
-	Type             BackgroundType `json:"type"`
-	Fill             BackgroundFill `json:"fill"`
-	DarkThemeDimming int            `json:"dark_theme_dimming"`
+	Type             BackgroundTypeType `json:"type"`
+	Fill             BackgroundFill     `json:"fill"`
+	DarkThemeDimming int                `json:"dark_theme_dimming"`
 }
 
 // BackgroundTypeWallpaper https://core.telegram.org/bots/api#backgroundtypewallpaper
 type BackgroundTypeWallpaper struct {
-	Type             BackgroundType `json:"type"`
-	Document         Document       `json:"document"`
-	DarkThemeDimming int            `json:"dark_theme_dimming"`
-	IsBlurred        bool           `json:"is_blurred,omitempty"`
-	IsMoving         bool           `json:"is_moving,omitempty"`
+	Type             BackgroundTypeType `json:"type"`
+	Document         Document           `json:"document"`
+	DarkThemeDimming int                `json:"dark_theme_dimming"`
+	IsBlurred        bool               `json:"is_blurred,omitempty"`
+	IsMoving         bool               `json:"is_moving,omitempty"`
 }
 
 // BackgroundTypePattern https://core.telegram.org/bots/api#backgroundtypepattern
 type BackgroundTypePattern struct {
-	Type       BackgroundType `json:"type"`
-	Document   Document       `json:"document"`
-	Fill       BackgroundFill `json:"fill"`
-	Intensity  int            `json:"intensity"`
-	IsInverted bool           `json:"is_inverted,omitempty"`
-	IsMoving   bool           `json:"is_moving,omitempty"`
+	Type       BackgroundTypeType `json:"type"`
+	Document   Document           `json:"document"`
+	Fill       BackgroundFill     `json:"fill"`
+	Intensity  int                `json:"intensity"`
+	IsInverted bool               `json:"is_inverted,omitempty"`
+	IsMoving   bool               `json:"is_moving,omitempty"`
 }
 
 // BackgroundTypeChatTheme https://core.telegram.org/bots/api#backgroundtypechattheme
 type BackgroundTypeChatTheme struct {
-	Type      BackgroundType `json:"type"`
-	ThemeName string         `json:"theme_name"`
+	Type      BackgroundTypeType `json:"type"`
+	ThemeName string             `json:"theme_name"`
 }
 
 type BackgroundFillType string

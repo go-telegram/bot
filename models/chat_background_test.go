@@ -14,24 +14,24 @@ func TestChatBackground_UnmarshalJSON_fill(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cb.Type != ChatBackgroundTypeFill {
+	if cb.Type.Type != ChatBackgroundTypeFill {
 		t.Fatal("invalid type")
 	}
 
-	if cb.Fill == nil {
+	if cb.Type.Fill == nil {
 		t.Fatal("invalid Fill")
 	}
 
-	if cb.Fill.Fill.Type != BackgroundFillTypeSolid {
+	if cb.Type.Fill.Fill.Type != BackgroundFillTypeSolid {
 		t.Fatal("invalid fill type")
 	}
 
-	if cb.Fill.Fill.Solid.Color != 123 {
-		t.Fatalf("invalid color %d, expect 123", cb.Fill.Fill.Solid.Color)
+	if cb.Type.Fill.Fill.Solid.Color != 123 {
+		t.Fatalf("invalid color %d, expect 123", cb.Type.Fill.Fill.Solid.Color)
 	}
 
-	if cb.Fill.DarkThemeDimming != 2 {
-		t.Fatalf("invalid dark theme dimming %d, expect 2", cb.Fill.DarkThemeDimming)
+	if cb.Type.Fill.DarkThemeDimming != 2 {
+		t.Fatalf("invalid dark theme dimming %d, expect 2", cb.Type.Fill.DarkThemeDimming)
 	}
 }
 
@@ -47,15 +47,15 @@ func TestChatBackground_UnmarshalJSON_wallpaper(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cb.Type != ChatBackgroundTypeWallpaper {
+	if cb.Type.Type != ChatBackgroundTypeWallpaper {
 		t.Fatal("invalid type")
 	}
 
-	if cb.Wallpaper == nil {
+	if cb.Type.Wallpaper == nil {
 		t.Fatal("invalid Wallpaper")
 	}
 
-	if cb.Wallpaper.Document.FileID != "test" {
+	if cb.Type.Wallpaper.Document.FileID != "test" {
 		t.Fatal("invalid document file id")
 	}
 }
@@ -69,15 +69,15 @@ func TestChatBackground_UnmarshalJSON_pattern(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cb.Type != ChatBackgroundTypePattern {
+	if cb.Type.Type != ChatBackgroundTypePattern {
 		t.Fatal("invalid type")
 	}
 
-	if cb.Pattern == nil {
+	if cb.Type.Pattern == nil {
 		t.Fatal("invalid Pattern")
 	}
 
-	if cb.Pattern.Document.FileID != "test" {
+	if cb.Type.Pattern.Document.FileID != "test" {
 		t.Fatal("invalid document file id")
 	}
 }
@@ -91,15 +91,15 @@ func TestChatBackground_UnmarshalJSON_chat_theme(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if cb.Type != ChatBackgroundTypeChatTheme {
+	if cb.Type.Type != ChatBackgroundTypeChatTheme {
 		t.Fatal("invalid type")
 	}
 
-	if cb.Theme == nil {
+	if cb.Type.Theme == nil {
 		t.Fatal("invalid Theme")
 	}
 
-	if cb.Theme.ThemeName != "test" {
+	if cb.Type.Theme.ThemeName != "test" {
 		t.Fatal("invalid theme name")
 	}
 }
