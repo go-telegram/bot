@@ -414,6 +414,12 @@ if errors.Is(err, mybot.ErrorConflict) {
 - `bot.Token() string` - returns bot token
 - `bot.SetToken()` - set new bot token
 
+## MiniApp misc
+
+Check the repo [go-telegram/miniapp](https://github.com/go-telegram/miniapp) for Telegram MiniApp example.
+
+Repo [go-telegram/miniapp-types](https://github.com/go-telegram/miniapp-types) contains TypeScript types definitions for Telegram MiniApp object.
+
 ## UI Components
 
 In the repo https://github.com/go-telegram/ui you can find a some UI elements for your bot.
