@@ -11,8 +11,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/go-telegram/bot/models"
 )
 
 // escape special symbols in text for MarkdownV2 parse mode
@@ -89,14 +87,27 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+type WebAppUser struct {
+	ID                    int    `json:"id"`
+	IsBot                 bool   `json:"is_bot"`
+	FirstName             string `json:"first_name"`
+	LastName              string `json:"last_name"`
+	Username              string `json:"username"`
+	LanguageCode          string `json:"language_code"`
+	IsPremium             bool   `json:"is_premium"`
+	AddedToAttachmentMenu bool   `json:"added_to_attachment_menu"`
+	AllowsWriteToPM       bool   `json:"allows_write_to_pm"`
+	PhotoURL              string `json:"photo_url"`
+}
+
 // ValidateWebappRequest validates request from webapp
-func ValidateWebappRequest(values url.Values, token string) (user *models.User, ok bool) {
+func ValidateWebappRequest(values url.Values, token string) (user *WebAppUser, ok bool) {
 	h := values.Get("hash")
 	values.Del("hash")
 
 	var vals []string
 
-	var u models.User
+	var u WebAppUser
 
 	for k, v := range values {
 		vv, _ := url.QueryUnescape(v[0])
