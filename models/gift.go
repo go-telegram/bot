@@ -7,9 +7,10 @@ type Gifts struct {
 
 // Gift https://core.telegram.org/bots/api#gift
 type Gift struct {
-	ID             string  `json:"id"`
-	Sticker        Sticker `json:"sticker"`
-	StarCount      int     `json:"star_count"`
-	TotalCount     int     `json:"total_count,omitempty"`
-	RemainingCount int     `json:"remaining_count,omitempty"`
+	ID               string  `json:"id"`
+	Sticker          Sticker `json:"sticker"`
+	StarCount        int     `json:"star_count"`
+	UpgradeStarCount int     `json:"upgrade_star_count,omitempty"`
+	TotalCount       int     `json:"total_count,omitempty"`
+	RemainingCount   int     `json:"remaining_count,omitempty"`
 }

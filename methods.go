@@ -915,3 +915,31 @@ func (b *Bot) SendGift(ctx context.Context, params *SendGiftParams) (bool, error
 	err := b.rawRequest(ctx, "sendGift", params, &result)
 	return result, err
 }
+
+// VerifyUser https://core.telegram.org/bots/api#verifyuser
+func (b *Bot) VerifyUser(ctx context.Context, params *VerifyUserParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "verifyUser", params, &result)
+	return result, err
+}
+
+// VerifyChat https://core.telegram.org/bots/api#verifychat
+func (b *Bot) VerifyChat(ctx context.Context, params *VerifyChatParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "verifyChat", params, &result)
+	return result, err
+}
+
+// RemoveUserVerification https://core.telegram.org/bots/api#removeuserverification
+func (b *Bot) RemoveUserVerification(ctx context.Context, params *RemoveUserVerificationParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "removeUserVerification", params, &result)
+	return result, err
+}
+
+// RemoveChatVerification https://core.telegram.org/bots/api#removechatverification
+func (b *Bot) RemoveChatVerification(ctx context.Context, params *RemoveChatVerificationParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "removeChatVerification", params, &result)
+	return result, err
+}
