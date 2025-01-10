@@ -344,7 +344,7 @@ p := &bot.SendPollParams{
 b.SendPoll(ctx, p)
 ```
 
-### `ValidateWebappRequest(values url.Values, token string) (user *models.User, ok bool)`
+### `ValidateWebappRequest(values url.Values, token string) (user *WebAppUser, ok bool)`
 
 Validate request from Telegram Webapp
 
