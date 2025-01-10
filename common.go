@@ -87,6 +87,7 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+// WebAppUser represents user model from webapp request
 type WebAppUser struct {
 	ID                    int    `json:"id"`
 	IsBot                 bool   `json:"is_bot"`

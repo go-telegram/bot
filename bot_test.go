@@ -348,3 +348,51 @@ func TestBot_Start(t *testing.T) {
 		t.Errorf("not called default handler")
 	}
 }
+
+func TestBot_ID(t *testing.T) {
+	type fields struct {
+		token string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   int64
+	}{
+		{name: "empty token", fields: fields{token: ""}, want: 0},
+		{name: "no colon", fields: fields{token: "xxx"}, want: 0},
+		{name: "bad value", fields: fields{token: "123xxx:xxx"}, want: 0},
+		{name: "bad value", fields: fields{token: ":xxx"}, want: 0},
+		{name: "ok", fields: fields{token: "123456:xxx"}, want: 123456},
+		{name: "two colon", fields: fields{token: "123456:5678:xxx"}, want: 123456},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &Bot{
+				token: tt.fields.token,
+			}
+			if got := b.ID(); got != tt.want {
+				t.Errorf("ID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBot_Token(t *testing.T) {
+	b := &Bot{token: "123456:xxx"}
+
+	token := b.Token()
+
+	if token != "123456:xxx" {
+		t.Errorf("Token() = %s, want %s", token, "123456:xxx")
+	}
+}
+
+func TestBot_SetToken(t *testing.T) {
+	b := &Bot{}
+
+	b.SetToken("123456:xxx")
+
+	if b.token != "123456:xxx" {
+		t.Errorf("SetToken() = %s, want %s", b.token, "123456:xxx")
+	}
+}

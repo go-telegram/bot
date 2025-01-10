@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.13.1 (2025-01-10)
+
+- add method `bot.ID() int64`
+- add method `bot.Token() string`
+
 ## v1.13.0 (2025-01-10)
 
 - support API 8.2 (#144)
