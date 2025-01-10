@@ -1032,7 +1032,30 @@ type GetGameHighScoresParams struct {
 type SendGiftParams struct {
 	UserID        int64                  `json:"user_id"`
 	GiftID        string                 `json:"gift_id"`
+	PayForUpgrade bool                   `json:"pay_for_upgrade,omitempty"`
 	Text          string                 `json:"text,omitempty"`
 	TextParseMode models.ParseMode       `json:"text_parse_mode,omitempty"`
 	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
+}
+
+// VerifyUserParams https://core.telegram.org/bots/api#verifyuser
+type VerifyUserParams struct {
+	UserID            int64  `json:"user_id"`
+	CustomDescription string `json:"custom_description,omitempty"`
+}
+
+// VerifyChatParams https://core.telegram.org/bots/api#verifychat
+type VerifyChatParams struct {
+	ChatID            any    `json:"chat_id"`
+	CustomDescription string `json:"custom_description,omitempty"`
+}
+
+// RemoveUserVerificationParams https://core.telegram.org/bots/api#removeuserverification
+type RemoveUserVerificationParams struct {
+	UserID int64 `json:"user_id"`
+}
+
+// RemoveChatVerificationParams https://core.telegram.org/bots/api#removechatverification
+type RemoveChatVerificationParams struct {
+	ChatID any `json:"chat_id"`
 }

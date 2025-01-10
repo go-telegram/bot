@@ -46,7 +46,6 @@ type InlineQueryResultArticle struct {
 	InputMessageContent InputMessageContent `json:"input_message_content,omitempty"`
 	ReplyMarkup         ReplyMarkup         `json:"reply_markup,omitempty"`
 	URL                 string              `json:"url,omitempty"`
-	HideURL             bool                `json:"hide_url,omitempty"`
 	Description         string              `json:"description,omitempty"`
 	ThumbnailURL        string              `json:"thumbnail_url,omitempty"`
 	ThumbnailWidth      int                 `json:"thumbnail_width,omitempty"`
