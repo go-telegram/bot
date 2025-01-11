@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.13.2 (2025-01-11)
+
+- change field type `WebAppUser.ID` from `int` to `int64`
+
 ## v1.13.1 (2025-01-10)
 
 - add method `bot.ID() int64`
