@@ -138,3 +138,10 @@ func WithNotAsyncHandlers() Option {
 		b.notAsyncHandlers = true
 	}
 }
+
+// WithInitialOffset allows to set initial offset for getUpdates method
+func WithInitialOffset(offset int64) Option {
+	return func(b *Bot) {
+		b.lastUpdateID = offset
+	}
+}
