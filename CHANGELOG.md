@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.13.3 (2025-01-11)
+
+- add option `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
+
 ## v1.13.2 (2025-01-11)
 
 - change field type `WebAppUser.ID` from `int` to `int64`

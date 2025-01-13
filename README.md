@@ -187,6 +187,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithWorkers` - set the number of workers that are processing the Updates channel, by default 1
 - `UseTestEnvironment()` - use test environment
 - `WithNotAsyncHandlers()` - allows to run handlers in the main goroutine
+- `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
 
 ## Message.Text and CallbackQuery.Data handlers
 
