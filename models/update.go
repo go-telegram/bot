@@ -27,3 +27,30 @@ type Update struct {
 	ChatBoost               *ChatBoostUpdated            `json:"chat_boost,omitempty"`
 	RemovedChatBoost        *ChatBoostRemoved            `json:"removed_chat_boost,omitempty"`
 }
+
+// allowed_updates https://core.telegram.org/bots/api#update
+const (
+	AllowedUpdateMessage                 string = "message"
+	AllowedUpdateEditedMessage           string = "edited_message"
+	AllowedUpdateChannelPost             string = "channel_post"
+	AllowedUpdateEditedChannelPost       string = "edited_channel_post"
+	AllowedUpdateBusinessConnection      string = "business_connection"
+	AllowedUpdateBusinessMessage         string = "business_message"
+	AllowedUpdateEditedBusinessMessage   string = "edited_business_message"
+	AllowedUpdateDeletedBusinessMessages string = "deleted_business_messages"
+	AllowedUpdateMessageReaction         string = "message_reaction"
+	AllowedUpdateMessageReactionCount    string = "message_reaction_count"
+	AllowedUpdateInlineQuery             string = "inline_query"
+	AllowedUpdateChosenInlineResult      string = "chosen_inline_result"
+	AllowedUpdateCallbackQuery           string = "callback_query"
+	AllowedUpdateShippingQuery           string = "shipping_query"
+	AllowedUpdatePreCheckoutQuery        string = "pre_checkout_query"
+	AllowedUpdatePurchasedPaidMedia      string = "purchased_paid_media"
+	AllowedUpdatePoll                    string = "poll"
+	AllowedUpdatePollAnswer              string = "poll_answer"
+	AllowedUpdateMyChatMember            string = "my_chat_member"
+	AllowedUpdateChatMember              string = "chat_member"
+	AllowedUpdateChatJoinRequest         string = "chat_join_request"
+	AllowedUpdateChatBoost               string = "chat_boost"
+	AllowedUpdateRemovedChatBoost        string = "removed_chat_boost"
+)
