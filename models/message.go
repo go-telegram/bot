@@ -21,6 +21,14 @@ type MaybeInaccessibleMessage struct {
 	InaccessibleMessage *InaccessibleMessage
 }
 
+func (mim *MaybeInaccessibleMessage) FromChat() *Chat {
+	if mim.InaccessibleMessage != nil {
+		return &mim.InaccessibleMessage.Chat
+	}
+
+	return &mim.Message.Chat
+}
+
 func (mim *MaybeInaccessibleMessage) UnmarshalJSON(data []byte) error {
 	v := struct {
 		Date int `json:"date"`
