@@ -49,14 +49,16 @@ type ChatBoostSource struct {
 func (cbs *ChatBoostSource) FromUser() *User {
 	if cbs.ChatBoostSourceGiftCode != nil {
 		return &cbs.ChatBoostSourceGiftCode.User
-	} else if cbs.ChatBoostSourceGiveaway != nil {
-		return &cbs.ChatBoostSourceGiveaway.User
-	} else if cbs.ChatBoostSourcePremium != nil {
-		return &cbs.ChatBoostSourcePremium.User
-	} else {
-		// In case, if Telegram will add new source types
-		panic("FromUser() method for " + string(cbs.Source) + " is not implemented")
 	}
+	if cbs.ChatBoostSourceGiveaway != nil {
+		return &cbs.ChatBoostSourceGiveaway.User
+	}
+	if cbs.ChatBoostSourcePremium != nil {
+		return &cbs.ChatBoostSourcePremium.User
+	}
+
+	// In case, if Telegram will add new source types
+	panic("FromUser() method for " + string(cbs.Source) + " is not implemented")
 }
 
 func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
