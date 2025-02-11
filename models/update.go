@@ -54,3 +54,55 @@ const (
 	AllowedUpdateChatBoost               string = "chat_boost"
 	AllowedUpdateRemovedChatBoost        string = "removed_chat_boost"
 )
+
+func (u *Update) FromUser() *User {
+	if u.Message != nil {
+		return u.Message.From
+	} else if u.EditedMessage != nil {
+		return u.EditedMessage.From
+	} else if u.ChannelPost != nil {
+		return u.ChannelPost.From
+	} else if u.EditedChannelPost != nil {
+		return u.EditedChannelPost.From
+	} else if u.BusinessConnection != nil {
+		return &u.BusinessConnection.User
+	} else if u.BusinessMessage != nil {
+		return u.BusinessMessage.From
+	} else if u.EditedBusinessMessage != nil {
+		return u.EditedBusinessMessage.From
+	} else if u.MessageReaction != nil {
+		return u.EditedMessage.From
+	} else if u.InlineQuery != nil {
+		return u.InlineQuery.From
+	} else if u.ChosenInlineResult != nil {
+		return &u.ChosenInlineResult.From
+	} else if u.CallbackQuery != nil {
+		return &u.CallbackQuery.From
+	} else if u.ShippingQuery != nil {
+		return u.ShippingQuery.From
+	} else if u.PreCheckoutQuery != nil {
+		return u.PreCheckoutQuery.From
+	} else if u.PurchasedPaidMedia != nil {
+		return &u.PurchasedPaidMedia.From
+	} else if u.PollAnswer != nil {
+		return u.PollAnswer.User
+	} else if u.MyChatMember != nil {
+		return &u.MyChatMember.From
+	} else if u.PurchasedPaidMedia != nil {
+		return &u.PurchasedPaidMedia.From
+	} else if u.ChatMember != nil {
+		return &u.ChatMember.From
+	} else if u.ChatJoinRequest != nil {
+		return &u.ChatJoinRequest.From
+	} else if u.ChatBoost != nil {
+		return u.ChatBoost.Boost.Source.FromUser()
+	} else if u.RemovedChatBoost != nil {
+		return u.RemovedChatBoost.Source.FromUser()
+	} else {
+		// Telegram can add new update types, so there is possibility of forgetting to add the statement
+		// or update simply could miss this data
+
+		// Poll, MessageReactionCount, DeletedBusinessMessages are skipped, they don't have User field
+		return nil
+	}
+}
