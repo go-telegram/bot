@@ -9,6 +9,7 @@ type TransactionPartnerType string
 
 const (
 	TransactionPartnerTypeUser             TransactionPartnerType = "user"
+	TransactionPartnerTypeChat             TransactionPartnerType = "chat"
 	TransactionPartnerTypeAffiliateProgram TransactionPartnerType = "affiliate_program"
 	TransactionPartnerTypeFragment         TransactionPartnerType = "fragment"
 	TransactionPartnerTypeTelegramAds      TransactionPartnerType = "telegram_ads"
@@ -21,6 +22,7 @@ type TransactionPartner struct {
 	Type TransactionPartnerType
 
 	User             *TransactionPartnerUser             `json:"user,omitempty"`
+	Chat             *TransactionPartnerChat             `json:"chat,omitempty"`
 	AffiliateProgram *TransactionPartnerAffiliateProgram `json:"affiliate_program,omitempty"`
 	Fragment         *TransactionPartnerFragment         `json:"fragment,omitempty"`
 	TelegramAds      *TransactionPartnerTelegramAds      `json:"telegram_ads,omitempty"`
@@ -42,6 +44,10 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 		m.Type = TransactionPartnerTypeUser
 		m.User = &TransactionPartnerUser{}
 		return json.Unmarshal(data, m.User)
+	case TransactionPartnerTypeChat:
+		m.Type = TransactionPartnerTypeChat
+		m.Chat = &TransactionPartnerChat{}
+		return json.Unmarshal(data, m.Chat)
 	case TransactionPartnerTypeAffiliateProgram:
 		m.Type = TransactionPartnerTypeAffiliateProgram
 		m.AffiliateProgram = &TransactionPartnerAffiliateProgram{}
@@ -86,6 +92,13 @@ type TransactionPartnerUser struct {
 	PaidMedia          []*PaidMedia           `json:"paid_media,omitempty"`
 	PaidMediaPayload   string                 `json:"paid_media_payload,omitempty"`
 	Gift               string                 `json:"gift,omitempty"`
+}
+
+// TransactionPartnerChat https://core.telegram.org/bots/api#transactionpartnerchat
+type TransactionPartnerChat struct {
+	Type TransactionPartnerType `json:"type"`
+	Chat Chat                   `json:"chat"`
+	Gift *Gift                  `json:"gift,omitempty"`
 }
 
 // TransactionPartnerAffiliateProgram https://core.telegram.org/bots/api#transactionpartneraffiliateprogram

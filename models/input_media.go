@@ -52,6 +52,8 @@ func (InputMediaPhoto) inputMediaTag() {}
 type InputMediaVideo struct {
 	Media                 string          `json:"media"`
 	Thumbnail             InputFile       `json:"thumbnail,omitempty"`
+	Cover                 string          `json:"cover,omitempty"`
+	StartTimestamp        int             `json:"start_timestamp,omitempty"`
 	Caption               string          `json:"caption,omitempty"`
 	ParseMode             ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities       []MessageEntity `json:"caption_entities,omitempty"`
