@@ -47,6 +47,8 @@ func (m *InputPaidMediaPhoto) MarshalInputMedia() ([]byte, error) {
 type InputPaidMediaVideo struct {
 	Media             string    `json:"media"`
 	Thumbnail         InputFile `json:"thumbnail,omitempty"`
+	Cover             string    `json:"cover,omitempty"`
+	StartTimestamp    int       `json:"start_timestamp,omitempty"`
 	Width             int       `json:"width,omitempty"`
 	Height            int       `json:"height,omitempty"`
 	Duration          int       `json:"duration,omitempty"`

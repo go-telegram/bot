@@ -40,6 +40,7 @@ type ForwardMessageParams struct {
 	ChatID              any  `json:"chat_id"`
 	MessageThreadID     int  `json:"message_thread_id,omitempty"`
 	FromChatID          any  `json:"from_chat_id"`
+	VideoStartTimestamp int  `json:"video_start_timestamp,omitempty"`
 	DisableNotification bool `json:"disable_notification,omitempty"`
 	ProtectContent      bool `json:"protect_content,omitempty"`
 	MessageID           int  `json:"message_id"`
@@ -61,6 +62,7 @@ type CopyMessageParams struct {
 	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
 	FromChatID            any                     `json:"from_chat_id"`
 	MessageID             int                     `json:"message_id"`
+	VideoStartTimestamp   int                     `json:"video_start_timestamp,omitempty"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
@@ -152,6 +154,8 @@ type SendVideoParams struct {
 	Width                 int                     `json:"width,omitempty"`
 	Height                int                     `json:"height,omitempty"`
 	Thumbnail             models.InputFile        `json:"thumbnail,omitempty"`
+	Cover                 models.InputFile        `json:"cover,omitempty"`
+	StartTimestamp        int                     `json:"start_timestamp,omitempty"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
@@ -1031,6 +1035,7 @@ type GetGameHighScoresParams struct {
 // SendGiftParams https://core.telegram.org/bots/api#sendgift
 type SendGiftParams struct {
 	UserID        int64                  `json:"user_id"`
+	ChatID        any                    `json:"chat_id,omitempty"`
 	GiftID        string                 `json:"gift_id"`
 	PayForUpgrade bool                   `json:"pay_for_upgrade,omitempty"`
 	Text          string                 `json:"text,omitempty"`
