@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.14.0 (2025-02-12)
+ 
+- support API 8.3 
+
 ## v1.13.3 (2025-01-11)
 
 - add option `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
