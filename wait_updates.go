@@ -13,6 +13,8 @@ func (b *Bot) waitUpdates(ctx context.Context, wg *sync.WaitGroup) {
 		select {
 		case <-ctx.Done():
 			return
+		case <-b.stopReceiveUpdates:
+			return
 		case upd := <-b.updates:
 			b.ProcessUpdate(ctx, upd)
 		}

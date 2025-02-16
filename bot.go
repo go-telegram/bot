@@ -59,7 +59,8 @@ type Bot struct {
 
 	allowedUpdates AllowedUpdates
 
-	updates chan *models.Update
+	updates            chan *models.Update
+	stopReceiveUpdates chan struct{}
 }
 
 // New creates new Bot instance
@@ -81,7 +82,8 @@ func New(token string, options ...Option) (*Bot, error) {
 		checkInitTimeout:   defaultCheckInitTimeout,
 		workers:            defaultWorkers,
 
-		updates: make(chan *models.Update, defaultUpdatesChanCap),
+		updates:            make(chan *models.Update, defaultUpdatesChanCap),
+		stopReceiveUpdates: make(chan struct{}),
 	}
 
 	for _, o := range options {
@@ -146,6 +148,11 @@ func (b *Bot) Start(ctx context.Context) {
 	}
 
 	wg.Wait()
+}
+
+// StopReceiveUpdates stops receiving updates
+func (b *Bot) StopReceiveUpdates() {
+	b.stopReceiveUpdates <- struct{}{}
 }
 
 func defaultErrorsHandler(err error) {
