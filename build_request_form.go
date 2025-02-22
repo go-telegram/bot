@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"reflect"
@@ -100,6 +101,9 @@ func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value
 	w, errCreateField := form.CreateFormFile(fieldName, value.Filename)
 	if errCreateField != nil {
 		return errCreateField
+	}
+	if value.Data == nil || reflect.ValueOf(value.Data).IsNil() {
+		return fmt.Errorf("nil data for field %s", fieldName)
 	}
 	_, errCopy := io.Copy(w, value.Data)
 	return errCopy
