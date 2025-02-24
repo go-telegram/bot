@@ -98,12 +98,12 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 }
 
 func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value *models.InputFileUpload) error {
+	if value.Data == nil || reflect.ValueOf(value.Data).IsNil() {
+		return fmt.Errorf("nil data for field %s", fieldName)
+	}
 	w, errCreateField := form.CreateFormFile(fieldName, value.Filename)
 	if errCreateField != nil {
 		return errCreateField
-	}
-	if value.Data == nil || reflect.ValueOf(value.Data).IsNil() {
-		return fmt.Errorf("nil data for field %s", fieldName)
 	}
 	_, errCopy := io.Copy(w, value.Data)
 	return errCopy
