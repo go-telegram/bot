@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.14.1 (2025-02-12)
+
+- remove ci args for use default config
+- make MaskPosition optional 
+- Add check for nil in addFormFieldInputFileUpload (#161) 
+- Change type of Stickers field in CreateNewStickerSetParams struct (#160)
+
 ## v1.14.0 (2025-02-12)
  
 - support API 8.3 
