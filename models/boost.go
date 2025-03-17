@@ -46,6 +46,21 @@ type ChatBoostSource struct {
 	ChatBoostSourceGiveaway *ChatBoostSourceGiveaway
 }
 
+func (cbs *ChatBoostSource) FromUser() *User {
+	if cbs.ChatBoostSourceGiftCode != nil {
+		return &cbs.ChatBoostSourceGiftCode.User
+	}
+	if cbs.ChatBoostSourceGiveaway != nil {
+		return &cbs.ChatBoostSourceGiveaway.User
+	}
+	if cbs.ChatBoostSourcePremium != nil {
+		return &cbs.ChatBoostSourcePremium.User
+	}
+
+	// In case, if Telegram will add new source types
+	panic("FromUser() method for " + string(cbs.Source) + " is not implemented")
+}
+
 func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 	v := struct {
 		Source ChatBoostSourceType `json:"source"`
