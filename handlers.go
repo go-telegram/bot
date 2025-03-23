@@ -22,6 +22,7 @@ const (
 	MatchTypeExact MatchType = iota
 	MatchTypePrefix
 	MatchTypeContains
+	MatchTypeCommand
 
 	matchTypeRegexp
 	matchTypeFunc
@@ -37,6 +38,8 @@ type handler struct {
 	re        *regexp.Regexp
 	matchFunc MatchFunc
 }
+
+var CommandRegexp = regexp.MustCompile(`(?s)^/(\w+)(?:@(\w+))?(?:\s+(.+?)\s*)?$`)
 
 func (h handler) match(update *models.Update) bool {
 	if h.matchType == matchTypeFunc {
@@ -79,6 +82,14 @@ func (h handler) match(update *models.Update) bool {
 	}
 	if h.matchType == matchTypeRegexp {
 		return h.re.Match([]byte(data))
+	}
+	if h.matchType == MatchTypeCommand {
+		matches := CommandRegexp.FindStringSubmatch(data)
+		if len(matches) != 4 {
+			return false
+		}
+
+		return strings.EqualFold(matches[1], h.pattern)
 	}
 	return false
 }
