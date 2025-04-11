@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.14.2 (2025-02-12)
+
+- add `MatchTypeCommand` and `MatchTypeCommandStartOnly`
+- updated UploadStickerFile method to match Telegram Bot API (#165)
+
 ## v1.14.1 (2025-02-12)
 
 - remove ci args for use default config
