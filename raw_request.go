@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"reflect"
@@ -74,7 +73,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			log.Printf("failed to close response body: %v", err)
+			b.errorsHandler(fmt.Errorf("failed to close response body: %w", err))
 		}
 	}()
 
