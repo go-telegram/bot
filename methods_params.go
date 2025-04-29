@@ -1065,3 +1065,141 @@ type RemoveUserVerificationParams struct {
 type RemoveChatVerificationParams struct {
 	ChatID any `json:"chat_id"`
 }
+
+// ReadBusinessMessageParams https://core.telegram.org/bots/api#readbusinessmessage
+type ReadBusinessMessageParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	ChatID               int    `json:"chat_id"`
+	MessageID            int    `json:"message_id"`
+}
+
+// DeleteBusinessMessagesParams https://core.telegram.org/bots/api#deletebusinessmessages
+type DeleteBusinessMessagesParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	MessageIDs           []int  `json:"message_ids"`
+}
+
+// SetBusinessAccountNameParams https://core.telegram.org/bots/api#setbusinessaccountname
+type SetBusinessAccountNameParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	FirstName            string `json:"first_name"`
+	LastName             string `json:"last_name,omitempty"`
+}
+
+// SetBusinessAccountUsernameParams https://core.telegram.org/bots/api#setbusinessaccountusername
+type SetBusinessAccountUsernameParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	Username             string `json:"username,omitempty"`
+}
+
+// SetBusinessAccountBioParams https://core.telegram.org/bots/api#setbusinessaccountbio
+type SetBusinessAccountBioParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	Bio                  string `json:"bio,omitempty"`
+}
+
+// SetBusinessAccountProfilePhotoParams https://core.telegram.org/bots/api#setbusinessaccountprofilephoto
+type SetBusinessAccountProfilePhotoParams struct {
+	BusinessConnectionID string                   `json:"business_connection_id"`
+	Photo                models.InputProfilePhoto `json:"photo"`
+	IsPublic             bool                     `json:"is_public,omitempty"`
+}
+
+// RemoveBusinessAccountProfilePhotoParams https://core.telegram.org/bots/api#removebusinessaccountprofilephoto
+type RemoveBusinessAccountProfilePhotoParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	IsPublic             bool   `json:"is_public,omitempty"`
+}
+
+// SetBusinessAccountGiftSettingsParams https://core.telegram.org/bots/api#setbusinessaccountgiftsettings
+type SetBusinessAccountGiftSettingsParams struct {
+	BusinessConnectionID string                   `json:"business_connection_id"`
+	ShowGiftButton       bool                     `json:"show_gift_button"`
+	AcceptedGiftTypes    models.AcceptedGiftTypes `json:"accepted_gift_types"`
+}
+
+// GetBusinessAccountStarBalanceParams https://core.telegram.org/bots/api#getbusinessaccountstarbalance
+type GetBusinessAccountStarBalanceParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+}
+
+// TransferBusinessAccountStarsParams https://core.telegram.org/bots/api#transferbusinessaccountstars
+type TransferBusinessAccountStarsParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	StarCount            int    `json:"star_count"`
+}
+
+// GetBusinessAccountGiftsParams https://core.telegram.org/bots/api#getbusinessaccountgifts
+type GetBusinessAccountGiftsParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	ExcludeUnsaved       bool   `json:"exclude_unsaved,omitempty"`
+	ExcludeSaved         bool   `json:"exclude_saved,omitempty"`
+	ExcludeUnlimited     bool   `json:"exclude_unlimited,omitempty"`
+	ExcludeLimited       bool   `json:"exclude_limited,omitempty"`
+	ExcludeUnique        bool   `json:"exclude_unique,omitempty"`
+	SortByPrice          bool   `json:"sort_by_price,omitempty"`
+	Offset               string `json:"offset,omitempty"`
+	Limit                int    `json:"limit,omitempty"`
+}
+
+// ConvertGiftToStarsParams https://core.telegram.org/bots/api#convertgifttostars
+type ConvertGiftToStarsParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	OwnedGiftID          string `json:"owned_gift_id"`
+}
+
+// UpgradeGiftParams https://core.telegram.org/bots/api#upgradegift
+type UpgradeGiftParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	OwnedGiftID          string `json:"owned_gift_id"`
+	KeepOriginalDetails  bool   `json:"keep_original_details,omitempty"`
+	StarCount            int    `json:"star_count,omitempty"`
+}
+
+// TransferGiftParams https://core.telegram.org/bots/api#transfergift
+type TransferGiftParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	OwnedGiftID          string `json:"owned_gift_id"`
+	NewOwnerChatID       int    `json:"new_owner_chat_id"`
+	StarCount            int    `json:"star_count"`
+}
+
+// PostStoryParams https://core.telegram.org/bots/api#poststory
+type PostStoryParams struct {
+	BusinessConnectionID string                   `json:"business_connection_id"`
+	Content              models.InputStoryContent `json:"content"`
+	ActivePeriod         int                      `json:"active_period"`
+	Caption              string                   `json:"caption,omitempty"`
+	ParseMode            models.ParseMode         `json:"parse_mode,omitempty"`
+	CaptionEntities      []models.MessageEntity   `json:"caption_entities,omitempty"`
+	Areas                []models.StoryArea       `json:"areas,omitempty"`
+	PostToChatPage       bool                     `json:"post_to_chat_page,omitempty"`
+	ProtectContent       bool                     `json:"protect_content,omitempty"`
+}
+
+// EditStoryParams https://core.telegram.org/bots/api#editstory
+type EditStoryParams struct {
+	BusinessConnectionID string                   `json:"business_connection_id"`
+	StoryID              int                      `json:"story_id"`
+	Content              models.InputStoryContent `json:"content"`
+	Caption              string                   `json:"caption,omitempty"`
+	ParseMode            models.ParseMode         `json:"parse_mode,omitempty"`
+	CaptionEntities      []models.MessageEntity   `json:"caption_entities,omitempty"`
+	Areas                []models.StoryArea       `json:"areas,omitempty"`
+}
+
+// DeleteStoryParams https://core.telegram.org/bots/api#deletestory
+type DeleteStoryParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	StoryID              int    `json:"story_id"`
+}
+
+// GiftPremiumSubscriptionParams https://core.telegram.org/bots/api#giftpremiumsubscription
+type GiftPremiumSubscriptionParams struct {
+	UserID        int64                  `json:"user_id"`
+	MonthCount    int                    `json:"month_count"`
+	StarCount     int                    `json:"star_count"`
+	Text          string                 `json:"text,omitempty"`
+	TextParseMode string                 `json:"text_parse_mode,omitempty"`
+	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
+}
