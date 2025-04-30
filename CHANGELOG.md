@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.15.0 (2025-04-29)
+
+- support API 9.0 (#176)
+- fix json 'omitempty' fields for message struct - pinned_message/pinned_message (#175) 
+- Add MessageEntity Types (#169) 
+- fix: rawRequest - use errorsHandler for error on close resp body (#170) 
+
 ## v1.14.2 (2025-02-12)
 
 - add `MatchTypeCommand` and `MatchTypeCommandStartOnly`

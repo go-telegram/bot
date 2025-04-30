@@ -84,14 +84,16 @@ type AffiliateInfo struct {
 
 // TransactionPartnerUser https://core.telegram.org/bots/api#transactionpartneruser
 type TransactionPartnerUser struct {
-	Type               TransactionPartnerType `json:"type"`
-	User               User                   `json:"user"`
-	Affiliate          *AffiliateInfo         `json:"affiliate,omitempty"`
-	InvoicePayload     string                 `json:"invoice_payload,omitempty"`
-	SubscriptionPeriod int                    `json:"subscription_period,omitempty"`
-	PaidMedia          []*PaidMedia           `json:"paid_media,omitempty"`
-	PaidMediaPayload   string                 `json:"paid_media_payload,omitempty"`
-	Gift               string                 `json:"gift,omitempty"`
+	Type                        TransactionPartnerType `json:"type"`
+	TransactionType             string                 `json:"transaction_type"`
+	User                        User                   `json:"user"`
+	Affiliate                   *AffiliateInfo         `json:"affiliate,omitempty"`
+	InvoicePayload              string                 `json:"invoice_payload,omitempty"`
+	SubscriptionPeriod          int                    `json:"subscription_period,omitempty"`
+	PaidMedia                   []*PaidMedia           `json:"paid_media,omitempty"`
+	PaidMediaPayload            string                 `json:"paid_media_payload,omitempty"`
+	Gift                        string                 `json:"gift,omitempty"`
+	PremiumSubscriptionDuration int                    `json:"premium_subscription_duration,omitempty"`
 }
 
 // TransactionPartnerChat https://core.telegram.org/bots/api#transactionpartnerchat
@@ -204,4 +206,10 @@ type StarTransaction struct {
 // StarTransactions https://core.telegram.org/bots/api#startransactions
 type StarTransactions struct {
 	Transactions []StarTransaction `json:"transactions"`
+}
+
+// StarAmount https://core.telegram.org/bots/api#staramount
+type StarAmount struct {
+	Amount         int `json:"amount"`
+	NanostarAmount int `json:"nanostar_amount,omitempty"`
 }

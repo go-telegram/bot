@@ -133,6 +133,7 @@ type ChatFullInfo struct {
 	InviteLink                         string                `json:"invite_link,omitempty"`
 	PinnedMessage                      *Message              `json:"pinned_message,omitempty"`
 	Permissions                        *ChatPermissions      `json:"permissions,omitempty"`
+	AcceptedGiftTypes                  AcceptedGiftTypes     `json:"accepted_gift_types"`
 	CanSendPaidMedia                   bool                  `json:"can_send_paid_media,omitempty"`
 	SlowModeDelay                      int                   `json:"slow_mode_delay,omitempty"`
 	UnrestrictBoostCount               int                   `json:"unrestrict_boost_count,omitempty"`
@@ -146,5 +147,4 @@ type ChatFullInfo struct {
 	CustomEmojiStickerSetName          string                `json:"custom_emoji_sticker_set_name,omitempty"`
 	LinkedChatID                       int64                 `json:"linked_chat_id,omitempty"`
 	Location                           *ChatLocation         `json:"location,omitempty"`
-	CanSendGift                        bool                  `json:"can_send_gift,omitempty"`
 }
