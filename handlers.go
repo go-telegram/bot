@@ -24,6 +24,7 @@ const (
 	MatchTypeContains
 	MatchTypeCommand
 	MatchTypeCommandStartOnly
+	MatchTypeCommandStartMaybeWithBotUsernameSuffix // example `/command@example_bot`, can't match username suffix if bot with the `bot.WithSkipGetMe()` option
 
 	matchTypeRegexp
 	matchTypeFunc
@@ -36,6 +37,7 @@ type handler struct {
 	handler     HandlerFunc
 
 	pattern   string
+	username  string
 	re        *regexp.Regexp
 	matchFunc MatchFunc
 }
@@ -100,6 +102,15 @@ func (h handler) match(update *models.Update) bool {
 			}
 		}
 	}
+	if h.matchType == MatchTypeCommandStartMaybeWithBotUsernameSuffix {
+		for _, e := range entities {
+			if e.Type == models.MessageEntityTypeBotCommand {
+				if e.Offset == 0 && (data[e.Offset+1:e.Offset+e.Length] == h.pattern || data[e.Offset+1:e.Offset+e.Length] == h.pattern + "@" + h.username) {
+					return true
+				}
+			}
+		}
+	}
 	if h.matchType == matchTypeRegexp {
 		return h.re.Match([]byte(data))
 	}
@@ -154,6 +165,7 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 		handlerType: handlerType,
 		matchType:   matchType,
 		pattern:     pattern,
+		username:    b.username,
 		handler:     applyMiddlewares(f, m...),
 	}
 

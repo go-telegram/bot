@@ -36,6 +36,7 @@ type Bot struct {
 
 	url                string
 	token              string
+	username           string
 	pollTimeout        time.Duration
 	skipGetMe          bool
 	webhookSecretToken string
@@ -92,10 +93,11 @@ func New(token string, options ...Option) (*Bot, error) {
 	defer cancel()
 
 	if !b.skipGetMe {
-		_, err := b.GetMe(ctx)
+		botInfo, err := b.GetMe(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("error call getMe, %w", err)
 		}
+		b.username = botInfo.Username
 	}
 
 	return b, nil
@@ -119,6 +121,13 @@ func (b *Bot) SetToken(token string) {
 // Token returns the bot token
 func (b *Bot) Token() string {
 	return b.token
+}
+
+// Username returns the bot username without `@` prefix
+//
+// Return empty string if bot with the `bot.WithSkipGetMe()` option
+func (b *Bot) Username() string {
+	return b.username
 }
 
 // StartWebhook starts the Bot with webhook mode
