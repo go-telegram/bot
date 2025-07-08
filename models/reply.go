@@ -30,6 +30,7 @@ type ExternalReplyInfo struct {
 	VideoNote          *VideoNote          `json:"video_note,omitempty"`
 	Voice              *Voice              `json:"voice,omitempty"`
 	HasMediaSpoiler    bool                `json:"has_media_spoiler,omitempty"`
+	Checklist          *Checklist          `json:"checklist,omitempty"`
 	Contact            *Contact            `json:"contact,omitempty"`
 	Dice               *Dice               `json:"dice,omitempty"`
 	Game               *Game               `json:"game,omitempty"`
