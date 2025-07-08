@@ -83,8 +83,15 @@ type OwnedGiftRegular struct {
 
 // OwnedGiftUnique https://core.telegram.org/bots/api#ownedgiftunique
 type OwnedGiftUnique struct {
-	Type OwnedGiftType `json:"type"`
-	Gift UniqueGift    `json:"gift"`
+	Type              OwnedGiftType `json:"type"`
+	Gift              UniqueGift    `json:"gift"`
+	OwnedGiftID       string        `json:"owned_gift_id,omitempty"`
+	SenderUser        *User         `json:"sender_user,omitempty"`
+	SendDate          int           `json:"send_date"`
+	IsSaved           bool          `json:"is_saved,omitempty"`
+	CanBeTransferred  bool          `json:"can_be_transferred,omitempty"`
+	TransferStarCount int           `json:"transfer_star_count,omitempty"`
+	NextTransferDate  int           `json:"next_transfer_date,omitempty"`
 }
 
 // OwnedGifts https://core.telegram.org/bots/api#ownedgifts
@@ -147,8 +154,9 @@ type GiftInfo struct {
 
 // UniqueGiftInfo https://core.telegram.org/bots/api#uniquegiftinfo
 type UniqueGiftInfo struct {
-	Gift              UniqueGift `json:"gift"`
-	Origin            string     `json:"origin"`
-	OwnedGiftID       string     `json:"owned_gift_id,omitempty"`
-	TransferStarCount int        `json:"transfer_star_count,omitempty"`
+	Gift                UniqueGift `json:"gift"`
+	Origin              string     `json:"origin"`
+	LastResaleStarCount int        `json:"last_resale_star_count,omitempty"`
+	OwnedGiftID         string     `json:"owned_gift_id,omitempty"`
+	TransferStarCount   int        `json:"transfer_star_count,omitempty"`
 }

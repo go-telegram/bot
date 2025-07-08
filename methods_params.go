@@ -365,6 +365,18 @@ type SendPollParams struct {
 	ReplyMarkup           models.ReplyMarkup       `json:"reply_markup,omitempty"`
 }
 
+// SendChecklistParams https://core.telegram.org/bots/api#sendchecklist
+type SendChecklistParams struct {
+	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`
+	ChatID               int                     `json:"chat_id"`
+	Checklist            models.InputChecklist   `json:"checklist"`
+	DisableNotification  bool                    `json:"disable_notification,omitempty"`
+	ProtectContent       bool                    `json:"protect_content,omitempty"`
+	MessageEffectID      string                  `json:"message_effect_id,omitempty"`
+	ReplyParameters      *models.ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
+}
+
 // SendDiceParams https://core.telegram.org/bots/api#senddice
 type SendDiceParams struct {
 	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`
@@ -760,6 +772,15 @@ type EditMessageMediaParams struct {
 	InlineMessageID      string             `json:"inline_message_id,omitempty"`
 	Media                models.InputMedia  `json:"media"`
 	ReplyMarkup          models.ReplyMarkup `json:"reply_markup,omitempty"`
+}
+
+// EditMessageChecklistParams https://core.telegram.org/bots/api#editmessagechecklist
+type EditMessageChecklistParams struct {
+	BusinessConnectionID string                `json:"business_connection_id,omitempty"`
+	ChatID               int                   `json:"chat_id,omitempty"`
+	MessageID            int                   `json:"message_id,omitempty"`
+	Checklist            models.InputChecklist `json:"checklist"`
+	ReplyMarkup          models.ReplyMarkup    `json:"reply_markup,omitempty"`
 }
 
 type EditMessageReplyMarkupParams struct {

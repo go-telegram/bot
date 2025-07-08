@@ -161,3 +161,9 @@ type PaidMediaPurchased struct {
 type PaidMessagePriceChanged struct {
 	PaidMessageStarCount int `json:"paid_message_star_count"`
 }
+
+// DirectMessagePriceChanged https://core.telegram.org/bots/api#directmessagepricechanged
+type DirectMessagePriceChanged struct {
+	AreDirectMessagesEnabled bool `json:"are_direct_messages_enabled"`
+	DirectMessageStarCount   int  `json:"direct_message_star_count,omitempty"`
+}
