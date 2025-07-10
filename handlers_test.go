@@ -329,4 +329,355 @@ func Test_match_command_start(t *testing.T) {
 			t.Error("unexpected result")
 		}
 	})
+
+	// correct command
+	t.Run("start maybe with username suffix 1, yes", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/foo",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 4},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if !res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, correct username
+	t.Run("start maybe with username suffix 2, yes", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/foo@foo_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 12},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if !res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, wrong username
+	t.Run("start maybe with username suffix 3, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/foo@other_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 14},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, with prefix
+	t.Run("start maybe with username suffix 4, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /foo",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 4},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, with prefix, correct username
+	t.Run("start maybe with username suffix 5, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /foo@foo_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 12},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, with prefix, wrong username
+	t.Run("start maybe with username suffix 6, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /foo@other_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 14},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+
+	// wrong command
+	t.Run("start maybe with username suffix 7, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/bar",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 4},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// wrong command, correct username
+	t.Run("start maybe with username suffix 8, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/bar@foo_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 12},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// wrong command, wrong username
+	t.Run("start maybe with username suffix 9, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/bar@other_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 14},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// wrong command, with prefix
+	t.Run("start maybe with username suffix 10, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /bar",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 4},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// wrong command, with prefix, correct username
+	t.Run("start maybe with username suffix 11, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /bar@foo_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 12},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// wrong command, with prefix, wrong username
+	t.Run("start maybe with username suffix 12, no", func(t *testing.T) {
+		b := &Bot{
+			username: "foo_bot",
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "a /bar@other_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 14},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, no username, correct username
+	t.Run("start maybe with username suffix 13, no", func(t *testing.T) {
+		b := &Bot{
+			// username: "foo_bot", // no username
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/foo@foo_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 12},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
+
+	// correct command, no username, wrong username
+	t.Run("start maybe with username suffix 14, no", func(t *testing.T) {
+		b := &Bot{
+			// username: "foo_bot", // no username
+		}
+
+		id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommandStartMaybeWithBotUsernameSuffix, nil)
+
+		h := findHandler(b, id)
+		u := models.Update{
+			ID: 42,
+			Message: &models.Message{
+				Text: "/foo@other_bot",
+				Entities: []models.MessageEntity{
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 14},
+				},
+			},
+		}
+
+		res := h.match(&u)
+		if res {
+			t.Error("unexpected result")
+		}
+	})
 }
