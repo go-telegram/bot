@@ -319,7 +319,7 @@ func Test_match_command_start(t *testing.T) {
 			Message: &models.Message{
 				Text: "/bar",
 				Entities: []models.MessageEntity{
-					{Type: models.MessageEntityTypeBotCommand, Offset: 2, Length: 4},
+					{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: 4},
 				},
 			},
 		}
