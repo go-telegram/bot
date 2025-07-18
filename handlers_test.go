@@ -480,7 +480,6 @@ func Test_match_command_start(t *testing.T) {
 		}
 	})
 
-
 	// wrong command
 	t.Run("start maybe with username suffix 7, no", func(t *testing.T) {
 		b := &Bot{

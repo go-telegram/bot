@@ -105,7 +105,7 @@ func (h handler) match(update *models.Update) bool {
 	if h.matchType == MatchTypeCommandStartMaybeWithBotUsernameSuffix {
 		for _, e := range entities {
 			if e.Type == models.MessageEntityTypeBotCommand {
-				if e.Offset == 0 && (data[e.Offset+1:e.Offset+e.Length] == h.pattern || data[e.Offset+1:e.Offset+e.Length] == h.pattern + "@" + h.username) {
+				if e.Offset == 0 && (data[e.Offset+1:e.Offset+e.Length] == h.pattern || data[e.Offset+1:e.Offset+e.Length] == h.pattern+"@"+h.username) {
 					return true
 				}
 			}
