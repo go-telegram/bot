@@ -152,7 +152,7 @@ func defaultErrorsHandler(err error) {
 	log.Printf("[TGBOT] [ERROR] %v", err)
 }
 
-func defaultDebugHandler(format string, args ...interface{}) {
+func defaultDebugHandler(format string, args ...any) {
 	log.Printf("[TGBOT] [DEBUG] "+format, args...)
 }
 
@@ -160,7 +160,7 @@ func defaultHandler(_ context.Context, _ *Bot, update *models.Update) {
 	log.Printf("[TGBOT] [UPDATE] %+v", update)
 }
 
-func (b *Bot) error(format string, args ...interface{}) {
+func (b *Bot) error(format string, args ...any) {
 	b.errorsHandler(fmt.Errorf(format, args...))
 }
 
