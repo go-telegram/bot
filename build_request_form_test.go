@@ -29,6 +29,7 @@ func Test_buildRequestForm(t *testing.T) {
 		DefaultInt                 int                        `json:"default_int"`
 		InputMediaInterface        models.InputMedia          `json:"input_media_interface"`
 		InlineQueryResultInterface models.InlineQueryResult   `json:"inline_query_result_interface"`
+		InputStickerSlice          []models.InputSticker      `json:"input_sticker_slice"`
 		NoJSONTag1                 string
 		NoJSONTag2                 string `json:"-"`
 		OmitEmptyString            string `json:"omit_empty_string,omitempty"`
@@ -46,9 +47,22 @@ func Test_buildRequestForm(t *testing.T) {
 		DefaultInt:                 42,
 		InputMediaInterface:        &models.InputMediaPhoto{Media: "foo", Caption: "bar", ParseMode: "baz"},
 		InlineQueryResultInterface: &models.InlineQueryResultArticle{Title: "foo", Description: "bar", InputMessageContent: &models.InputTextMessageContent{MessageText: "foo"}},
-		NoJSONTag1:                 "foo",
-		NoJSONTag2:                 "bar",
-		OmitEmptyString:            "",
+		InputStickerSlice: []models.InputSticker{
+			{
+				Sticker:   "attach://sticker.png",
+				Format:    "foo",
+				EmojiList: []string{"bar"},
+				StickerAttachment: strings.NewReader("sticker file"),
+			},
+			{
+				Sticker:   "foo",
+				Format:    "bar",
+				EmojiList: []string{"baz"},
+			},
+		},
+		NoJSONTag1:      "foo",
+		NoJSONTag2:      "bar",
+		OmitEmptyString: "",
 	}
 
 	buf := bytes.NewBuffer(nil)
@@ -102,8 +116,17 @@ Content-Disposition: form-data; name="input_media_interface"
 Content-Disposition: form-data; name="inline_query_result_interface"
 
 {"type":"article","id":"","title":"foo","input_message_content":{"message_text":"foo"},"description":"bar"}
+--XXX
+Content-Disposition: form-data; name="sticker.png"; filename="sticker.png"
+Content-Type: application/octet-stream
+
+sticker file
+--XXX
+Content-Disposition: form-data; name="input_sticker_slice"
+
+[{"sticker":"attach://sticker.png","format":"foo","emoji_list":["bar"]},{"sticker":"foo","format":"bar","emoji_list":["baz"]}]
 --XXX--
 `
-	assertEqualInt(t, fieldsCount, 6)
+	assertEqualInt(t, fieldsCount, 7)
 	assertFormData(t, buf.String(), expect)
 }
