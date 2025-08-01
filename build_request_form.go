@@ -84,6 +84,8 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 			err = addFormFieldInputMediaSlice(form, fieldName, ss)
 		case []models.InlineQueryResult:
 			err = addFormFieldInlineQueryResultSlice(form, fieldName, vv)
+		case []models.InputSticker:
+			err = addFormFieldInputStickerSlice(form, fieldName, vv)
 		default:
 			err = addFormFieldDefault(form, fieldName, v.Field(i).Interface())
 		}
@@ -173,6 +175,35 @@ func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string
 	var lines []string
 	for _, media := range value {
 		line, errEncode := media.MarshalCustom()
+		if errEncode != nil {
+			return errEncode
+		}
+		lines = append(lines, string(line))
+	}
+
+	w, errCreateField := form.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
+	return errCopy
+}
+
+func addFormFieldInputStickerSlice(form *multipart.Writer, fieldName string, value []models.InputSticker) error {
+	var lines []string
+	for _, sticker := range value {
+		if strings.HasPrefix(sticker.Sticker, "attach://") {
+			filename := strings.TrimPrefix(sticker.Sticker, "attach://")
+			attachmentField, errCreateAttachmentField := form.CreateFormFile(filename, filename)
+			if errCreateAttachmentField != nil {
+				return errCreateAttachmentField
+			}
+			_, errCopy := io.Copy(attachmentField, sticker.StickerAttachment)
+			if errCopy != nil {
+				return errCopy
+			}
+		}
+		line, errEncode := json.Marshal(sticker)
 		if errEncode != nil {
 			return errEncode
 		}
