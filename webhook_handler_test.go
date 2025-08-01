@@ -17,7 +17,7 @@ type mockDebugHandler struct {
 	messages []string
 }
 
-func (h *mockDebugHandler) Handle(format string, args ...interface{}) {
+func (h *mockDebugHandler) Handle(format string, args ...any) {
 	h.messages = append(h.messages, format)
 }
 
@@ -52,7 +52,7 @@ func TestWebhookHandler_Success(t *testing.T) {
 	bot := &Bot{
 		updates: make(chan *models.Update, 1),
 		isDebug: true,
-		debugHandler: func(format string, args ...interface{}) {
+		debugHandler: func(format string, args ...any) {
 			debugHandler.Handle(format, args...)
 		},
 		errorsHandler: func(err error) {
@@ -86,7 +86,7 @@ func TestWebhookHandler_ReadBodyError(t *testing.T) {
 	errorsHandler := &mockErrorsHandler{}
 
 	bot := &Bot{
-		debugHandler: func(format string, args ...interface{}) {
+		debugHandler: func(format string, args ...any) {
 			debugHandler.Handle(format, args...)
 		},
 		errorsHandler: func(err error) {
@@ -114,7 +114,7 @@ func TestWebhookHandler_DecodeError(t *testing.T) {
 	errorsHandler := &mockErrorsHandler{}
 
 	bot := &Bot{
-		debugHandler: func(format string, args ...interface{}) {
+		debugHandler: func(format string, args ...any) {
 			debugHandler.Handle(format, args...)
 		},
 		errorsHandler: func(err error) {
@@ -144,7 +144,7 @@ func TestWebhookHandler_ContextDone(t *testing.T) {
 
 	bot := &Bot{
 		updates: make(chan *models.Update, 1),
-		debugHandler: func(format string, args ...interface{}) {
+		debugHandler: func(format string, args ...any) {
 			debugHandler.Handle(format, args...)
 		},
 		errorsHandler: func(err error) {
