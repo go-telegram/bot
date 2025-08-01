@@ -396,3 +396,13 @@ func TestBot_SetToken(t *testing.T) {
 		t.Errorf("SetToken() = %s, want %s", b.token, "123456:xxx")
 	}
 }
+
+func TestBot_Username(t *testing.T) {
+	b := &Bot{username: "example_bot"}
+
+	username := b.Username()
+
+	if username != "example_bot" {
+		t.Errorf("Username() = %s, want %s", username, "example_bot")
+	}
+}
