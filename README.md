@@ -321,6 +321,47 @@ bot.SendMediaGroup(ctx, params)
 
 [Demo in examples](examples/send_media_group/main.go)
 
+## InputSticker
+
+For `CreateNewStickerSet` method you can send sticker by file path or file contents.
+
+[Official documentation InputSticker]((https://core.telegram.org/bots/api#inputsticker)
+
+> field `sticker`: The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new file using multipart/form-data under <file_attach_name> name. Animated and video stickers can't be uploaded via HTTP URL.
+
+If you want to use `attach://` format, you should to define `StickerAttachment` field with file content reader.
+
+```go
+fileContent, _ := os.ReadFile("/path/to/telegram.png")
+
+inputSticker1 := models.InputSticker{
+	Sticker:   "https://github.com/go-telegram/bot/blob/main/examples/create_new_sticker_set/images/telegram.png?raw=true",
+	Format:    "static",
+	EmojiList: []string{"1️⃣"},
+}
+
+inputSticker2 := models.InputSticker{
+	Sticker:           "attach://telegram.png",
+	Format:            "static",
+	EmojiList:         []string{"2️⃣"},
+	StickerAttachment: bytes.NewReader(fileContent),
+}
+
+params := &bot.CreateNewStickerSetParams{
+	UserID: update.Message.Chat.ID,
+	Name:   fmt.Sprintf("Example%d_by_%s", time.Now().Unix(), botUsername),
+	Title:  "Example sticker set",
+	Stickers: []models.InputSticker{
+		inputSticker1,
+		inputSticker2,
+	},
+}
+
+b.CreateNewStickerSet(ctx, params)
+```
+
+[Demo in examples](examples/create_new_sticker_set/main.go)
+
 ## Helpers
 
 ### `EscapeMarkdown(s string) string`
