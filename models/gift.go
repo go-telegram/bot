@@ -18,6 +18,7 @@ type Gift struct {
 	UpgradeStarCount int     `json:"upgrade_star_count,omitempty"`
 	TotalCount       int     `json:"total_count,omitempty"`
 	RemainingCount   int     `json:"remaining_count,omitempty"`
+	PublisherChat    *Chat   `json:"publisher_chat,omitempty"`
 }
 
 // AcceptedGiftTypes https://core.telegram.org/bots/api#acceptedgifttypes
@@ -103,12 +104,13 @@ type OwnedGifts struct {
 
 // UniqueGift https://core.telegram.org/bots/api#uniquegift
 type UniqueGift struct {
-	BaseName string             `json:"base_name"`
-	Name     string             `json:"name"`
-	Number   int                `json:"number"`
-	Model    UniqueGiftModel    `json:"model"`
-	Symbol   UniqueGiftSymbol   `json:"symbol"`
-	Backdrop UniqueGiftBackdrop `json:"backdrop"`
+	BaseName      string             `json:"base_name"`
+	Name          string             `json:"name"`
+	Number        int                `json:"number"`
+	Model         UniqueGiftModel    `json:"model"`
+	Symbol        UniqueGiftSymbol   `json:"symbol"`
+	Backdrop      UniqueGiftBackdrop `json:"backdrop"`
+	PublisherChat *Chat              `json:"publisher_chat,omitempty"`
 }
 
 // UniqueGiftModel https://core.telegram.org/bots/api#uniquegiftmodel

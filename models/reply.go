@@ -51,6 +51,7 @@ type ReplyParameters struct {
 	QuoteParseMode           ParseMode       `json:"quote_parse_mode,omitempty"`
 	QuoteEntities            []MessageEntity `json:"quote_entities,omitempty"`
 	QuotePosition            int             `json:"quote_position,omitempty"`
+	ChecklistTaskID          int             `json:"checklist_task_id,omitempty"`
 }
 
 // MessageOriginType https://core.telegram.org/bots/api#messageorigin
