@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -58,7 +59,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 
 	if b.isDebug && strings.ToLower(method) != "getupdates" {
 		requestDebugData, _ := json.Marshal(params)
-		b.debugHandler("request url: %s, payload: %s", u, requestDebugData)
+		b.debugHandler("request url: %s, payload: %s", strings.Replace(u, b.token, "***", 1), requestDebugData)
 	}
 
 	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, pr)
@@ -73,7 +74,8 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		if errClose := pr.CloseWithError(errDo); errClose != nil {
 			b.errorsHandler(fmt.Errorf("error close pipe reader for method %s, %w", method, errClose))
 		}
-		return fmt.Errorf("error do request for method %s, %w", method, errDo)
+		errDoC := errors.New(strings.Replace(errDo.Error(), b.token, "***", -1))
+		return fmt.Errorf("error do request for method %s, %w", method, errDoC)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
@@ -126,7 +128,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 
 	if !bytes.Equal(r.Result, []byte("[]")) {
 		if b.isDebug {
-			b.debugHandler("response from '%s' with payload '%s'", u, body)
+			b.debugHandler("response from '%s' with payload '%s'", strings.Replace(u, b.token, "***", 1), body)
 		}
 	}
 
