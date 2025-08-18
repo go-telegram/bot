@@ -33,21 +33,22 @@ type ChatInviteLink struct {
 
 // ChatAdministratorRights https://core.telegram.org/bots/api#chatadministratorrights
 type ChatAdministratorRights struct {
-	IsAnonymous         bool `json:"is_anonymous"`
-	CanManageChat       bool `json:"can_manage_chat"`
-	CanDeleteMessages   bool `json:"can_delete_messages"`
-	CanManageVideoChats bool `json:"can_manage_video_chats"`
-	CanRestrictMembers  bool `json:"can_restrict_members"`
-	CanPromoteMembers   bool `json:"can_promote_members"`
-	CanChangeInfo       bool `json:"can_change_info"`
-	CanInviteUsers      bool `json:"can_invite_users"`
-	CanPostMessages     bool `json:"can_post_messages,omitempty"`
-	CanEditMessages     bool `json:"can_edit_messages,omitempty"`
-	CanPinMessages      bool `json:"can_pin_messages,omitempty"`
-	CanPostStories      bool `json:"can_post_stories,omitempty"`
-	CanEditStories      bool `json:"can_edit_stories,omitempty"`
-	CanDeleteStories    bool `json:"can_delete_stories,omitempty"`
-	CanManageTopics     bool `json:"can_manage_topics,omitempty"`
+	IsAnonymous             bool `json:"is_anonymous"`
+	CanManageChat           bool `json:"can_manage_chat"`
+	CanDeleteMessages       bool `json:"can_delete_messages"`
+	CanManageVideoChats     bool `json:"can_manage_video_chats"`
+	CanRestrictMembers      bool `json:"can_restrict_members"`
+	CanPromoteMembers       bool `json:"can_promote_members"`
+	CanChangeInfo           bool `json:"can_change_info"`
+	CanInviteUsers          bool `json:"can_invite_users"`
+	CanPostMessages         bool `json:"can_post_messages,omitempty"`
+	CanEditMessages         bool `json:"can_edit_messages,omitempty"`
+	CanPinMessages          bool `json:"can_pin_messages,omitempty"`
+	CanPostStories          bool `json:"can_post_stories,omitempty"`
+	CanEditStories          bool `json:"can_edit_stories,omitempty"`
+	CanDeleteStories        bool `json:"can_delete_stories,omitempty"`
+	CanManageTopics         bool `json:"can_manage_topics,omitempty"`
+	CanManageDirectMessages bool `json:"can_manage_direct_messages,omitempty"`
 }
 
 // ChatPermissions https://core.telegram.org/bots/api#chatpermissions
@@ -91,13 +92,14 @@ const (
 
 // Chat https://core.telegram.org/bots/api#chat
 type Chat struct {
-	ID        int64    `json:"id"`
-	Type      ChatType `json:"type"`
-	Title     string   `json:"title,omitempty"`
-	Username  string   `json:"username,omitempty"`
-	FirstName string   `json:"first_name,omitempty"`
-	LastName  string   `json:"last_name,omitempty"`
-	IsForum   bool     `json:"is_forum,omitempty"`
+	ID               int64    `json:"id"`
+	Type             ChatType `json:"type"`
+	Title            string   `json:"title,omitempty"`
+	Username         string   `json:"username,omitempty"`
+	FirstName        string   `json:"first_name,omitempty"`
+	LastName         string   `json:"last_name,omitempty"`
+	IsForum          bool     `json:"is_forum,omitempty"`
+	IsDirectMessages bool     `json:"is_direct_messages,omitempty"`
 }
 
 // ChatFullInfo https://core.telegram.org/bots/api#chatfullinfo
@@ -109,6 +111,7 @@ type ChatFullInfo struct {
 	FirstName                          string                `json:"first_name,omitempty"`
 	LastName                           string                `json:"last_name,omitempty"`
 	IsForum                            bool                  `json:"is_forum,omitempty"`
+	IsDirectMessages                   bool                  `json:"is_direct_messages,omitempty"`
 	Photo                              *ChatPhoto            `json:"photo,omitempty"`
 	ActiveUsernames                    []string              `json:"active_usernames,omitempty"`
 	Birthdate                          Birthdate             `json:"birthdate,omitempty"`
@@ -116,6 +119,7 @@ type ChatFullInfo struct {
 	BusinessLocation                   *BusinessLocation     `json:"business_location,omitempty"`
 	BusinessOpeningHours               *BusinessOpeningHours `json:"business_opening_hours,omitempty"`
 	PersonalChat                       *Chat                 `json:"personal_chat,omitempty"`
+	ParentChat                         *Chat                 `json:"parent_chat,omitempty"`
 	AvailableReactions                 []ReactionType        `json:"available_reactions,omitempty"`
 	AccentColorID                      int                   `json:"accent_color_id,omitempty"`
 	MaxReactionCount                   int                   `json:"max_reaction_count"`

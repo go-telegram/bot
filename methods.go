@@ -692,6 +692,20 @@ func (b *Bot) StopPoll(ctx context.Context, params *StopPollParams) (*models.Pol
 	return result, err
 }
 
+// ApproveSuggestedPost https://core.telegram.org/bots/api#approvesuggestedpost
+func (b *Bot) ApproveSuggestedPost(ctx context.Context, params *ApproveSuggestedPostParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "approveSuggestedPost", params, &result)
+	return result, err
+}
+
+// DeclineSuggestedPost https://core.telegram.org/bots/api#declinesuggestedpost
+func (b *Bot) DeclineSuggestedPost(ctx context.Context, params *DeclineSuggestedPostParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "declineSuggestedPost", params, &result)
+	return result, err
+}
+
 // DeleteMessage https://core.telegram.org/bots/api#deletemessage
 func (b *Bot) DeleteMessage(ctx context.Context, params *DeleteMessageParams) (bool, error) {
 	var result bool
