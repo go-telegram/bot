@@ -264,7 +264,7 @@ type SendPaidMediaParams struct {
 	CaptionEntities         []models.MessageEntity          `json:"caption_entities,omitempty"`
 	ShowCaptionAboveMedia   bool                            `json:"show_caption_above_media,omitempty"`
 	DisableNotification     bool                            `json:"disable_notification,omitempty"`
-	ProtectContent          bool                            `json:"protect_content,omitempty"`
+	ProtectContent          *bool                           `json:"protect_content,omitempty"`
 	AllowPaidBroadcast      bool                            `json:"allow_paid_broadcast,omitempty"`
 	SuggestedPostParameters *models.SuggestedPostParameters `json:"suggested_post_parameters,omitempty"`
 	ReplyParameters         *models.ReplyParameters         `json:"reply_parameters,omitempty"`
