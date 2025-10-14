@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 )
@@ -74,8 +75,12 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		if errClose := pr.CloseWithError(errDo); errClose != nil {
 			b.errorsHandler(fmt.Errorf("error close pipe reader for method %s, %w", method, errClose))
 		}
-		errDoC := errors.New(strings.Replace(errDo.Error(), b.token, "***", -1))
-		return fmt.Errorf("error do request for method %s, %w", method, errDoC)
+		var netErr *url.Error
+		if errors.As(errDo, &netErr) {
+			netErr.URL = strings.Replace(netErr.URL, b.token, "***", -1)
+		}
+
+		return fmt.Errorf("error do request for method %s, %w", method, errDo)
 	}
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
