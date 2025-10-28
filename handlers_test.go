@@ -528,3 +528,417 @@ func Test_getDataFromUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestHandler_matchExact(t *testing.T) {
+	tests := []struct {
+		name      string
+		pattern   string
+		data      string
+		wantMatch bool
+	}{
+		{
+			name:      "exact match",
+			pattern:   "test",
+			data:      "test",
+			wantMatch: true,
+		},
+		{
+			name:      "no match",
+			pattern:   "test",
+			data:      "testing",
+			wantMatch: false,
+		},
+		{
+			name:      "empty pattern",
+			pattern:   "",
+			data:      "",
+			wantMatch: true,
+		},
+		{
+			name:      "empty data",
+			pattern:   "test",
+			data:      "",
+			wantMatch: false,
+		},
+		{
+			name:      "case sensitive",
+			pattern:   "Test",
+			data:      "test",
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := handler{pattern: tt.pattern}
+			result := h.matchExact(tt.data)
+			if result != tt.wantMatch {
+				t.Errorf("matchExact() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
+
+func TestHandler_matchPrefix(t *testing.T) {
+	tests := []struct {
+		name      string
+		pattern   string
+		data      string
+		wantMatch bool
+	}{
+		{
+			name:      "has prefix",
+			pattern:   "test",
+			data:      "testing",
+			wantMatch: true,
+		},
+		{
+			name:      "exact match",
+			pattern:   "test",
+			data:      "test",
+			wantMatch: true,
+		},
+		{
+			name:      "no prefix",
+			pattern:   "test",
+			data:      "notest",
+			wantMatch: false,
+		},
+		{
+			name:      "empty pattern",
+			pattern:   "",
+			data:      "anything",
+			wantMatch: true,
+		},
+		{
+			name:      "empty data",
+			pattern:   "test",
+			data:      "",
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := handler{pattern: tt.pattern}
+			result := h.matchPrefix(tt.data)
+			if result != tt.wantMatch {
+				t.Errorf("matchPrefix() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
+
+func TestHandler_matchContains(t *testing.T) {
+	tests := []struct {
+		name      string
+		pattern   string
+		data      string
+		wantMatch bool
+	}{
+		{
+			name:      "contains",
+			pattern:   "test",
+			data:      "atestb",
+			wantMatch: true,
+		},
+		{
+			name:      "exact match",
+			pattern:   "test",
+			data:      "test",
+			wantMatch: true,
+		},
+		{
+			name:      "no contains",
+			pattern:   "test",
+			data:      "nothing",
+			wantMatch: false,
+		},
+		{
+			name:      "empty pattern",
+			pattern:   "",
+			data:      "anything",
+			wantMatch: true,
+		},
+		{
+			name:      "empty data",
+			pattern:   "test",
+			data:      "",
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := handler{pattern: tt.pattern}
+			result := h.matchContains(tt.data)
+			if result != tt.wantMatch {
+				t.Errorf("matchContains() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
+
+func TestHandler_matchRegexp(t *testing.T) {
+	tests := []struct {
+		name      string
+		regexp    string
+		data      string
+		wantMatch bool
+	}{
+		{
+			name:      "simple match",
+			regexp:    "^test$",
+			data:      "test",
+			wantMatch: true,
+		},
+		{
+			name:      "no match",
+			regexp:    "^test$",
+			data:      "testing",
+			wantMatch: false,
+		},
+		{
+			name:      "partial match",
+			regexp:    "test",
+			data:      "testing",
+			wantMatch: true,
+		},
+		{
+			name:      "digit pattern",
+			regexp:    "\\d+",
+			data:      "123abc",
+			wantMatch: true,
+		},
+		{
+			name:      "no digits",
+			regexp:    "\\d+",
+			data:      "abc",
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			re := regexp.MustCompile(tt.regexp)
+			h := handler{re: re}
+			result := h.matchRegexp(tt.data)
+			if result != tt.wantMatch {
+				t.Errorf("matchRegexp() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
+
+func TestExtractCommand(t *testing.T) {
+	tests := []struct {
+		name   string
+		data   string
+		entity models.MessageEntity
+		want   string
+	}{
+		{
+			name: "valid command",
+			data: "/start arg1",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 0,
+				Length: 6,
+			},
+			want: "start",
+		},
+		{
+			name: "command in middle",
+			data: "text /help more",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 5,
+				Length: 5,
+			},
+			want: "help",
+		},
+		{
+			name: "invalid offset negative",
+			data: "/start",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: -1,
+				Length: 6,
+			},
+			want: "",
+		},
+		{
+			name: "invalid length too long",
+			data: "/start",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 0,
+				Length: 100,
+			},
+			want: "",
+		},
+		{
+			name: "length too small",
+			data: "/",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 0,
+				Length: 1,
+			},
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := extractCommand(tt.data, tt.entity)
+			if result != tt.want {
+				t.Errorf("extractCommand() = %q, want %q", result, tt.want)
+			}
+		})
+	}
+}
+
+func TestHandler_matchCommand(t *testing.T) {
+	tests := []struct {
+		name      string
+		pattern   string
+		data      string
+		entities  []models.MessageEntity
+		wantMatch bool
+	}{
+		{
+			name:    "command match anywhere",
+			pattern: "start",
+			data:    "text /start arg1",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 5,
+					Length: 6,
+				},
+			},
+			wantMatch: true,
+		},
+		{
+			name:    "no command match",
+			pattern: "help",
+			data:    "text /start arg1",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 5,
+					Length: 6,
+				},
+			},
+			wantMatch: false,
+		},
+		{
+			name:      "no entities",
+			pattern:   "start",
+			data:      "/start",
+			entities:  []models.MessageEntity{},
+			wantMatch: false,
+		},
+		{
+			name:    "multiple commands, one matches",
+			pattern: "help",
+			data:    "/start /help /stop",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 0,
+					Length: 6,
+				},
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 7,
+					Length: 5,
+				},
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 13,
+					Length: 5,
+				},
+			},
+			wantMatch: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := handler{pattern: tt.pattern}
+			result := h.matchCommand(tt.data, tt.entities)
+			if result != tt.wantMatch {
+				t.Errorf("matchCommand() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
+
+func TestHandler_matchCommandStartOnly(t *testing.T) {
+	tests := []struct {
+		name      string
+		pattern   string
+		data      string
+		entities  []models.MessageEntity
+		wantMatch bool
+	}{
+		{
+			name:    "command at start",
+			pattern: "start",
+			data:    "/start arg1",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 0,
+					Length: 6,
+				},
+			},
+			wantMatch: true,
+		},
+		{
+			name:    "command not at start",
+			pattern: "start",
+			data:    "text /start arg1",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 5,
+					Length: 6,
+				},
+			},
+			wantMatch: false,
+		},
+		{
+			name:    "wrong command at start",
+			pattern: "help",
+			data:    "/start arg1",
+			entities: []models.MessageEntity{
+				{
+					Type:   models.MessageEntityTypeBotCommand,
+					Offset: 0,
+					Length: 6,
+				},
+			},
+			wantMatch: false,
+		},
+		{
+			name:      "no entities",
+			pattern:   "start",
+			data:      "/start",
+			entities:  []models.MessageEntity{},
+			wantMatch: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			h := handler{pattern: tt.pattern}
+			result := h.matchCommandStartOnly(tt.data, tt.entities)
+			if result != tt.wantMatch {
+				t.Errorf("matchCommandStartOnly() = %v, want %v", result, tt.wantMatch)
+			}
+		})
+	}
+}
