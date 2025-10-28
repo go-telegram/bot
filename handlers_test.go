@@ -332,6 +332,22 @@ func Test_match_command_start(t *testing.T) {
 	})
 }
 
+func Test_match_NilUpdateMessageIsFalse(t *testing.T) {
+	b := &Bot{}
+	id := b.RegisterHandler(HandlerTypeMessageText, "foo", MatchTypeCommand, nil)
+	h := findHandler(b, id)
+
+	u := models.Update{
+		ID:      42,
+		Message: nil,
+	}
+
+	res := h.match(&u)
+	if res {
+		t.Error("want 'false', but got 'true'")
+	}
+}
+
 func Test_getDataFromUpdate(t *testing.T) {
 	tests := []struct {
 		name         string
