@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"errors"
 	"regexp"
 	"strings"
 
@@ -45,32 +46,9 @@ func (h handler) match(update *models.Update) bool {
 		return h.matchFunc(update)
 	}
 
-	var data string
-	var entities []models.MessageEntity
-
-	switch h.handlerType {
-	case HandlerTypeMessageText:
-		if update.Message == nil {
-			return false
-		}
-		data = update.Message.Text
-		entities = update.Message.Entities
-	case HandlerTypeCallbackQueryData:
-		if update.CallbackQuery == nil {
-			return false
-		}
-		data = update.CallbackQuery.Data
-	case HandlerTypeCallbackQueryGameShortName:
-		if update.CallbackQuery == nil {
-			return false
-		}
-		data = update.CallbackQuery.GameShortName
-	case HandlerTypePhotoCaption:
-		if update.Message == nil {
-			return false
-		}
-		data = update.Message.Caption
-		entities = update.Message.CaptionEntities
+	data, entities, err := getDataFromUpdate(update, h.handlerType)
+	if err != nil {
+		return false
 	}
 
 	if h.matchType == MatchTypeExact {
@@ -104,6 +82,34 @@ func (h handler) match(update *models.Update) bool {
 		return h.re.Match([]byte(data))
 	}
 	return false
+}
+
+func getDataFromUpdate(update *models.Update, handlerType HandlerType) (data string, entities []models.MessageEntity, err error) {
+	switch handlerType {
+	case HandlerTypeMessageText:
+		if update.Message == nil {
+			return "", nil, errors.New("message is nil")
+		}
+		data = update.Message.Text
+		entities = update.Message.Entities
+	case HandlerTypeCallbackQueryData:
+		if update.CallbackQuery == nil {
+			return "", nil, errors.New("callback query is nil")
+		}
+		data = update.CallbackQuery.Data
+	case HandlerTypeCallbackQueryGameShortName:
+		if update.CallbackQuery == nil {
+			return "", nil, errors.New("callback query is nil")
+		}
+		data = update.CallbackQuery.GameShortName
+	case HandlerTypePhotoCaption:
+		if update.Message == nil {
+			return "", nil, errors.New("message is nil")
+		}
+		data = update.Message.Caption
+		entities = update.Message.CaptionEntities
+	}
+	return
 }
 
 func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...Middleware) string {
