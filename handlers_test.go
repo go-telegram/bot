@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"reflect"
 	"regexp"
 	"testing"
 
@@ -329,4 +330,185 @@ func Test_match_command_start(t *testing.T) {
 			t.Error("unexpected result")
 		}
 	})
+}
+
+func Test_getDataFromUpdate(t *testing.T) {
+	tests := []struct {
+		name         string
+		update       *models.Update
+		handlerType  HandlerType
+		wantData     string
+		wantEntities []models.MessageEntity
+		wantError    bool
+	}{
+		{
+			name: "HandlerTypeMessageText - valid message",
+			update: &models.Update{
+				Message: &models.Message{
+					Text: "Hello, world!",
+					Entities: []models.MessageEntity{
+						{Type: models.MessageEntityTypeBold, Offset: 0, Length: 5},
+					},
+				},
+			},
+			handlerType: HandlerTypeMessageText,
+			wantData:    "Hello, world!",
+			wantEntities: []models.MessageEntity{
+				{Type: models.MessageEntityTypeBold, Offset: 0, Length: 5},
+			},
+			wantError: false,
+		},
+		{
+			name: "HandlerTypeMessageText - nil message",
+			update: &models.Update{
+				Message: nil,
+			},
+			handlerType:  HandlerTypeMessageText,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    true,
+		},
+		{
+			name: "HandlerTypeMessageText - empty message",
+			update: &models.Update{
+				Message: &models.Message{
+					Text:     "",
+					Entities: nil,
+				},
+			},
+			handlerType:  HandlerTypeMessageText,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    false,
+		},
+		{
+			name: "HandlerTypeCallbackQueryData - valid callback query",
+			update: &models.Update{
+				CallbackQuery: &models.CallbackQuery{
+					Data: "callback_data",
+				},
+			},
+			handlerType:  HandlerTypeCallbackQueryData,
+			wantData:     "callback_data",
+			wantEntities: nil,
+			wantError:    false,
+		},
+		{
+			name: "HandlerTypeCallbackQueryData - nil callback query",
+			update: &models.Update{
+				CallbackQuery: nil,
+			},
+			handlerType:  HandlerTypeCallbackQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    true,
+		},
+		{
+			name: "HandlerTypeCallbackQueryData - empty data",
+			update: &models.Update{
+				CallbackQuery: &models.CallbackQuery{
+					Data: "",
+				},
+			},
+			handlerType:  HandlerTypeCallbackQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    false,
+		},
+		{
+			name: "HandlerTypeCallbackQueryGameShortName - valid game short name",
+			update: &models.Update{
+				CallbackQuery: &models.CallbackQuery{
+					GameShortName: "snake_game",
+				},
+			},
+			handlerType:  HandlerTypeCallbackQueryGameShortName,
+			wantData:     "snake_game",
+			wantEntities: nil,
+			wantError:    false,
+		},
+		{
+			name: "HandlerTypeCallbackQueryGameShortName - nil callback query",
+			update: &models.Update{
+				CallbackQuery: nil,
+			},
+			handlerType:  HandlerTypeCallbackQueryGameShortName,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    true,
+		},
+		{
+			name: "HandlerTypePhotoCaption - valid photo caption",
+			update: &models.Update{
+				Message: &models.Message{
+					Caption: "Photo caption",
+					CaptionEntities: []models.MessageEntity{
+						{Type: models.MessageEntityTypeItalic, Offset: 6, Length: 7},
+					},
+				},
+			},
+			handlerType: HandlerTypePhotoCaption,
+			wantData:    "Photo caption",
+			wantEntities: []models.MessageEntity{
+				{Type: models.MessageEntityTypeItalic, Offset: 6, Length: 7},
+			},
+			wantError: false,
+		},
+		{
+			name: "HandlerTypePhotoCaption - nil message",
+			update: &models.Update{
+				Message: nil,
+			},
+			handlerType:  HandlerTypePhotoCaption,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    true,
+		},
+		{
+			name: "HandlerTypePhotoCaption - empty caption",
+			update: &models.Update{
+				Message: &models.Message{
+					Caption:         "",
+					CaptionEntities: nil,
+				},
+			},
+			handlerType:  HandlerTypePhotoCaption,
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    false,
+		},
+		{
+			name: "Invalid handler type",
+			update: &models.Update{
+				Message: &models.Message{
+					Text: "some text",
+				},
+			},
+			handlerType:  HandlerType(999), // Unknown type
+			wantData:     "",
+			wantEntities: nil,
+			wantError:    false, // Func just returns empty values for unknown types
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, entities, err := getDataFromUpdate(tt.update, tt.handlerType)
+
+			if tt.wantError && err == nil {
+				t.Errorf("want error but got none")
+			}
+			if !tt.wantError && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+
+			if data != tt.wantData {
+				t.Errorf("want data %q, got %q", tt.wantData, data)
+			}
+
+			if !reflect.DeepEqual(entities, tt.wantEntities) {
+				t.Errorf("entities mismatch:\nwant: %+v\ngot:  %+v", tt.wantEntities, entities)
+			}
+		})
+	}
 }
