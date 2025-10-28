@@ -358,7 +358,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 		wantError    bool
 	}{
 		{
-			name: "HandlerTypeMessageText - valid message",
+			name: "HandlerTypeMessageText - valid message, is ok",
 			update: &models.Update{
 				Message: &models.Message{
 					Text: "Hello, world!",
@@ -375,7 +375,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError: false,
 		},
 		{
-			name: "HandlerTypeMessageText - nil message",
+			name: "HandlerTypeMessageText - nil message, is error",
 			update: &models.Update{
 				Message: nil,
 			},
@@ -385,7 +385,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    true,
 		},
 		{
-			name: "HandlerTypeMessageText - empty message",
+			name: "HandlerTypeMessageText - empty message, is ok",
 			update: &models.Update{
 				Message: &models.Message{
 					Text:     "",
@@ -398,7 +398,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    false,
 		},
 		{
-			name: "HandlerTypeCallbackQueryData - valid callback query",
+			name: "HandlerTypeCallbackQueryData - valid callback query, is ok",
 			update: &models.Update{
 				CallbackQuery: &models.CallbackQuery{
 					Data: "callback_data",
@@ -410,7 +410,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    false,
 		},
 		{
-			name: "HandlerTypeCallbackQueryData - nil callback query",
+			name: "HandlerTypeCallbackQueryData - nil callback query, is error",
 			update: &models.Update{
 				CallbackQuery: nil,
 			},
@@ -420,7 +420,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    true,
 		},
 		{
-			name: "HandlerTypeCallbackQueryData - empty data",
+			name: "HandlerTypeCallbackQueryData - empty data, is ok",
 			update: &models.Update{
 				CallbackQuery: &models.CallbackQuery{
 					Data: "",
@@ -432,7 +432,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    false,
 		},
 		{
-			name: "HandlerTypeCallbackQueryGameShortName - valid game short name",
+			name: "HandlerTypeCallbackQueryGameShortName - valid game short name, is ok",
 			update: &models.Update{
 				CallbackQuery: &models.CallbackQuery{
 					GameShortName: "snake_game",
@@ -444,7 +444,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    false,
 		},
 		{
-			name: "HandlerTypeCallbackQueryGameShortName - nil callback query",
+			name: "HandlerTypeCallbackQueryGameShortName - nil callback query, is error",
 			update: &models.Update{
 				CallbackQuery: nil,
 			},
@@ -454,7 +454,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    true,
 		},
 		{
-			name: "HandlerTypePhotoCaption - valid photo caption",
+			name: "HandlerTypePhotoCaption - valid photo caption, is ok",
 			update: &models.Update{
 				Message: &models.Message{
 					Caption: "Photo caption",
@@ -471,7 +471,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError: false,
 		},
 		{
-			name: "HandlerTypePhotoCaption - nil message",
+			name: "HandlerTypePhotoCaption - nil message, is error",
 			update: &models.Update{
 				Message: nil,
 			},
@@ -481,7 +481,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    true,
 		},
 		{
-			name: "HandlerTypePhotoCaption - empty caption",
+			name: "HandlerTypePhotoCaption - empty caption, is ok",
 			update: &models.Update{
 				Message: &models.Message{
 					Caption:         "",
@@ -494,7 +494,7 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantError:    false,
 		},
 		{
-			name: "Invalid handler type",
+			name: "Invalid handler type returns empty values, is ok",
 			update: &models.Update{
 				Message: &models.Message{
 					Text: "some text",
