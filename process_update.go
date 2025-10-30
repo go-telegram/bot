@@ -17,7 +17,8 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 	return wrapped
 }
 
-// ProcessUpdate allows you to process update
+// ProcessUpdate processes incoming update by finding appropriate handler and applying middlewares.
+// Handlers execute asynchronously by default unless WithNotAsyncHandlers option is used.
 func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 	h := b.findHandler(upd)
 
