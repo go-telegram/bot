@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 )
 
-// PassportElementError https://core.telegram.org/bots/api#passportelementerror
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerror
 type PassportElementError interface {
 	passportElementErrorTag()
 
 	MarshalCustom() ([]byte, error)
 }
 
-// PassportElementErrorDataField https://core.telegram.org/bots/api#passportelementerrordatafield
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrordatafield
 type PassportElementErrorDataField struct {
 	Type      string `json:"type"`
 	FieldName string `json:"field_name"`
@@ -33,7 +33,7 @@ func (m *PassportElementErrorDataField) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorFrontSide https://core.telegram.org/bots/api#passportelementerrorfrontside
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorfrontside
 type PassportElementErrorFrontSide struct {
 	Type     string `json:"type"`
 	FileHash string `json:"file_hash"`
@@ -54,7 +54,7 @@ func (m *PassportElementErrorFrontSide) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorReverseSide https://core.telegram.org/bots/api#passportelementerrorreverseside
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorreverseside
 type PassportElementErrorReverseSide struct {
 	Type     string `json:"type"`
 	FileHash string `json:"file_hash"`
@@ -75,7 +75,7 @@ func (m *PassportElementErrorReverseSide) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorSelfie https://core.telegram.org/bots/api#passportelementerrorselfie
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorselfie
 type PassportElementErrorSelfie struct {
 	Type     string `json:"type"`
 	FileHash string `json:"file_hash"`
@@ -96,7 +96,7 @@ func (m *PassportElementErrorSelfie) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorFile https://core.telegram.org/bots/api#passportelementerrorfile
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorfile
 type PassportElementErrorFile struct {
 	Type     string `json:"type"`
 	FileHash string `json:"file_hash"`
@@ -117,7 +117,7 @@ func (m *PassportElementErrorFile) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorFiles https://core.telegram.org/bots/api#passportelementerrorfiles
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorfiles
 type PassportElementErrorFiles struct {
 	Type       string   `json:"type"`
 	FileHashes []string `json:"file_hashes"`
@@ -138,7 +138,7 @@ func (m *PassportElementErrorFiles) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorTranslationFile https://core.telegram.org/bots/api#passportelementerrortranslationfile
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrortranslationfile
 type PassportElementErrorTranslationFile struct {
 	Type     string `json:"type"`
 	FileHash string `json:"file_hash"`
@@ -159,7 +159,7 @@ func (m *PassportElementErrorTranslationFile) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorTranslationFiles https://core.telegram.org/bots/api#passportelementerrortranslationfiles
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrortranslationfiles
 type PassportElementErrorTranslationFiles struct {
 	Type       string   `json:"type"`
 	FileHashes []string `json:"file_hashes"`
@@ -180,7 +180,7 @@ func (m *PassportElementErrorTranslationFiles) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// PassportElementErrorUnspecified https://core.telegram.org/bots/api#passportelementerrorunspecified
+// See Telegram API docs: https://core.telegram.org/bots/api#passportelementerrorunspecified
 type PassportElementErrorUnspecified struct {
 	Type        string `json:"type"`
 	ElementHash string `json:"element_hash"`

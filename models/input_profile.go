@@ -5,12 +5,12 @@ import (
 	"io"
 )
 
-// InputProfilePhoto https://core.telegram.org/bots/api#inputprofilephoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inputprofilephoto
 type InputProfilePhoto interface {
 	inputProfilePhotoTag()
 }
 
-// InputProfilePhotoStatic https://core.telegram.org/bots/api#inputprofilephotostatic
+// See Telegram API docs: https://core.telegram.org/bots/api#inputprofilephotostatic
 type InputProfilePhotoStatic struct {
 	Photo string `json:"photo"`
 
@@ -33,7 +33,7 @@ func (i InputProfilePhotoStatic) MarshalInputMedia() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InputProfilePhotoAnimated https://core.telegram.org/bots/api#inputprofilephotoanimated
+// See Telegram API docs: https://core.telegram.org/bots/api#inputprofilephotoanimated
 type InputProfilePhotoAnimated struct {
 	Animation          string  `json:"animation"`
 	MainFrameTimestamp float64 `json:"main_frame_timestamp,omitempty"`

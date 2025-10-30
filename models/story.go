@@ -15,7 +15,7 @@ type InputStoryContent interface {
 	inputStoryContentTag()
 }
 
-// InputStoryContentPhoto https://core.telegram.org/bots/api#inputstorycontentphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inputstorycontentphoto
 type InputStoryContentPhoto struct {
 	Photo           string    `json:"photo"`
 	MediaAttachment io.Reader `json:"-"`
@@ -36,7 +36,7 @@ func (i InputStoryContentPhoto) MarshalInputMedia() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InputStoryContentVideo https://core.telegram.org/bots/api#inputstorycontentvideo
+// See Telegram API docs: https://core.telegram.org/bots/api#inputstorycontentvideo
 type InputStoryContentVideo struct {
 	Video               string    `json:"video"`
 	Duration            float64   `json:"duration,omitempty"`
@@ -60,13 +60,13 @@ func (i InputStoryContentVideo) MarshalInputMedia() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// StoryArea https://core.telegram.org/bots/api#storyarea
+// See Telegram API docs: https://core.telegram.org/bots/api#storyarea
 type StoryArea struct {
 	Position StoryAreaPosition `json:"position"`
 	Type     StoryAreaType     `json:"type"`
 }
 
-// StoryAreaPosition https://core.telegram.org/bots/api#storyareaposition
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareaposition
 type StoryAreaPosition struct {
 	XPercentage            float64 `json:"x_percentage"`
 	YPercentage            float64 `json:"y_percentage"`
@@ -76,7 +76,7 @@ type StoryAreaPosition struct {
 	CornerRadiusPercentage float64 `json:"corner_radius_percentage"`
 }
 
-// LocationAddress https://core.telegram.org/bots/api#locationaddress
+// See Telegram API docs: https://core.telegram.org/bots/api#locationaddress
 type LocationAddress struct {
 	CountryCode string `json:"country_code"`
 	State       string `json:"state,omitempty"`
@@ -94,7 +94,7 @@ var (
 	StoryAreaTypeTypeUniqueGift        StoryAreaTypeType = "unique_gift"
 )
 
-// StoryAreaType https://core.telegram.org/bots/api#storyareatype
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatype
 type StoryAreaType struct {
 	Type StoryAreaTypeType
 
@@ -148,7 +148,7 @@ func (s *StoryAreaType) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported StoryAreaType type")
 }
 
-// StoryAreaTypeLocation https://core.telegram.org/bots/api#storyareatypelocation
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatypelocation
 type StoryAreaTypeLocation struct {
 	Type      StoryAreaTypeType `json:"type"`
 	Latitude  float64           `json:"latitude"`
@@ -156,7 +156,7 @@ type StoryAreaTypeLocation struct {
 	Address   *LocationAddress  `json:"address,omitempty"`
 }
 
-// StoryAreaTypeSuggestedReaction https://core.telegram.org/bots/api#storyareatypesuggestedreaction
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatypesuggestedreaction
 type StoryAreaTypeSuggestedReaction struct {
 	Type         StoryAreaTypeType `json:"type"`
 	ReactionType ReactionType      `json:"reaction_type"`
@@ -164,13 +164,13 @@ type StoryAreaTypeSuggestedReaction struct {
 	IsFlipped    bool              `json:"is_flipped,omitempty"`
 }
 
-// StoryAreaTypeLink https://core.telegram.org/bots/api#storyareatypelink
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatypelink
 type StoryAreaTypeLink struct {
 	Type StoryAreaTypeType `json:"type"`
 	URL  string            `json:"url"`
 }
 
-// StoryAreaTypeWeather https://core.telegram.org/bots/api#storyareatypeweather
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatypeweather
 type StoryAreaTypeWeather struct {
 	Type            StoryAreaTypeType `json:"type"`
 	Temperature     float64           `json:"temperature"`
@@ -178,7 +178,7 @@ type StoryAreaTypeWeather struct {
 	BackgroundColor int               `json:"background_color"`
 }
 
-// StoryAreaTypeUniqueGift https://core.telegram.org/bots/api#storyareatypeuniquegift
+// See Telegram API docs: https://core.telegram.org/bots/api#storyareatypeuniquegift
 type StoryAreaTypeUniqueGift struct {
 	Type StoryAreaTypeType `json:"type"`
 	Name string            `json:"name"`

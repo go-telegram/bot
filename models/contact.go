@@ -1,6 +1,6 @@
 package models
 
-// Contact https://core.telegram.org/bots/api#contact
+// See Telegram API docs: https://core.telegram.org/bots/api#contact
 type Contact struct {
 	PhoneNumber string `json:"phone_number"`
 	FirstName   string `json:"first_name"`

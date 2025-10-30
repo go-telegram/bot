@@ -1,6 +1,6 @@
 package models
 
-// Update https://core.telegram.org/bots/api#update
+// See Telegram API docs: https://core.telegram.org/bots/api#update
 type Update struct {
 	ID                      int64                        `json:"update_id"`
 	Message                 *Message                     `json:"message,omitempty"`
@@ -28,7 +28,7 @@ type Update struct {
 	RemovedChatBoost        *ChatBoostRemoved            `json:"removed_chat_boost,omitempty"`
 }
 
-// allowed_updates https://core.telegram.org/bots/api#update
+// See Telegram API docs: https://core.telegram.org/bots/api#update
 const (
 	AllowedUpdateMessage                 string = "message"
 	AllowedUpdateEditedMessage           string = "edited_message"

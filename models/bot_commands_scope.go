@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 )
 
-// BotCommandScope https://core.telegram.org/bots/api#botcommandscope
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscope
 type BotCommandScope interface {
 	MarshalCustom() ([]byte, error)
 }
 
-// BotCommandScopeDefault https://core.telegram.org/bots/api#botcommandscopedefault
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopedefault
 type BotCommandScopeDefault struct{}
 
 func (m *BotCommandScopeDefault) MarshalCustom() ([]byte, error) {
@@ -24,7 +24,7 @@ func (m *BotCommandScopeDefault) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeAllPrivateChats https://core.telegram.org/bots/api#botcommandscopeallprivatechats
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopeallprivatechats
 type BotCommandScopeAllPrivateChats struct{}
 
 func (m *BotCommandScopeAllPrivateChats) MarshalCustom() ([]byte, error) {
@@ -39,7 +39,7 @@ func (m *BotCommandScopeAllPrivateChats) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeAllGroupChats https://core.telegram.org/bots/api#botcommandscopeallgroupchats
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopeallgroupchats
 type BotCommandScopeAllGroupChats struct{}
 
 func (m *BotCommandScopeAllGroupChats) MarshalCustom() ([]byte, error) {
@@ -54,7 +54,7 @@ func (m *BotCommandScopeAllGroupChats) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeAllChatAdministrators https://core.telegram.org/bots/api#botcommandscopeallchatadministrators
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopeallchatadministrators
 type BotCommandScopeAllChatAdministrators struct{}
 
 func (m *BotCommandScopeAllChatAdministrators) MarshalCustom() ([]byte, error) {
@@ -69,7 +69,7 @@ func (m *BotCommandScopeAllChatAdministrators) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeChat https://core.telegram.org/bots/api#botcommandscopechat
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopechat
 type BotCommandScopeChat struct {
 	ChatID any `json:"chat_id"`
 }
@@ -86,7 +86,7 @@ func (m *BotCommandScopeChat) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeChatAdministrators https://core.telegram.org/bots/api#botcommandscopechatadministrators
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopechatadministrators
 type BotCommandScopeChatAdministrators struct {
 	ChatID any `json:"chat_id"`
 }
@@ -103,7 +103,7 @@ func (m *BotCommandScopeChatAdministrators) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// BotCommandScopeChatMember https://core.telegram.org/bots/api#botcommandscopechatmember
+// See Telegram API docs: https://core.telegram.org/bots/api#botcommandscopechatmember
 type BotCommandScopeChatMember struct {
 	ChatID any   `json:"chat_id"`
 	UserID int64 `json:"user_id"`

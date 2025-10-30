@@ -1,6 +1,6 @@
 package models
 
-// PhotoSize https://core.telegram.org/bots/api#photosize
+// See Telegram API docs: https://core.telegram.org/bots/api#photosize
 type PhotoSize struct {
 	FileID       string `json:"file_id"`
 	FileUniqueID string `json:"file_unique_id"`

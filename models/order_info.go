@@ -1,6 +1,6 @@
 package models
 
-// OrderInfo https://core.telegram.org/bots/api#orderinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#orderinfo
 type OrderInfo struct {
 	Name            string           `json:"name,omitempty"`
 	PhoneNumber     string           `json:"phone_number,omitempty"`

@@ -23,7 +23,7 @@ type getUpdatesParams struct {
 
 type AllowedUpdates []string
 
-// GetUpdates https://core.telegram.org/bots/api#getupdates
+// See Telegram API docs: https://core.telegram.org/bots/api#getupdates
 func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 	defer wg.Done()
 

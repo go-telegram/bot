@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// TextQuote https://core.telegram.org/bots/api#textquote
+// See Telegram API docs: https://core.telegram.org/bots/api#textquote
 type TextQuote struct {
 	Text     string          `json:"text"`
 	Entities []MessageEntity `json:"entities,omitempty"`
@@ -13,7 +13,7 @@ type TextQuote struct {
 	IsManual bool            `json:"is_manual,omitempty"`
 }
 
-// ExternalReplyInfo https://core.telegram.org/bots/api#externalreplyinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#externalreplyinfo
 type ExternalReplyInfo struct {
 	Origin             MessageOrigin       `json:"origin"`
 	Chat               *Chat               `json:"chat,omitempty"`
@@ -42,7 +42,7 @@ type ExternalReplyInfo struct {
 	Venue              *Venue              `json:"venue,omitempty"`
 }
 
-// ReplyParameters https://core.telegram.org/bots/api#replyparameters
+// See Telegram API docs: https://core.telegram.org/bots/api#replyparameters
 type ReplyParameters struct {
 	MessageID                int             `json:"message_id"`
 	ChatID                   any             `json:"chat_id,omitempty"`
@@ -54,7 +54,7 @@ type ReplyParameters struct {
 	ChecklistTaskID          int             `json:"checklist_task_id,omitempty"`
 }
 
-// MessageOriginType https://core.telegram.org/bots/api#messageorigin
+// See Telegram API docs: https://core.telegram.org/bots/api#messageorigin
 type MessageOriginType string
 
 const (
@@ -64,7 +64,7 @@ const (
 	MessageOriginTypeChannel    MessageOriginType = "channel"
 )
 
-// MessageOrigin https://core.telegram.org/bots/api#messageorigin
+// See Telegram API docs: https://core.telegram.org/bots/api#messageorigin
 type MessageOrigin struct {
 	Type MessageOriginType
 
@@ -123,21 +123,21 @@ func (mo *MessageOrigin) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported MessageOrigin type")
 }
 
-// MessageOriginUser https://core.telegram.org/bots/api#messageoriginuser
+// See Telegram API docs: https://core.telegram.org/bots/api#messageoriginuser
 type MessageOriginUser struct {
 	Type       MessageOriginType `json:"type"` // always “user”
 	Date       int               `json:"date"`
 	SenderUser User              `json:"sender_user"`
 }
 
-// MessageOriginHiddenUser https://core.telegram.org/bots/api#messageoriginhiddenuser
+// See Telegram API docs: https://core.telegram.org/bots/api#messageoriginhiddenuser
 type MessageOriginHiddenUser struct {
 	Type           MessageOriginType `json:"type"` // always “hidden_user”
 	Date           int               `json:"date"`
 	SenderUserName string            `json:"sender_user_name"`
 }
 
-// MessageOriginChat https://core.telegram.org/bots/api#messageoriginchat
+// See Telegram API docs: https://core.telegram.org/bots/api#messageoriginchat
 type MessageOriginChat struct {
 	Type            MessageOriginType `json:"type"` // always “chat”
 	Date            int               `json:"date"`
@@ -145,7 +145,7 @@ type MessageOriginChat struct {
 	AuthorSignature *string           `json:"author_signature,omitempty"`
 }
 
-// MessageOriginChannel https://core.telegram.org/bots/api#messageoriginchannel
+// See Telegram API docs: https://core.telegram.org/bots/api#messageoriginchannel
 type MessageOriginChannel struct {
 	Type            MessageOriginType `json:"type"` // always “channel”
 	Date            int               `json:"date"`

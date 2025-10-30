@@ -1,6 +1,6 @@
 package models
 
-// ShippingAddress https://core.telegram.org/bots/api#shippingaddress
+// See Telegram API docs: https://core.telegram.org/bots/api#shippingaddress
 type ShippingAddress struct {
 	CountryCode string `json:"country_code"`
 	State       string `json:"state"`
@@ -10,7 +10,7 @@ type ShippingAddress struct {
 	PostCode    string `json:"post_code"`
 }
 
-// ShippingQuery https://core.telegram.org/bots/api#shippingquery
+// See Telegram API docs: https://core.telegram.org/bots/api#shippingquery
 type ShippingQuery struct {
 	ID              string          `json:"id"`
 	From            *User           `json:"from"`
@@ -18,7 +18,7 @@ type ShippingQuery struct {
 	ShippingAddress ShippingAddress `json:"shipping_address"`
 }
 
-// ShippingOption https://core.telegram.org/bots/api#shippingoption
+// See Telegram API docs: https://core.telegram.org/bots/api#shippingoption
 type ShippingOption struct {
 	ID     string         `json:"id"`
 	Title  string         `json:"title"`

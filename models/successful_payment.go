@@ -1,6 +1,6 @@
 package models
 
-// SuccessfulPayment https://core.telegram.org/bots/api#successfulpayment
+// See Telegram API docs: https://core.telegram.org/bots/api#successfulpayment
 type SuccessfulPayment struct {
 	Currency                   string     `json:"currency"`
 	TotalAmount                int        `json:"total_amount"`
@@ -14,7 +14,7 @@ type SuccessfulPayment struct {
 	ProviderPaymentChargeID    string     `json:"provider_payment_charge_id"`
 }
 
-// RefundedPayment https://core.telegram.org/bots/api#refundedpayment
+// See Telegram API docs: https://core.telegram.org/bots/api#refundedpayment
 type RefundedPayment struct {
 	Currency                string `json:"currency"`
 	TotalAmount             int    `json:"total_amount"`

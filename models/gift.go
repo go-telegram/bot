@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-// Gifts https://core.telegram.org/bots/api#gifts
+// See Telegram API docs: https://core.telegram.org/bots/api#gifts
 type Gifts struct {
 	Gifts []Gift `json:"gifts"`
 }
 
-// Gift https://core.telegram.org/bots/api#gift
+// See Telegram API docs: https://core.telegram.org/bots/api#gift
 type Gift struct {
 	ID               string  `json:"id"`
 	Sticker          Sticker `json:"sticker"`
@@ -21,14 +21,14 @@ type Gift struct {
 	PublisherChat    *Chat   `json:"publisher_chat,omitempty"`
 }
 
-// AcceptedGiftTypes https://core.telegram.org/bots/api#acceptedgifttypes
+// See Telegram API docs: https://core.telegram.org/bots/api#acceptedgifttypes
 type AcceptedGiftTypes struct {
 	UnlimitedGifts bool `json:"unlimited_gifts"`
 	LimitedGifts   bool `json:"limited_gifts"`
 	UniqueGifts    bool `json:"unique_gifts"`
 }
 
-// OwnedGift https://core.telegram.org/bots/api#ownedgift
+// See Telegram API docs: https://core.telegram.org/bots/api#ownedgift
 type OwnedGift struct {
 	Type OwnedGiftType `json:"type"`
 
@@ -62,7 +62,7 @@ func (g *OwnedGift) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported OwnedGift type")
 }
 
-// OwnedGiftType https://core.telegram.org/bots/api#ownedgift
+// See Telegram API docs: https://core.telegram.org/bots/api#ownedgift
 type OwnedGiftType string
 
 const (
@@ -70,7 +70,7 @@ const (
 	OwnedGiftTypeUnique  OwnedGiftType = "unique"
 )
 
-// OwnedGiftRegular https://core.telegram.org/bots/api#ownedgiftregular
+// See Telegram API docs: https://core.telegram.org/bots/api#ownedgiftregular
 type OwnedGiftRegular struct {
 	Type              OwnedGiftType `json:"type"`
 	Gift              Gift          `json:"gift"`
@@ -82,7 +82,7 @@ type OwnedGiftRegular struct {
 	TransferStarCount int           `json:"transfer_star_count,omitempty"`
 }
 
-// OwnedGiftUnique https://core.telegram.org/bots/api#ownedgiftunique
+// See Telegram API docs: https://core.telegram.org/bots/api#ownedgiftunique
 type OwnedGiftUnique struct {
 	Type              OwnedGiftType `json:"type"`
 	Gift              UniqueGift    `json:"gift"`
@@ -95,14 +95,14 @@ type OwnedGiftUnique struct {
 	NextTransferDate  int           `json:"next_transfer_date,omitempty"`
 }
 
-// OwnedGifts https://core.telegram.org/bots/api#ownedgifts
+// See Telegram API docs: https://core.telegram.org/bots/api#ownedgifts
 type OwnedGifts struct {
 	TotalCount int         `json:"total_count"`
 	Gifts      []OwnedGift `json:"gifts"`
 	NextOffset string      `json:"next_offset,omitempty"`
 }
 
-// UniqueGift https://core.telegram.org/bots/api#uniquegift
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegift
 type UniqueGift struct {
 	BaseName      string             `json:"base_name"`
 	Name          string             `json:"name"`
@@ -113,21 +113,21 @@ type UniqueGift struct {
 	PublisherChat *Chat              `json:"publisher_chat,omitempty"`
 }
 
-// UniqueGiftModel https://core.telegram.org/bots/api#uniquegiftmodel
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegiftmodel
 type UniqueGiftModel struct {
 	Name           string  `json:"name"`
 	Sticker        Sticker `json:"sticker"`
 	RarityPerMille int     `json:"rarity_per_mille"`
 }
 
-// UniqueGiftSymbol https://core.telegram.org/bots/api#uniquegiftsymbol
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegiftsymbol
 type UniqueGiftSymbol struct {
 	Name           string  `json:"name"`
 	Sticker        Sticker `json:"sticker"`
 	RarityPerMille int     `json:"rarity_per_mille"`
 }
 
-// UniqueGiftBackdropColors https://core.telegram.org/bots/api#uniquegiftbackdropcolors
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegiftbackdropcolors
 type UniqueGiftBackdropColors struct {
 	CenterColor int `json:"center_color"`
 	EdgeColor   int `json:"edge_color"`
@@ -135,14 +135,14 @@ type UniqueGiftBackdropColors struct {
 	TextColor   int `json:"text_color"`
 }
 
-// UniqueGiftBackdrop https://core.telegram.org/bots/api#uniquegiftbackdrop
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegiftbackdrop
 type UniqueGiftBackdrop struct {
 	Name           string                   `json:"name"`
 	Colors         UniqueGiftBackdropColors `json:"colors"`
 	RarityPerMille int                      `json:"rarity_per_mille"`
 }
 
-// GiftInfo https://core.telegram.org/bots/api#giftinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#giftinfo
 type GiftInfo struct {
 	Gift                    Gift            `json:"gift"`
 	OwnedGiftID             string          `json:"owned_gift_id,omitempty"`
@@ -154,7 +154,7 @@ type GiftInfo struct {
 	IsPrivate               bool            `json:"is_private,omitempty"`
 }
 
-// UniqueGiftInfo https://core.telegram.org/bots/api#uniquegiftinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#uniquegiftinfo
 type UniqueGiftInfo struct {
 	Gift                UniqueGift `json:"gift"`
 	Origin              string     `json:"origin"`

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// MaybeInaccessibleMessageType https://core.telegram.org/bots/api#maybeinaccessiblemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#maybeinaccessiblemessage
 type MaybeInaccessibleMessageType int
 
 const (
@@ -13,7 +13,7 @@ const (
 	MaybeInaccessibleMessageTypeInaccessibleMessage
 )
 
-// MaybeInaccessibleMessage https://core.telegram.org/bots/api#maybeinaccessiblemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#maybeinaccessiblemessage
 type MaybeInaccessibleMessage struct {
 	Type MaybeInaccessibleMessageType
 
@@ -52,7 +52,7 @@ func (mim *MaybeInaccessibleMessage) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported MaybeInaccessibleMessage type")
 }
 
-// InaccessibleMessage https://core.telegram.org/bots/api#inaccessiblemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#inaccessiblemessage
 type InaccessibleMessage struct {
 	Chat      Chat `json:"chat"`
 	MessageID int  `json:"message_id"`
@@ -63,12 +63,12 @@ type MessageID struct {
 	ID int `json:"message_id"`
 }
 
-// MessageAutoDeleteTimerChanged https://core.telegram.org/bots/api#messageautodeletetimerchanged
+// See Telegram API docs: https://core.telegram.org/bots/api#messageautodeletetimerchanged
 type MessageAutoDeleteTimerChanged struct {
 	MessageAutoDeleteTime int `json:"message_auto_delete_time"`
 }
 
-// Message https://core.telegram.org/bots/api#message
+// See Telegram API docs: https://core.telegram.org/bots/api#message
 type Message struct {
 	ID                            int                            `json:"message_id"`
 	MessageThreadID               int                            `json:"message_thread_id,omitempty"`
@@ -174,13 +174,13 @@ type Message struct {
 	ReplyMarkup                   *InlineKeyboardMarkup          `json:"reply_markup,omitempty"`
 }
 
-// PreparedInlineMessage https://core.telegram.org/bots/api#preparedinlinemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#preparedinlinemessage
 type PreparedInlineMessage struct {
 	ID             string `json:"id"`
 	ExpirationDate int    `json:"expiration_date"`
 }
 
-// DirectMessagesTopic https://core.telegram.org/bots/api#directmessagestopic
+// See Telegram API docs: https://core.telegram.org/bots/api#directmessagestopic
 type DirectMessagesTopic struct {
 	TopicID int   `json:"topic_id"`
 	User    *User `json:"user,omitempty"`

@@ -17,7 +17,7 @@ const (
 	TransactionPartnerTypeOther            TransactionPartnerType = "other"
 )
 
-// TransactionPartner https://core.telegram.org/bots/api#transactionpartner
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartner
 type TransactionPartner struct {
 	Type TransactionPartnerType
 
@@ -73,7 +73,7 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported TransactionPartner type")
 }
 
-// AffiliateInfo https://core.telegram.org/bots/api#affiliateinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#affiliateinfo
 type AffiliateInfo struct {
 	AffiliateUser      *User `json:"affiliate_user,omitempty"`
 	AffiliateChat      *Chat `json:"affiliate_chat,omitempty"`
@@ -82,7 +82,7 @@ type AffiliateInfo struct {
 	NanostarAmount     int   `json:"nanostar_amount"`
 }
 
-// TransactionPartnerUser https://core.telegram.org/bots/api#transactionpartneruser
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartneruser
 type TransactionPartnerUser struct {
 	Type                        TransactionPartnerType `json:"type"`
 	TransactionType             string                 `json:"transaction_type"`
@@ -96,38 +96,38 @@ type TransactionPartnerUser struct {
 	PremiumSubscriptionDuration int                    `json:"premium_subscription_duration,omitempty"`
 }
 
-// TransactionPartnerChat https://core.telegram.org/bots/api#transactionpartnerchat
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartnerchat
 type TransactionPartnerChat struct {
 	Type TransactionPartnerType `json:"type"`
 	Chat Chat                   `json:"chat"`
 	Gift *Gift                  `json:"gift,omitempty"`
 }
 
-// TransactionPartnerAffiliateProgram https://core.telegram.org/bots/api#transactionpartneraffiliateprogram
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartneraffiliateprogram
 type TransactionPartnerAffiliateProgram struct {
 	Type               TransactionPartnerType `json:"type"`
 	SponsorUser        *User                  `json:"sponsor_user,omitempty"`
 	CommissionPerMille int                    `json:"commission_per_mille"`
 }
 
-// TransactionPartnerFragment https://core.telegram.org/bots/api#transactionpartnerfragment
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartnerfragment
 type TransactionPartnerFragment struct {
 	Type            TransactionPartnerType  `json:"type"`
 	WithdrawalState *RevenueWithdrawalState `json:"withdrawal_state,omitempty"`
 }
 
-// TransactionPartnerTelegramAds https://core.telegram.org/bots/api#transactionpartnertelegramads
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartnertelegramads
 type TransactionPartnerTelegramAds struct {
 	Type TransactionPartnerType `json:"type"`
 }
 
-// TransactionPartnerTelegramApi https://core.telegram.org/bots/api#transactionpartnertelegramapi
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartnertelegramapi
 type TransactionPartnerTelegramApi struct {
 	Type         TransactionPartnerType `json:"type"`
 	RequestCount int                    `json:"request_count"`
 }
 
-// TransactionPartnerOther https://core.telegram.org/bots/api#transactionpartnerother
+// See Telegram API docs: https://core.telegram.org/bots/api#transactionpartnerother
 type TransactionPartnerOther struct {
 	Type TransactionPartnerType `json:"type"`
 }
@@ -140,7 +140,7 @@ const (
 	RevenueWithdrawalStateTypeFailed    RevenueWithdrawalStateType = "failed"
 )
 
-// RevenueWithdrawalState https://core.telegram.org/bots/api#revenuewithdrawalstate
+// See Telegram API docs: https://core.telegram.org/bots/api#revenuewithdrawalstate
 type RevenueWithdrawalState struct {
 	Type RevenueWithdrawalStateType `json:"type"`
 
@@ -176,24 +176,24 @@ func (m *RevenueWithdrawalState) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported RevenueWithdrawalState type")
 }
 
-// RevenueWithdrawalStatePending https://core.telegram.org/bots/api#revenuewithdrawalstatepending
+// See Telegram API docs: https://core.telegram.org/bots/api#revenuewithdrawalstatepending
 type RevenueWithdrawalStatePending struct {
 	Type RevenueWithdrawalStateType `json:"type"`
 }
 
-// RevenueWithdrawalStateSucceeded https://core.telegram.org/bots/api#revenuewithdrawalstatesucceeded
+// See Telegram API docs: https://core.telegram.org/bots/api#revenuewithdrawalstatesucceeded
 type RevenueWithdrawalStateSucceeded struct {
 	Type RevenueWithdrawalStateType `json:"type"`
 	Date int                        `json:"date"`
 	URL  string                     `json:"url"`
 }
 
-// RevenueWithdrawalStateFailed https://core.telegram.org/bots/api#revenuewithdrawalstatefailed
+// See Telegram API docs: https://core.telegram.org/bots/api#revenuewithdrawalstatefailed
 type RevenueWithdrawalStateFailed struct {
 	Type RevenueWithdrawalStateType `json:"type"`
 }
 
-// StarTransaction https://core.telegram.org/bots/api#startransaction
+// See Telegram API docs: https://core.telegram.org/bots/api#startransaction
 type StarTransaction struct {
 	ID             string              `json:"id"`
 	Amount         int                 `json:"amount"`
@@ -203,12 +203,12 @@ type StarTransaction struct {
 	Receiver       *TransactionPartner `json:"receiver,omitempty"`
 }
 
-// StarTransactions https://core.telegram.org/bots/api#startransactions
+// See Telegram API docs: https://core.telegram.org/bots/api#startransactions
 type StarTransactions struct {
 	Transactions []StarTransaction `json:"transactions"`
 }
 
-// StarAmount https://core.telegram.org/bots/api#staramount
+// See Telegram API docs: https://core.telegram.org/bots/api#staramount
 type StarAmount struct {
 	Amount         int `json:"amount"`
 	NanostarAmount int `json:"nanostar_amount,omitempty"`

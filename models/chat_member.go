@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// ChatMemberUpdated https://core.telegram.org/bots/api#chatmemberupdated
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberupdated
 type ChatMemberUpdated struct {
 	Chat                    Chat            `json:"chat"`
 	From                    User            `json:"from"`
@@ -28,7 +28,7 @@ const (
 	ChatMemberTypeBanned        ChatMemberType = "kicked"
 )
 
-// ChatMember https://core.telegram.org/bots/api#chatmember
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmember
 type ChatMember struct {
 	Type ChatMemberType
 
@@ -103,7 +103,7 @@ func (c *ChatMember) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported ChatMember type")
 }
 
-// ChatMemberOwner https://core.telegram.org/bots/api#chatmemberowner
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberowner
 type ChatMemberOwner struct {
 	Status      ChatMemberType `json:"status"` // The member's status in the chat, always “creator”
 	User        *User          `json:"user"`
@@ -111,7 +111,7 @@ type ChatMemberOwner struct {
 	CustomTitle string         `json:"custom_title,omitempty"`
 }
 
-// ChatMemberAdministrator https://core.telegram.org/bots/api#chatmemberadministrator
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberadministrator
 type ChatMemberAdministrator struct {
 	Status                  ChatMemberType `json:"status"` // The member's status in the chat, always “administrator”
 	User                    User           `json:"user"`
@@ -135,14 +135,14 @@ type ChatMemberAdministrator struct {
 	CustomTitle             string         `json:"custom_title,omitempty"`
 }
 
-// ChatMemberMember https://core.telegram.org/bots/api#chatmembermember
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmembermember
 type ChatMemberMember struct {
 	Status    ChatMemberType `json:"status"` // The member's status in the chat, always “member”
 	User      *User          `json:"user"`
 	UntilDate int            `json:"until_date,omitempty"`
 }
 
-// ChatMemberRestricted https://core.telegram.org/bots/api#chatmemberrestricted
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberrestricted
 type ChatMemberRestricted struct {
 	Status                ChatMemberType `json:"status"` // The member's status in the chat, always “restricted”
 	User                  *User          `json:"user"`
@@ -164,13 +164,13 @@ type ChatMemberRestricted struct {
 	UntilDate             int            `json:"until_date"`
 }
 
-// ChatMemberLeft https://core.telegram.org/bots/api#chatmemberleft
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberleft
 type ChatMemberLeft struct {
 	Status ChatMemberType `json:"status"` // The member's status in the chat, always “left”
 	User   *User          `json:"user"`
 }
 
-// ChatMemberBanned https://core.telegram.org/bots/api#chatmemberbanned
+// See Telegram API docs: https://core.telegram.org/bots/api#chatmemberbanned
 type ChatMemberBanned struct {
 	Status    ChatMemberType `json:"status"` // The member's status in the chat, always “kicked”
 	User      *User          `json:"user"`

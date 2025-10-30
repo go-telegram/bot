@@ -1,12 +1,12 @@
 package models
 
-// UserProfilePhotos https://core.telegram.org/bots/api#userprofilephotos
+// See Telegram API docs: https://core.telegram.org/bots/api#userprofilephotos
 type UserProfilePhotos struct {
 	TotalCount int           `json:"total_count"`
 	Photos     [][]PhotoSize `json:"photos"`
 }
 
-// User https://core.telegram.org/bots/api#user
+// See Telegram API docs: https://core.telegram.org/bots/api#user
 type User struct {
 	ID                      int64  `json:"id"`
 	IsBot                   bool   `json:"is_bot"`

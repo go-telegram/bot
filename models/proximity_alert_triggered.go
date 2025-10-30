@@ -1,6 +1,6 @@
 package models
 
-// ProximityAlertTriggered https://core.telegram.org/bots/api#proximityalerttriggered
+// See Telegram API docs: https://core.telegram.org/bots/api#proximityalerttriggered
 type ProximityAlertTriggered struct {
 	Traveler User `json:"traveler"`
 	Watcher  User `json:"watcher"`

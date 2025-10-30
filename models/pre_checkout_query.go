@@ -1,6 +1,6 @@
 package models
 
-// PreCheckoutQuery https://core.telegram.org/bots/api#precheckoutquery
+// See Telegram API docs: https://core.telegram.org/bots/api#precheckoutquery
 type PreCheckoutQuery struct {
 	ID               string     `json:"id"`
 	From             *User      `json:"from"`

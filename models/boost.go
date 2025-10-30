@@ -5,18 +5,18 @@ import (
 	"fmt"
 )
 
-// ChatBoostAdded https://core.telegram.org/bots/api#chatboostadded
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostadded
 type ChatBoostAdded struct {
 	BoostCount int `json:"boost_count"`
 }
 
-// ChatBoostUpdated https://core.telegram.org/bots/api#chatboostupdated
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostupdated
 type ChatBoostUpdated struct {
 	Chat  Chat      `json:"chat"`
 	Boost ChatBoost `json:"boost"`
 }
 
-// ChatBoostRemoved https://core.telegram.org/bots/api#chatboostremoved
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostremoved
 type ChatBoostRemoved struct {
 	Chat       Chat            `json:"chat"`
 	BoostID    string          `json:"boost_id"`
@@ -24,12 +24,12 @@ type ChatBoostRemoved struct {
 	Source     ChatBoostSource `json:"source"`
 }
 
-// UserChatBoosts https://core.telegram.org/bots/api#userchatboosts
+// See Telegram API docs: https://core.telegram.org/bots/api#userchatboosts
 type UserChatBoosts struct {
 	Boosts []ChatBoost `json:"boosts"`
 }
 
-// ChatBoost https://core.telegram.org/bots/api#chatboost
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboost
 type ChatBoost struct {
 	BoostID        string          `json:"boost_id"`
 	AddDate        int             `json:"add_date"`
@@ -37,7 +37,7 @@ type ChatBoost struct {
 	Source         ChatBoostSource `json:"source"`
 }
 
-// ChatBoostSource https://core.telegram.org/bots/api#chatboostsource
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostsource
 type ChatBoostSource struct {
 	Source ChatBoostSourceType
 
@@ -89,7 +89,7 @@ func (cbs *ChatBoostSource) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported ChatBoostSource type")
 }
 
-// ChatBoostSourceType https://core.telegram.org/bots/api#chatboostsource
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostsource
 type ChatBoostSourceType string
 
 const (
@@ -98,19 +98,19 @@ const (
 	ChatBoostSourceTypeGiveaway ChatBoostSourceType = "giveaway"
 )
 
-// ChatBoostSourcePremium https://core.telegram.org/bots/api#chatboostsourcepremium
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostsourcepremium
 type ChatBoostSourcePremium struct {
 	Source ChatBoostSourceType `json:"source"` // always “premium”
 	User   User                `json:"user"`
 }
 
-// ChatBoostSourceGiftCode https://core.telegram.org/bots/api#chatboostsourcegiftcode
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostsourcegiftcode
 type ChatBoostSourceGiftCode struct {
 	Source ChatBoostSourceType `json:"source"` // always “gift_code”
 	User   User                `json:"user"`
 }
 
-// ChatBoostSourceGiveaway https://core.telegram.org/bots/api#chatboostsourcegiveaway
+// See Telegram API docs: https://core.telegram.org/bots/api#chatboostsourcegiveaway
 type ChatBoostSourceGiveaway struct {
 	Source            ChatBoostSourceType `json:"source"` // always “giveaway”
 	GiveawayMessageID int                 `json:"giveaway_message_id"`

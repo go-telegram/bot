@@ -1,6 +1,6 @@
 package models
 
-// ChecklistTask https://core.telegram.org/bots/api#checklisttask
+// See Telegram API docs: https://core.telegram.org/bots/api#checklisttask
 type ChecklistTask struct {
 	ID              int             `json:"id"`
 	Text            string          `json:"text"`
@@ -9,7 +9,7 @@ type ChecklistTask struct {
 	CompletionDate  int             `json:"completion_date,omitempty"`
 }
 
-// Checklist https://core.telegram.org/bots/api#checklist
+// See Telegram API docs: https://core.telegram.org/bots/api#checklist
 type Checklist struct {
 	Title                    string          `json:"title"`
 	TitleEntities            []MessageEntity `json:"title_entities,omitempty"`
@@ -18,7 +18,7 @@ type Checklist struct {
 	OthersCanMarkTasksAsDone bool            `json:"others_can_mark_tasks_as_done,omitempty"`
 }
 
-// InputChecklistTask https://core.telegram.org/bots/api#inputchecklisttask
+// See Telegram API docs: https://core.telegram.org/bots/api#inputchecklisttask
 type InputChecklistTask struct {
 	ID           int             `json:"id"`
 	Text         string          `json:"text"`
@@ -26,7 +26,7 @@ type InputChecklistTask struct {
 	TextEntities []MessageEntity `json:"text_entities,omitempty"`
 }
 
-// InputChecklist https://core.telegram.org/bots/api#inputchecklist
+// See Telegram API docs: https://core.telegram.org/bots/api#inputchecklist
 type InputChecklist struct {
 	Title                    string               `json:"title"`
 	ParseMode                ParseMode            `json:"parse_mode,omitempty"`
@@ -36,14 +36,14 @@ type InputChecklist struct {
 	OthersCanMarkTasksAsDone bool                 `json:"others_can_mark_tasks_as_done,omitempty"`
 }
 
-// ChecklistTasksDone https://core.telegram.org/bots/api#checklisttasksdone
+// See Telegram API docs: https://core.telegram.org/bots/api#checklisttasksdone
 type ChecklistTasksDone struct {
 	ChecklistMessage       *Message `json:"checklist_message,omitempty"`
 	MarkedAsDoneTaskIDs    []int    `json:"marked_as_done_task_ids,omitempty"`
 	MarkedAsNotDoneTaskIDs []int    `json:"marked_as_not_done_task_ids,omitempty"`
 }
 
-// ChecklistTasksAdded https://core.telegram.org/bots/api#checklisttasksadded
+// See Telegram API docs: https://core.telegram.org/bots/api#checklisttasksadded
 type ChecklistTasksAdded struct {
 	ChecklistMessage *Message        `json:"checklist_message,omitempty"`
 	Tasks            []ChecklistTask `json:"tasks"`

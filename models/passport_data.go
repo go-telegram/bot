@@ -1,6 +1,6 @@
 package models
 
-// PassportFile https://core.telegram.org/bots/api#passportfile
+// See Telegram API docs: https://core.telegram.org/bots/api#passportfile
 type PassportFile struct {
 	FileID       string `json:"file_id"`
 	FileUniqueID string `json:"file_unique_id"`
@@ -8,7 +8,7 @@ type PassportFile struct {
 	FileDate     int    `json:"file_date"`
 }
 
-// EncryptedPassportElement https://core.telegram.org/bots/api#encryptedpassportelement
+// See Telegram API docs: https://core.telegram.org/bots/api#encryptedpassportelement
 type EncryptedPassportElement struct {
 	Type        string         `json:"type"`
 	Data        string         `json:"data,omitempty"`
@@ -22,14 +22,14 @@ type EncryptedPassportElement struct {
 	Hash        string         `json:"hash"`
 }
 
-// EncryptedCredentials https://core.telegram.org/bots/api#encryptedcredentials
+// See Telegram API docs: https://core.telegram.org/bots/api#encryptedcredentials
 type EncryptedCredentials struct {
 	Data   string `json:"data"`
 	Hash   string `json:"hash"`
 	Secret string `json:"secret"`
 }
 
-// PassportData https://core.telegram.org/bots/api#passportdata
+// See Telegram API docs: https://core.telegram.org/bots/api#passportdata
 type PassportData struct {
 	Data        []EncryptedPassportElement `json:"data"`
 	Credentials EncryptedCredentials       `json:"credentials"`

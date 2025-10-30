@@ -1,6 +1,6 @@
 package models
 
-// ChatJoinRequest https://core.telegram.org/bots/api#chatjoinrequest
+// See Telegram API docs: https://core.telegram.org/bots/api#chatjoinrequest
 type ChatJoinRequest struct {
 	Chat       Chat            `json:"chat"`
 	From       User            `json:"from"`
@@ -10,7 +10,7 @@ type ChatJoinRequest struct {
 	InviteLink *ChatInviteLink `json:"invite_link,omitempty"`
 }
 
-// ChatPhoto https://core.telegram.org/bots/api#chatphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#chatphoto
 type ChatPhoto struct {
 	SmallFileID       string `json:"small_file_id"`
 	SmallFileUniqueID string `json:"small_file_unique_id"`
@@ -18,7 +18,7 @@ type ChatPhoto struct {
 	BigFileUniqueID   string `json:"big_file_unique_id"`
 }
 
-// ChatInviteLink https://core.telegram.org/bots/api#chatinvitelink
+// See Telegram API docs: https://core.telegram.org/bots/api#chatinvitelink
 type ChatInviteLink struct {
 	InviteLink              string `json:"invite_link"`
 	Creator                 User   `json:"creator"`
@@ -31,7 +31,7 @@ type ChatInviteLink struct {
 	PendingJoinRequestCount int    `json:"pending_join_request_count,omitempty"`
 }
 
-// ChatAdministratorRights https://core.telegram.org/bots/api#chatadministratorrights
+// See Telegram API docs: https://core.telegram.org/bots/api#chatadministratorrights
 type ChatAdministratorRights struct {
 	IsAnonymous             bool `json:"is_anonymous"`
 	CanManageChat           bool `json:"can_manage_chat"`
@@ -51,7 +51,7 @@ type ChatAdministratorRights struct {
 	CanManageDirectMessages bool `json:"can_manage_direct_messages,omitempty"`
 }
 
-// ChatPermissions https://core.telegram.org/bots/api#chatpermissions
+// See Telegram API docs: https://core.telegram.org/bots/api#chatpermissions
 type ChatPermissions struct {
 	CanSendMessages       bool `json:"can_send_messages,omitempty"`
 	CanSendAudios         bool `json:"can_send_audios"`
@@ -69,7 +69,7 @@ type ChatPermissions struct {
 	CanManageTopics       bool `json:"can_manage_topics,omitempty"`
 }
 
-// ChatLocation https://core.telegram.org/bots/api#chatlocation
+// See Telegram API docs: https://core.telegram.org/bots/api#chatlocation
 type ChatLocation struct {
 	Location Location `json:"location"`
 	Address  string   `json:"address"`
@@ -90,7 +90,7 @@ const (
 	ChatTypeChannel    ChatType = "channel"
 )
 
-// Chat https://core.telegram.org/bots/api#chat
+// See Telegram API docs: https://core.telegram.org/bots/api#chat
 type Chat struct {
 	ID               int64    `json:"id"`
 	Type             ChatType `json:"type"`
@@ -102,7 +102,7 @@ type Chat struct {
 	IsDirectMessages bool     `json:"is_direct_messages,omitempty"`
 }
 
-// ChatFullInfo https://core.telegram.org/bots/api#chatfullinfo
+// See Telegram API docs: https://core.telegram.org/bots/api#chatfullinfo
 type ChatFullInfo struct {
 	ID                                 int64                 `json:"id"`
 	Type                               ChatType              `json:"type"`

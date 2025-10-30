@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// InlineQuery https://core.telegram.org/bots/api#inlinequery
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequery
 type InlineQuery struct {
 	ID       string    `json:"id"`
 	From     *User     `json:"from"`
@@ -14,7 +14,7 @@ type InlineQuery struct {
 	Location *Location `json:"location,omitempty"`
 }
 
-// AnswerInlineQuery https://core.telegram.org/bots/api#answerinlinequery
+// See Telegram API docs: https://core.telegram.org/bots/api#answerinlinequery
 type AnswerInlineQuery struct {
 	InlineQueryID     string              `json:"inline_query_id"`
 	Results           []InlineQueryResult `json:"results"`
@@ -25,21 +25,21 @@ type AnswerInlineQuery struct {
 	SwitchPmParameter string              `json:"switch_pm_parameter,omitempty"`
 }
 
-// InlineQueryResultsButton https://core.telegram.org/bots/api#inlinequeryresultsbutton
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultsbutton
 type InlineQueryResultsButton struct {
 	Text           string      `json:"text"`
 	WebApp         *WebAppInfo `json:"web_app"`
 	StartParameter string      `json:"start_parameter,omitempty"`
 }
 
-// InlineQueryResult https://core.telegram.org/bots/api#inlinequeryresult
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresult
 type InlineQueryResult interface {
 	inlineQueryResultTag()
 
 	MarshalCustom() ([]byte, error)
 }
 
-// InlineQueryResultArticle https://core.telegram.org/bots/api#inlinequeryresultarticle
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultarticle
 type InlineQueryResultArticle struct {
 	ID                  string              `json:"id"`
 	Title               string              `json:"title,omitempty"`
@@ -66,7 +66,7 @@ func (m *InlineQueryResultArticle) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultPhoto https://core.telegram.org/bots/api#inlinequeryresultphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultphoto
 type InlineQueryResultPhoto struct {
 	ID                    string              `json:"id"`
 	PhotoURL              string              `json:"photo_url"`
@@ -97,7 +97,7 @@ func (m *InlineQueryResultPhoto) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultGif https://core.telegram.org/bots/api#inlinequeryresultgif
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultgif
 type InlineQueryResultGif struct {
 	ID                    string              `json:"id"`
 	GifURL                string              `json:"gif_url"`
@@ -129,7 +129,7 @@ func (m *InlineQueryResultGif) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultMpeg4Gif https://core.telegram.org/bots/api#inlinequeryresultmpeg4gif
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultmpeg4gif
 type InlineQueryResultMpeg4Gif struct {
 	ID                    string              `json:"id"`
 	Mpeg4URL              string              `json:"mpeg4_url"`
@@ -161,7 +161,7 @@ func (m *InlineQueryResultMpeg4Gif) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultVideo https://core.telegram.org/bots/api#inlinequeryresultvideo
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultvideo
 type InlineQueryResultVideo struct {
 	ID                    string              `json:"id"`
 	VideoURL              string              `json:"video_url"`
@@ -194,7 +194,7 @@ func (m *InlineQueryResultVideo) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultAudio https://core.telegram.org/bots/api#inlinequeryresultaudio
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultaudio
 type InlineQueryResultAudio struct {
 	ID                  string              `json:"id"`
 	AudioURL            string              `json:"audio_url"`
@@ -222,7 +222,7 @@ func (m *InlineQueryResultAudio) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultVoice https://core.telegram.org/bots/api#inlinequeryresultvoice
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultvoice
 type InlineQueryResultVoice struct {
 	ID                  string              `json:"id"`
 	VoiceURL            string              `json:"voice_url"`
@@ -249,7 +249,7 @@ func (m *InlineQueryResultVoice) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultDocument https://core.telegram.org/bots/api#inlinequeryresultdocument
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultdocument
 type InlineQueryResultDocument struct {
 	ID                  string              `json:"id"`
 	Title               string              `json:"title,omitempty"`
@@ -280,7 +280,7 @@ func (m *InlineQueryResultDocument) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultLocation https://core.telegram.org/bots/api#inlinequeryresultlocation
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultlocation
 type InlineQueryResultLocation struct {
 	ID                   string              `json:"id"`
 	Latitude             float64             `json:"latitude"`
@@ -311,7 +311,7 @@ func (m *InlineQueryResultLocation) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultVenue https://core.telegram.org/bots/api#inlinequeryresultvenue
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultvenue
 type InlineQueryResultVenue struct {
 	ID                  string              `json:"id"`
 	Latitude            float64             `json:"latitude"`
@@ -343,7 +343,7 @@ func (m *InlineQueryResultVenue) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultContact https://core.telegram.org/bots/api#inlinequeryresultcontact
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcontact
 type InlineQueryResultContact struct {
 	ID                  string              `json:"id"`
 	PhoneNumber         string              `json:"phone_number"`
@@ -371,7 +371,7 @@ func (m *InlineQueryResultContact) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultGame https://core.telegram.org/bots/api#inlinequeryresultgame
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultgame
 type InlineQueryResultGame struct {
 	ID            string      `json:"id"`
 	GameShortName string      `json:"game_short_name"`
@@ -392,7 +392,7 @@ func (m *InlineQueryResultGame) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedPhoto https://core.telegram.org/bots/api#inlinequeryresultcachedphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedphoto
 type InlineQueryResultCachedPhoto struct {
 	ID                    string              `json:"id"`
 	PhotoFileID           string              `json:"photo_file_id"`
@@ -420,7 +420,7 @@ func (m *InlineQueryResultCachedPhoto) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedGif https://core.telegram.org/bots/api#inlinequeryresultcachedgif
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedgif
 type InlineQueryResultCachedGif struct {
 	ID                    string              `json:"id"`
 	GifFileID             string              `json:"gif_file_id"`
@@ -447,7 +447,7 @@ func (m *InlineQueryResultCachedGif) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedMpeg4Gif https://core.telegram.org/bots/api#inlinequeryresultcachedmpeg4gif
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedmpeg4gif
 type InlineQueryResultCachedMpeg4Gif struct {
 	ID                    string              `json:"id"`
 	Mpeg4FileID           string              `json:"mpeg4_file_id"`
@@ -474,7 +474,7 @@ func (m *InlineQueryResultCachedMpeg4Gif) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedSticker https://core.telegram.org/bots/api#inlinequeryresultcachedsticker
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedsticker
 type InlineQueryResultCachedSticker struct {
 	ID                  string              `json:"id"`
 	StickerFileID       string              `json:"sticker_file_id"`
@@ -496,7 +496,7 @@ func (m *InlineQueryResultCachedSticker) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedDocument https://core.telegram.org/bots/api#inlinequeryresultcacheddocument
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcacheddocument
 type InlineQueryResultCachedDocument struct {
 	ID                  string              `json:"id"`
 	Title               string              `json:"title,omitempty"`
@@ -523,7 +523,7 @@ func (m *InlineQueryResultCachedDocument) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedVideo https://core.telegram.org/bots/api#inlinequeryresultcachedvideo
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedvideo
 type InlineQueryResultCachedVideo struct {
 	ID                    string              `json:"id"`
 	VideoFileID           string              `json:"video_file_id"`
@@ -551,7 +551,7 @@ func (m *InlineQueryResultCachedVideo) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedVoice https://core.telegram.org/bots/api#inlinequeryresultcachedvoice
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedvoice
 type InlineQueryResultCachedVoice struct {
 	ID                  string              `json:"id"`
 	VoiceFileID         string              `json:"voice_file_id"`
@@ -577,7 +577,7 @@ func (m *InlineQueryResultCachedVoice) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InlineQueryResultCachedAudio https://core.telegram.org/bots/api#inlinequeryresultcachedaudio
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinequeryresultcachedaudio
 type InlineQueryResultCachedAudio struct {
 	ID                  string              `json:"id"`
 	AudioFileID         string              `json:"audio_file_id"`
@@ -602,12 +602,12 @@ func (m *InlineQueryResultCachedAudio) MarshalCustom() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InputMessageContent https://core.telegram.org/bots/api#inputmessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmessagecontent
 type InputMessageContent interface {
 	inputMessageContentTag()
 }
 
-// InputTextMessageContent https://core.telegram.org/bots/api#inputtextmessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputtextmessagecontent
 type InputTextMessageContent struct {
 	MessageText        string              `json:"message_text"`
 	ParseMode          ParseMode           `json:"parse_mode,omitempty"`
@@ -617,7 +617,7 @@ type InputTextMessageContent struct {
 
 func (InputTextMessageContent) inputMessageContentTag() {}
 
-// InputLocationMessageContent https://core.telegram.org/bots/api#inputlocationmessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputlocationmessagecontent
 type InputLocationMessageContent struct {
 	Latitude             float64 `json:"latitude"`
 	Longitude            float64 `json:"longitude"`
@@ -629,7 +629,7 @@ type InputLocationMessageContent struct {
 
 func (InputLocationMessageContent) inputMessageContentTag() {}
 
-// InputVenueMessageContent https://core.telegram.org/bots/api#inputvenuemessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputvenuemessagecontent
 type InputVenueMessageContent struct {
 	Latitude        float64 `json:"latitude"`
 	Longitude       float64 `json:"longitude"`
@@ -643,7 +643,7 @@ type InputVenueMessageContent struct {
 
 func (InputVenueMessageContent) inputMessageContentTag() {}
 
-// InputContactMessageContent https://core.telegram.org/bots/api#inputcontactmessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputcontactmessagecontent
 type InputContactMessageContent struct {
 	PhoneNumber string `json:"phone_number"`
 	FirstName   string `json:"first_name"`
@@ -653,13 +653,13 @@ type InputContactMessageContent struct {
 
 func (InputContactMessageContent) inputMessageContentTag() {}
 
-// LabeledPrice https://core.telegram.org/bots/api#labeledprice
+// See Telegram API docs: https://core.telegram.org/bots/api#labeledprice
 type LabeledPrice struct {
 	Label  string `json:"label"`
 	Amount int    `json:"amount"`
 }
 
-// InputInvoiceMessageContent https://core.telegram.org/bots/api#inputinvoicemessagecontent
+// See Telegram API docs: https://core.telegram.org/bots/api#inputinvoicemessagecontent
 type InputInvoiceMessageContent struct {
 	Title                     string         `json:"title"`
 	Description               string         `json:"description"`
