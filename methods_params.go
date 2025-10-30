@@ -18,7 +18,7 @@ type DeleteWebhookParams struct {
 	DropPendingUpdates bool `json:"drop_pending_updates,omitempty"`
 }
 
-// SendMessageParams https://core.telegram.org/bots/api#sendmessage
+// See Telegram API docs: https://core.telegram.org/bots/api#sendmessage
 type SendMessageParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -37,7 +37,7 @@ type SendMessageParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// ForwardMessageParams https://core.telegram.org/bots/api#forwardmessage
+// See Telegram API docs: https://core.telegram.org/bots/api#forwardmessage
 type ForwardMessageParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
@@ -50,7 +50,7 @@ type ForwardMessageParams struct {
 	MessageID               int                             `json:"message_id"`
 }
 
-// ForwardMessagesParams https://core.telegram.org/bots/api#forwardmessages
+// See Telegram API docs: https://core.telegram.org/bots/api#forwardmessages
 type ForwardMessagesParams struct {
 	ChatID                any   `json:"chat_id"`
 	MessageThreadID       int   `json:"message_thread_id,omitempty"`
@@ -61,7 +61,7 @@ type ForwardMessagesParams struct {
 	ProtectContent        bool  `json:"protect_content,omitempty"`
 }
 
-// CopyMessageParams https://core.telegram.org/bots/api#copymessage
+// See Telegram API docs: https://core.telegram.org/bots/api#copymessage
 type CopyMessageParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
@@ -81,7 +81,7 @@ type CopyMessageParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// CopyMessagesParams https://core.telegram.org/bots/api#copymessages
+// See Telegram API docs: https://core.telegram.org/bots/api#copymessages
 type CopyMessagesParams struct {
 	ChatID                any   `json:"chat_id"`
 	MessageThreadID       int   `json:"message_thread_id,omitempty"`
@@ -93,7 +93,7 @@ type CopyMessagesParams struct {
 	RemoveCaption         bool  `json:"remove_caption,omitempty"`
 }
 
-// SendPhotoParams https://core.telegram.org/bots/api#sendphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#sendphoto
 type SendPhotoParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -114,7 +114,7 @@ type SendPhotoParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendAudioParams https://core.telegram.org/bots/api#sendaudio
+// See Telegram API docs: https://core.telegram.org/bots/api#sendaudio
 type SendAudioParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -137,7 +137,7 @@ type SendAudioParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendDocumentParams https://core.telegram.org/bots/api#senddocument
+// See Telegram API docs: https://core.telegram.org/bots/api#senddocument
 type SendDocumentParams struct {
 	BusinessConnectionID        string                          `json:"business_connection_id,omitempty"`
 	ChatID                      any                             `json:"chat_id"`
@@ -158,7 +158,7 @@ type SendDocumentParams struct {
 	ReplyMarkup                 models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendVideoParams https://core.telegram.org/bots/api#sendvideo
+// See Telegram API docs: https://core.telegram.org/bots/api#sendvideo
 type SendVideoParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -186,7 +186,7 @@ type SendVideoParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendAnimationParams https://core.telegram.org/bots/api#sendanimation
+// See Telegram API docs: https://core.telegram.org/bots/api#sendanimation
 type SendAnimationParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -211,7 +211,7 @@ type SendAnimationParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendVoiceParams https://core.telegram.org/bots/api#sendvoice
+// See Telegram API docs: https://core.telegram.org/bots/api#sendvoice
 type SendVoiceParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -231,7 +231,7 @@ type SendVoiceParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendVideoNoteParams https://core.telegram.org/bots/api#sendvideonote
+// See Telegram API docs: https://core.telegram.org/bots/api#sendvideonote
 type SendVideoNoteParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -250,7 +250,7 @@ type SendVideoNoteParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendPaidMediaParams https://core.telegram.org/bots/api#sendpaidmedia
+// See Telegram API docs: https://core.telegram.org/bots/api#sendpaidmedia
 type SendPaidMediaParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -271,7 +271,7 @@ type SendPaidMediaParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendMediaGroupParams https://core.telegram.org/bots/api#sendmediagroup
+// See Telegram API docs: https://core.telegram.org/bots/api#sendmediagroup
 type SendMediaGroupParams struct {
 	BusinessConnectionID  string                  `json:"business_connection_id,omitempty"`
 	ChatID                any                     `json:"chat_id"`
@@ -285,7 +285,7 @@ type SendMediaGroupParams struct {
 	ReplyParameters       *models.ReplyParameters `json:"reply_parameters,omitempty"`
 }
 
-// SendLocationParams https://core.telegram.org/bots/api#sendlocation
+// See Telegram API docs: https://core.telegram.org/bots/api#sendlocation
 type SendLocationParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -328,7 +328,7 @@ type StopMessageLiveLocationParams struct {
 	ReplyMarkup          models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-// SendVenueParams https://core.telegram.org/bots/api#sendvenue
+// See Telegram API docs: https://core.telegram.org/bots/api#sendvenue
 type SendVenueParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -351,7 +351,7 @@ type SendVenueParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendContactParams https://core.telegram.org/bots/api#sendcontact
+// See Telegram API docs: https://core.telegram.org/bots/api#sendcontact
 type SendContactParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -370,7 +370,7 @@ type SendContactParams struct {
 	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
 }
 
-// SendPollParams https://core.telegram.org/bots/api#sendpoll
+// See Telegram API docs: https://core.telegram.org/bots/api#sendpoll
 type SendPollParams struct {
 	BusinessConnectionID  string                   `json:"business_connection_id,omitempty"`
 	ChatID                any                      `json:"chat_id"`
@@ -397,7 +397,7 @@ type SendPollParams struct {
 	ReplyMarkup           models.ReplyMarkup       `json:"reply_markup,omitempty"`
 }
 
-// SendChecklistParams https://core.telegram.org/bots/api#sendchecklist
+// See Telegram API docs: https://core.telegram.org/bots/api#sendchecklist
 type SendChecklistParams struct {
 	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`
 	ChatID               int                     `json:"chat_id"`
@@ -409,7 +409,7 @@ type SendChecklistParams struct {
 	ReplyMarkup          models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
 
-// SendDiceParams https://core.telegram.org/bots/api#senddice
+// See Telegram API docs: https://core.telegram.org/bots/api#senddice
 type SendDiceParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -432,7 +432,7 @@ type SendChatActionParams struct {
 	Action               models.ChatAction `json:"action"`
 }
 
-// SetMessageReactionParams https://core.telegram.org/bots/api#setmessagereaction
+// See Telegram API docs: https://core.telegram.org/bots/api#setmessagereaction
 type SetMessageReactionParams struct {
 	ChatID    any                   `json:"chat_id"`
 	MessageID int                   `json:"message_id"`
@@ -446,7 +446,7 @@ type GetUserProfilePhotosParams struct {
 	Limit  int   `json:"limit,omitempty"`
 }
 
-// SetUserEmojiStatusParams https://core.telegram.org/bots/api#setuseremojistatus
+// See Telegram API docs: https://core.telegram.org/bots/api#setuseremojistatus
 type SetUserEmojiStatusParams struct {
 	UserID                    int64  `json:"user_id"`
 	EmojiStatusCustomEmojiID  string `json:"emoji_status_custom_emoji_id,omitempty"`
@@ -702,13 +702,13 @@ type AnswerCallbackQueryParams struct {
 	CacheTime       int    `json:"cache_time,omitempty"`
 }
 
-// GetUserChatBoostsParams https://core.telegram.org/bots/api#getuserchatboosts
+// See Telegram API docs: https://core.telegram.org/bots/api#getuserchatboosts
 type GetUserChatBoostsParams struct {
 	ChatID any `json:"chat_id"`
 	UserID int `json:"user_id"`
 }
 
-// GetBusinessConnectionParams https://core.telegram.org/bots/api#getbusinessconnection
+// See Telegram API docs: https://core.telegram.org/bots/api#getbusinessconnection
 type GetBusinessConnectionParams struct {
 	BusinessConnectionID any `json:"business_connection_id"`
 }
@@ -774,7 +774,7 @@ type GetMyDefaultAdministratorRightsParams struct {
 	ForChannels bool `json:"for_channels,omitempty"`
 }
 
-// EditMessageTextParams https://core.telegram.org/bots/api#editmessagetext
+// See Telegram API docs: https://core.telegram.org/bots/api#editmessagetext
 type EditMessageTextParams struct {
 	BusinessConnectionID string                     `json:"business_connection_id,omitempty"`
 	ChatID               any                        `json:"chat_id,omitempty"`
@@ -809,7 +809,7 @@ type EditMessageMediaParams struct {
 	ReplyMarkup          models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-// EditMessageChecklistParams https://core.telegram.org/bots/api#editmessagechecklist
+// See Telegram API docs: https://core.telegram.org/bots/api#editmessagechecklist
 type EditMessageChecklistParams struct {
 	BusinessConnectionID string                `json:"business_connection_id,omitempty"`
 	ChatID               int                   `json:"chat_id,omitempty"`
@@ -833,33 +833,33 @@ type StopPollParams struct {
 	ReplyMarkup          models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
-// ApproveSuggestedPostParams https://core.telegram.org/bots/api#approvesuggestedpost
+// See Telegram API docs: https://core.telegram.org/bots/api#approvesuggestedpost
 type ApproveSuggestedPostParams struct {
 	ChatID    int `json:"chat_id"`
 	MessageID int `json:"message_id"`
 	SendDate  int `json:"send_date,omitempty"`
 }
 
-// DeclineSuggestedPostParams https://core.telegram.org/bots/api#declinesuggestedpost
+// See Telegram API docs: https://core.telegram.org/bots/api#declinesuggestedpost
 type DeclineSuggestedPostParams struct {
 	ChatID    int    `json:"chat_id"`
 	MessageID int    `json:"message_id"`
 	Comment   string `json:"comment,omitempty"`
 }
 
-// DeleteMessageParams https://core.telegram.org/bots/api#deletemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#deletemessage
 type DeleteMessageParams struct {
 	ChatID    any `json:"chat_id"`
 	MessageID int `json:"message_id"`
 }
 
-// DeleteMessagesParams https://core.telegram.org/bots/api#deletemessages
+// See Telegram API docs: https://core.telegram.org/bots/api#deletemessages
 type DeleteMessagesParams struct {
 	ChatID     any   `json:"chat_id"`
 	MessageIDs []int `json:"message_ids"`
 }
 
-// SendStickerParams https://core.telegram.org/bots/api#sendsticker
+// See Telegram API docs: https://core.telegram.org/bots/api#sendsticker
 type SendStickerParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
@@ -971,7 +971,7 @@ type AnswerWebAppQueryParams struct {
 	Result        models.InlineQueryResult `json:"result"`
 }
 
-// SavePreparedInlineMessageParams https://core.telegram.org/bots/api#savepreparedinlinemessage
+// See Telegram API docs: https://core.telegram.org/bots/api#savepreparedinlinemessage
 type SavePreparedInlineMessageParams struct {
 	UserID            int64                    `json:"user_id"`
 	Result            models.InlineQueryResult `json:"result"`
@@ -981,7 +981,7 @@ type SavePreparedInlineMessageParams struct {
 	AllowChannelChats bool                     `json:"allow_channel_chats,omitempty"`
 }
 
-// SendInvoiceParams https://core.telegram.org/bots/api#sendinvoice
+// See Telegram API docs: https://core.telegram.org/bots/api#sendinvoice
 type SendInvoiceParams struct {
 	ChatID                    any                             `json:"chat_id"`
 	MessageThreadID           int                             `json:"message_thread_id,omitempty"`
@@ -1064,7 +1064,7 @@ type RefundStarPaymentParams struct {
 	TelegramPaymentChargeID string `json:"telegram_payment_charge_id"`
 }
 
-// EditUserStarSubscriptionParams https://core.telegram.org/bots/api#edituserstarsubscription
+// See Telegram API docs: https://core.telegram.org/bots/api#edituserstarsubscription
 type EditUserStarSubscriptionParams struct {
 	UserID                  int64  `json:"user_id"`
 	TelegramPaymentChargeID string `json:"telegram_payment_charge_id"`
@@ -1076,7 +1076,7 @@ type SetPassportDataErrorsParams struct {
 	Errors []models.PassportElementError `json:"errors"`
 }
 
-// SendGameParams https://core.telegram.org/bots/api#sendgame
+// See Telegram API docs: https://core.telegram.org/bots/api#sendgame
 type SendGameParams struct {
 	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`
 	ChatID               any                     `json:"chat_id"`
@@ -1107,7 +1107,7 @@ type GetGameHighScoresParams struct {
 	InlineMessageID int   `json:"inline_message_id,omitempty"`
 }
 
-// SendGiftParams https://core.telegram.org/bots/api#sendgift
+// See Telegram API docs: https://core.telegram.org/bots/api#sendgift
 type SendGiftParams struct {
 	UserID        int64                  `json:"user_id"`
 	ChatID        any                    `json:"chat_id,omitempty"`
@@ -1118,92 +1118,92 @@ type SendGiftParams struct {
 	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
 }
 
-// VerifyUserParams https://core.telegram.org/bots/api#verifyuser
+// See Telegram API docs: https://core.telegram.org/bots/api#verifyuser
 type VerifyUserParams struct {
 	UserID            int64  `json:"user_id"`
 	CustomDescription string `json:"custom_description,omitempty"`
 }
 
-// VerifyChatParams https://core.telegram.org/bots/api#verifychat
+// See Telegram API docs: https://core.telegram.org/bots/api#verifychat
 type VerifyChatParams struct {
 	ChatID            any    `json:"chat_id"`
 	CustomDescription string `json:"custom_description,omitempty"`
 }
 
-// RemoveUserVerificationParams https://core.telegram.org/bots/api#removeuserverification
+// See Telegram API docs: https://core.telegram.org/bots/api#removeuserverification
 type RemoveUserVerificationParams struct {
 	UserID int64 `json:"user_id"`
 }
 
-// RemoveChatVerificationParams https://core.telegram.org/bots/api#removechatverification
+// See Telegram API docs: https://core.telegram.org/bots/api#removechatverification
 type RemoveChatVerificationParams struct {
 	ChatID any `json:"chat_id"`
 }
 
-// ReadBusinessMessageParams https://core.telegram.org/bots/api#readbusinessmessage
+// See Telegram API docs: https://core.telegram.org/bots/api#readbusinessmessage
 type ReadBusinessMessageParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	ChatID               int    `json:"chat_id"`
 	MessageID            int    `json:"message_id"`
 }
 
-// DeleteBusinessMessagesParams https://core.telegram.org/bots/api#deletebusinessmessages
+// See Telegram API docs: https://core.telegram.org/bots/api#deletebusinessmessages
 type DeleteBusinessMessagesParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	MessageIDs           []int  `json:"message_ids"`
 }
 
-// SetBusinessAccountNameParams https://core.telegram.org/bots/api#setbusinessaccountname
+// See Telegram API docs: https://core.telegram.org/bots/api#setbusinessaccountname
 type SetBusinessAccountNameParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	FirstName            string `json:"first_name"`
 	LastName             string `json:"last_name,omitempty"`
 }
 
-// SetBusinessAccountUsernameParams https://core.telegram.org/bots/api#setbusinessaccountusername
+// See Telegram API docs: https://core.telegram.org/bots/api#setbusinessaccountusername
 type SetBusinessAccountUsernameParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	Username             string `json:"username,omitempty"`
 }
 
-// SetBusinessAccountBioParams https://core.telegram.org/bots/api#setbusinessaccountbio
+// See Telegram API docs: https://core.telegram.org/bots/api#setbusinessaccountbio
 type SetBusinessAccountBioParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	Bio                  string `json:"bio,omitempty"`
 }
 
-// SetBusinessAccountProfilePhotoParams https://core.telegram.org/bots/api#setbusinessaccountprofilephoto
+// See Telegram API docs: https://core.telegram.org/bots/api#setbusinessaccountprofilephoto
 type SetBusinessAccountProfilePhotoParams struct {
 	BusinessConnectionID string                   `json:"business_connection_id"`
 	Photo                models.InputProfilePhoto `json:"photo"`
 	IsPublic             bool                     `json:"is_public,omitempty"`
 }
 
-// RemoveBusinessAccountProfilePhotoParams https://core.telegram.org/bots/api#removebusinessaccountprofilephoto
+// See Telegram API docs: https://core.telegram.org/bots/api#removebusinessaccountprofilephoto
 type RemoveBusinessAccountProfilePhotoParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	IsPublic             bool   `json:"is_public,omitempty"`
 }
 
-// SetBusinessAccountGiftSettingsParams https://core.telegram.org/bots/api#setbusinessaccountgiftsettings
+// See Telegram API docs: https://core.telegram.org/bots/api#setbusinessaccountgiftsettings
 type SetBusinessAccountGiftSettingsParams struct {
 	BusinessConnectionID string                   `json:"business_connection_id"`
 	ShowGiftButton       bool                     `json:"show_gift_button"`
 	AcceptedGiftTypes    models.AcceptedGiftTypes `json:"accepted_gift_types"`
 }
 
-// GetBusinessAccountStarBalanceParams https://core.telegram.org/bots/api#getbusinessaccountstarbalance
+// See Telegram API docs: https://core.telegram.org/bots/api#getbusinessaccountstarbalance
 type GetBusinessAccountStarBalanceParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 }
 
-// TransferBusinessAccountStarsParams https://core.telegram.org/bots/api#transferbusinessaccountstars
+// See Telegram API docs: https://core.telegram.org/bots/api#transferbusinessaccountstars
 type TransferBusinessAccountStarsParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	StarCount            int    `json:"star_count"`
 }
 
-// GetBusinessAccountGiftsParams https://core.telegram.org/bots/api#getbusinessaccountgifts
+// See Telegram API docs: https://core.telegram.org/bots/api#getbusinessaccountgifts
 type GetBusinessAccountGiftsParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	ExcludeUnsaved       bool   `json:"exclude_unsaved,omitempty"`
@@ -1216,13 +1216,13 @@ type GetBusinessAccountGiftsParams struct {
 	Limit                int    `json:"limit,omitempty"`
 }
 
-// ConvertGiftToStarsParams https://core.telegram.org/bots/api#convertgifttostars
+// See Telegram API docs: https://core.telegram.org/bots/api#convertgifttostars
 type ConvertGiftToStarsParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	OwnedGiftID          string `json:"owned_gift_id"`
 }
 
-// UpgradeGiftParams https://core.telegram.org/bots/api#upgradegift
+// See Telegram API docs: https://core.telegram.org/bots/api#upgradegift
 type UpgradeGiftParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	OwnedGiftID          string `json:"owned_gift_id"`
@@ -1230,7 +1230,7 @@ type UpgradeGiftParams struct {
 	StarCount            int    `json:"star_count,omitempty"`
 }
 
-// TransferGiftParams https://core.telegram.org/bots/api#transfergift
+// See Telegram API docs: https://core.telegram.org/bots/api#transfergift
 type TransferGiftParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	OwnedGiftID          string `json:"owned_gift_id"`
@@ -1238,7 +1238,7 @@ type TransferGiftParams struct {
 	StarCount            int    `json:"star_count"`
 }
 
-// PostStoryParams https://core.telegram.org/bots/api#poststory
+// See Telegram API docs: https://core.telegram.org/bots/api#poststory
 type PostStoryParams struct {
 	BusinessConnectionID string                   `json:"business_connection_id"`
 	Content              models.InputStoryContent `json:"content"`
@@ -1251,7 +1251,7 @@ type PostStoryParams struct {
 	ProtectContent       bool                     `json:"protect_content,omitempty"`
 }
 
-// EditStoryParams https://core.telegram.org/bots/api#editstory
+// See Telegram API docs: https://core.telegram.org/bots/api#editstory
 type EditStoryParams struct {
 	BusinessConnectionID string                   `json:"business_connection_id"`
 	StoryID              int                      `json:"story_id"`
@@ -1262,13 +1262,13 @@ type EditStoryParams struct {
 	Areas                []models.StoryArea       `json:"areas,omitempty"`
 }
 
-// DeleteStoryParams https://core.telegram.org/bots/api#deletestory
+// See Telegram API docs: https://core.telegram.org/bots/api#deletestory
 type DeleteStoryParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	StoryID              int    `json:"story_id"`
 }
 
-// GiftPremiumSubscriptionParams https://core.telegram.org/bots/api#giftpremiumsubscription
+// See Telegram API docs: https://core.telegram.org/bots/api#giftpremiumsubscription
 type GiftPremiumSubscriptionParams struct {
 	UserID        int64                  `json:"user_id"`
 	MonthCount    int                    `json:"month_count"`
