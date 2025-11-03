@@ -23,11 +23,15 @@ const (
 type MatchType int
 
 const (
-	MatchTypeExact            MatchType = iota // Exact string match (content == pattern)
-	MatchTypePrefix                            // Prefix match (content starts with pattern)
-	MatchTypeContains                          // Contains match (pattern found anywhere in content)
-	MatchTypeCommand                           // Bot command match (finds /pattern as bot command)
-	MatchTypeCommandStartOnly                  // Bot command at message start only (strict command matching)
+	MatchTypeExact    MatchType = iota // Exact string match (content == pattern)
+	MatchTypePrefix                    // Prefix match (content starts with pattern)
+	MatchTypeContains                  // Contains match (pattern found anywhere in content)
+	// Bot command match (finds /pattern as bot command).
+	// When registering, command is specified without /. Example: "start", "help", etc.
+	MatchTypeCommand
+	// Bot command at message start only (strict command matching).
+	// When registering, command is specified without /. Example: "start", "help", etc.
+	MatchTypeCommandStartOnly
 
 	// Internal match types (not for public use)
 	matchTypeRegexp // Regular expression matching (use RegisterHandlerRegexp)
