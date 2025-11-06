@@ -2,7 +2,7 @@ package models
 
 import "io"
 
-// MaskPosition https://core.telegram.org/bots/api#maskposition
+// See Telegram API docs: https://core.telegram.org/bots/api#maskposition
 type MaskPosition struct {
 	Point  string  `json:"point"`
 	XShift float64 `json:"x_shift"`
@@ -10,7 +10,7 @@ type MaskPosition struct {
 	Scale  float64 `json:"scale"`
 }
 
-// Sticker https://core.telegram.org/bots/api#sticker
+// See Telegram API docs: https://core.telegram.org/bots/api#sticker
 type Sticker struct {
 	FileID           string        `json:"file_id"`
 	FileUniqueID     string        `json:"file_unique_id"`
@@ -29,7 +29,7 @@ type Sticker struct {
 	FileSize         int           `json:"file_size,omitempty"`
 }
 
-// InputSticker https://core.telegram.org/bots/api#inputsticker
+// See Telegram API docs: https://core.telegram.org/bots/api#inputsticker
 type InputSticker struct {
 	Sticker      string        `json:"sticker"`
 	Format       string        `json:"format"`

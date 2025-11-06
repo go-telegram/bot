@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// InputMedia https://core.telegram.org/bots/api#inputmedia
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmedia
 type InputMedia interface {
 	inputMediaTag()
 
@@ -14,7 +14,7 @@ type InputMedia interface {
 	GetMedia() string
 }
 
-// InputMediaPhoto https://core.telegram.org/bots/api#inputmediaphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmediaphoto
 type InputMediaPhoto struct {
 	Media                 string          `json:"media"`
 	Caption               string          `json:"caption,omitempty"`
@@ -48,7 +48,7 @@ func (m *InputMediaPhoto) MarshalInputMedia() ([]byte, error) {
 
 func (InputMediaPhoto) inputMediaTag() {}
 
-// InputMediaVideo https://core.telegram.org/bots/api#inputmediavideo
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmediavideo
 type InputMediaVideo struct {
 	Media                 string          `json:"media"`
 	Thumbnail             InputFile       `json:"thumbnail,omitempty"`
@@ -87,7 +87,7 @@ func (m InputMediaVideo) MarshalInputMedia() ([]byte, error) {
 
 func (InputMediaVideo) inputMediaTag() {}
 
-// InputMediaAnimation https://core.telegram.org/bots/api#inputmediaanimation
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmediaanimation
 type InputMediaAnimation struct {
 	Media                 string          `json:"media"`
 	Thumbnail             InputFile       `json:"thumbnail,omitempty"`
@@ -123,7 +123,7 @@ func (m InputMediaAnimation) MarshalInputMedia() ([]byte, error) {
 
 func (InputMediaAnimation) inputMediaTag() {}
 
-// InputMediaAudio https://core.telegram.org/bots/api#inputmediaaudio
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmediaaudio
 type InputMediaAudio struct {
 	Media           string          `json:"media"`
 	Thumbnail       InputFile       `json:"thumbnail,omitempty"`
@@ -157,7 +157,7 @@ func (m InputMediaAudio) MarshalInputMedia() ([]byte, error) {
 
 func (InputMediaAudio) inputMediaTag() {}
 
-// InputMediaDocument https://core.telegram.org/bots/api#inputmediadocument
+// See Telegram API docs: https://core.telegram.org/bots/api#inputmediadocument
 type InputMediaDocument struct {
 	Media                       string          `json:"media"`
 	Thumbnail                   InputFile       `json:"thumbnail,omitempty"`

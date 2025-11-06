@@ -1,6 +1,6 @@
 package models
 
-// Animation https://core.telegram.org/bots/api#animation
+// See Telegram API docs: https://core.telegram.org/bots/api#animation
 type Animation struct {
 	FileID       string     `json:"file_id"`
 	FileUniqueID string     `json:"file_unique_id"`

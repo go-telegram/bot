@@ -1,6 +1,6 @@
 package models
 
-// Video https://core.telegram.org/bots/api#video
+// See Telegram API docs: https://core.telegram.org/bots/api#video
 type Video struct {
 	FileID         string      `json:"file_id"`
 	FileUniqueID   string      `json:"file_unique_id"`

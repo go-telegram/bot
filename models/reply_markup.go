@@ -2,12 +2,12 @@ package models
 
 type ReplyMarkup any
 
-// InlineKeyboardMarkup https://core.telegram.org/bots/api#inlinekeyboardmarkup
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinekeyboardmarkup
 type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
 }
 
-// LoginURL https://core.telegram.org/bots/api#loginurl
+// See Telegram API docs: https://core.telegram.org/bots/api#loginurl
 type LoginURL struct {
 	URL                string `json:"url"`
 	ForwardText        string `json:"forward_text,omitempty"`
@@ -15,7 +15,7 @@ type LoginURL struct {
 	RequestWriteAccess bool   `json:"request_write_access,omitempty"`
 }
 
-// SwitchInlineQueryChosenChat https://core.telegram.org/bots/api#switchinlinequerychosenchat
+// See Telegram API docs: https://core.telegram.org/bots/api#switchinlinequerychosenchat
 type SwitchInlineQueryChosenChat struct {
 	Query             string `json:"query,omitempty"`
 	AllowUserChats    bool   `json:"allow_user_chats,omitempty"`
@@ -24,12 +24,12 @@ type SwitchInlineQueryChosenChat struct {
 	AllowChannelChats bool   `json:"allow_channel_chats,omitempty"`
 }
 
-// CopyTextButton https://core.telegram.org/bots/api#copytextbutton
+// See Telegram API docs: https://core.telegram.org/bots/api#copytextbutton
 type CopyTextButton struct {
 	Text string `json:"text"`
 }
 
-// InlineKeyboardButton https://core.telegram.org/bots/api#inlinekeyboardbutton
+// See Telegram API docs: https://core.telegram.org/bots/api#inlinekeyboardbutton
 type InlineKeyboardButton struct {
 	Text                         string                       `json:"text"`
 	URL                          string                       `json:"url,omitempty"`
@@ -44,7 +44,7 @@ type InlineKeyboardButton struct {
 	Pay                          bool                         `json:"pay,omitempty"`
 }
 
-// ReplyKeyboardMarkup https://core.telegram.org/bots/api#replykeyboardmarkup
+// See Telegram API docs: https://core.telegram.org/bots/api#replykeyboardmarkup
 type ReplyKeyboardMarkup struct {
 	Keyboard              [][]KeyboardButton `json:"keyboard"`
 	IsPersistent          bool               `json:"is_persistent,omitempty"`
@@ -54,7 +54,7 @@ type ReplyKeyboardMarkup struct {
 	Selective             bool               `json:"selective,omitempty"`
 }
 
-// KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
+// See Telegram API docs: https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
 	Text            string                      `json:"text"`
 	RequestUser     *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
@@ -66,14 +66,14 @@ type KeyboardButton struct {
 	WebApp          *WebAppInfo                 `json:"web_app,omitempty"`
 }
 
-// KeyboardButtonRequestUser https://core.telegram.org/bots/api#keyboardbuttonrequestuser
+// See Telegram API docs: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
 type KeyboardButtonRequestUser struct {
 	RequestID     int32 `json:"request_id"`
 	UserIsBot     bool  `json:"user_is_bot,omitempty"`
 	UserIsPremium bool  `json:"user_is_premium,omitempty"`
 }
 
-// KeyboardButtonRequestUsers https://core.telegram.org/bots/api#keyboardbuttonrequestusers
+// See Telegram API docs: https://core.telegram.org/bots/api#keyboardbuttonrequestusers
 type KeyboardButtonRequestUsers struct {
 	RequestID       int32 `json:"request_id"`
 	UserIsBot       bool  `json:"user_is_bot,omitempty"`
@@ -84,7 +84,7 @@ type KeyboardButtonRequestUsers struct {
 	RequestPhoto    bool  `json:"request_photo,omitempty"`
 }
 
-// KeyboardButtonRequestChat https://core.telegram.org/bots/api#keyboardbuttonrequestchat
+// See Telegram API docs: https://core.telegram.org/bots/api#keyboardbuttonrequestchat
 type KeyboardButtonRequestChat struct {
 	RequestID               int32                    `json:"request_id"`
 	ChatIsChannel           bool                     `json:"chat_is_channel"`
@@ -99,7 +99,7 @@ type KeyboardButtonRequestChat struct {
 	RequestPhoto            bool                     `json:"request_photo,omitempty"`
 }
 
-// KeyboardButtonPollType https://core.telegram.org/bots/api#keyboardbuttonpolltype
+// See Telegram API docs: https://core.telegram.org/bots/api#keyboardbuttonpolltype
 type KeyboardButtonPollType struct {
 	Type string `json:"type,omitempty"`
 }
@@ -114,13 +114,13 @@ type CallbackGame struct {
 	InlineMessageID    int   `json:"inline_message_id,omitempty"`
 }
 
-// ReplyKeyboardRemove https://core.telegram.org/bots/api#replykeyboardremove
+// See Telegram API docs: https://core.telegram.org/bots/api#replykeyboardremove
 type ReplyKeyboardRemove struct {
 	RemoveKeyboard bool `json:"remove_keyboard"`
 	Selective      bool `json:"selective,omitempty"`
 }
 
-// ForceReply https://core.telegram.org/bots/api#forcereply
+// See Telegram API docs: https://core.telegram.org/bots/api#forcereply
 type ForceReply struct {
 	ForceReply            bool   `json:"force_reply"`
 	InputFieldPlaceholder string `json:"input_field_placeholder,omitempty"`

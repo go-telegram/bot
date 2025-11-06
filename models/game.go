@@ -1,6 +1,6 @@
 package models
 
-// Game https://core.telegram.org/bots/api#game
+// See Telegram API docs: https://core.telegram.org/bots/api#game
 type Game struct {
 	Title        string          `json:"title"`
 	Description  string          `json:"description"`
@@ -10,7 +10,7 @@ type Game struct {
 	Animation    *Animation      `json:"animation,omitempty"`
 }
 
-// GameHighScore https://core.telegram.org/bots/api#gamehighscore
+// See Telegram API docs: https://core.telegram.org/bots/api#gamehighscore
 type GameHighScore struct {
 	Position int  `json:"position"`
 	User     User `json:"user"`

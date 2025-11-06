@@ -1,6 +1,6 @@
 package models
 
-// Giveaway https://core.telegram.org/bots/api#giveaway
+// See Telegram API docs: https://core.telegram.org/bots/api#giveaway
 type Giveaway struct {
 	Chats                         []Chat   `json:"chats"`
 	WinnersSelectionDate          int      `json:"winners_selection_date"`
@@ -13,12 +13,12 @@ type Giveaway struct {
 	PremiumSubscriptionMonthCount int      `json:"premium_subscription_month_count,omitempty"`
 }
 
-// GiveawayCreated https://core.telegram.org/bots/api#giveawaycreated
+// See Telegram API docs: https://core.telegram.org/bots/api#giveawaycreated
 type GiveawayCreated struct {
 	PrizeStarCount int `json:"prize_star_count,omitempty"`
 }
 
-// GiveawayWinners https://core.telegram.org/bots/api#giveawaywinners
+// See Telegram API docs: https://core.telegram.org/bots/api#giveawaywinners
 type GiveawayWinners struct {
 	Chat                          Chat   `json:"chat"`
 	GiveawayMessageID             int    `json:"giveaway_message_id"`
@@ -34,7 +34,7 @@ type GiveawayWinners struct {
 	PrizeDescription              string `json:"prize_description,omitempty"`
 }
 
-// GiveawayCompleted https://core.telegram.org/bots/api#giveawaycompleted
+// See Telegram API docs: https://core.telegram.org/bots/api#giveawaycompleted
 type GiveawayCompleted struct {
 	WinnerCount         int      `json:"winner_count"`
 	UnclaimedPrizeCount int      `json:"unclaimed_prize_count,omitempty"`

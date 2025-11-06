@@ -7,7 +7,7 @@ import (
 
 type InputFileType int
 
-// InputFile https://core.telegram.org/bots/api#inputfile
+// See Telegram API docs: https://core.telegram.org/bots/api#inputfile
 type InputFile interface {
 	inputFileTag()
 }

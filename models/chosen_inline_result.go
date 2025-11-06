@@ -1,6 +1,6 @@
 package models
 
-// ChosenInlineResult https://core.telegram.org/bots/api#choseninlineresult
+// See Telegram API docs: https://core.telegram.org/bots/api#choseninlineresult
 type ChosenInlineResult struct {
 	ResultID        string    `json:"result_id"`
 	From            User      `json:"from"`

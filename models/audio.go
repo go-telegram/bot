@@ -1,6 +1,6 @@
 package models
 
-// Audio https://core.telegram.org/bots/api#audio
+// See Telegram API docs: https://core.telegram.org/bots/api#audio
 type Audio struct {
 	FileID       string     `json:"file_id"`
 	FileUniqueID string     `json:"file_unique_id"`

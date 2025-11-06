@@ -7,37 +7,49 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+// HandlerType defines the type of Telegram update content that handler should process.
+// Each type corresponds to different data sources within update structure.
 type HandlerType int
 
 const (
-	HandlerTypeMessageText HandlerType = iota
-	HandlerTypeCallbackQueryData
-	HandlerTypeCallbackQueryGameShortName
-	HandlerTypePhotoCaption
+	HandlerTypeMessageText                HandlerType = iota // Handles text content of regular messages
+	HandlerTypeCallbackQueryData                             // Handles callback data from inline keyboard buttons
+	HandlerTypeCallbackQueryGameShortName                    // Handles game short names from game callback queries
+	HandlerTypePhotoCaption                                  // Handles caption text of photo messages
 )
 
+// MatchType defines how the handler pattern should be matched against incoming content.
+// Different match types provide various levels of flexibility for content filtering.
 type MatchType int
 
 const (
-	MatchTypeExact MatchType = iota
-	MatchTypePrefix
-	MatchTypeContains
+	MatchTypeExact    MatchType = iota // Exact string match (content == pattern)
+	MatchTypePrefix                    // Prefix match (content starts with pattern)
+	MatchTypeContains                  // Contains match (pattern found anywhere in content)
+	// Bot command match (finds /pattern as bot command).
+	// When registering, command is specified without /. Example: "start", "help", etc.
 	MatchTypeCommand
+	// Bot command at message start only (strict command matching).
+	// When registering, command is specified without /. Example: "start", "help", etc.
 	MatchTypeCommandStartOnly
 
-	matchTypeRegexp
-	matchTypeFunc
+	// Internal match types (not for public use)
+	matchTypeRegexp // Regular expression matching (use RegisterHandlerRegexp)
+	matchTypeFunc   // Custom function matching (use RegisterHandlerMatchFunc)
 )
 
+// handler represents internal handler configuration with matching logic and execution function.
+// Contains all necessary data for determining if update should be processed by this handler.
 type handler struct {
-	id          string
-	handlerType HandlerType
-	matchType   MatchType
-	handler     HandlerFunc
+	id          string      // Unique handler identifier for registration/unregistration
+	handlerType HandlerType // Type of content to extract from update
+	matchType   MatchType   // How to match extracted content against pattern
+	handler     HandlerFunc // Function to execute when match is found
 
-	pattern   string
-	re        *regexp.Regexp
-	matchFunc MatchFunc
+	// Pattern matching fields (used based on matchType)
+	pattern   string         // String pattern for basic matching
+	re        *regexp.Regexp // Compiled regex for regexp matching
+	matchFunc MatchFunc      // Custom function for function-based matching
 }
 
 func (h handler) match(update *models.Update) bool {
@@ -106,6 +118,9 @@ func (h handler) match(update *models.Update) bool {
 	return false
 }
 
+// RegisterHandlerMatchFunc registers a handler with custom matching function.
+// This provides maximum flexibility for complex matching logic that cannot be expressed with standard match types.
+// Returns handler ID that can be used to unregister the handler later.
 func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -124,6 +139,9 @@ func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...
 	return id
 }
 
+// RegisterHandlerRegexp registers a handler with regular expression pattern matching.
+// The regex will be applied to content extracted based on handlerType.
+// Returns handler ID that can be used to unregister the handler later.
 func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -143,6 +161,9 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 	return id
 }
 
+// RegisterHandler registers a handler with specified pattern and match type.
+// This is the most commonly used method for registering handlers with standard matching logic.
+// Returns handler ID that can be used to unregister the handler later.
 func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -162,6 +183,8 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 	return id
 }
 
+// UnregisterHandler removes a previously registered handler by its ID.
+// The ID is returned when registering handlers with any of the Register* methods.
 func (b *Bot) UnregisterHandler(id string) {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()

@@ -24,7 +24,7 @@ const (
 	MessageEntityTypeCustomEmoji          MessageEntityType = "custom_emoji"
 )
 
-// MessageEntity https://core.telegram.org/bots/api#messageentity
+// See Telegram API docs: https://core.telegram.org/bots/api#messageentity
 type MessageEntity struct {
 	Type          MessageEntityType `json:"type"`
 	Offset        int               `json:"offset"`

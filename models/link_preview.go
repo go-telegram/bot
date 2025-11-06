@@ -1,6 +1,6 @@
 package models
 
-// LinkPreviewOptions https://core.telegram.org/bots/api#linkpreviewoptions
+// See Telegram API docs: https://core.telegram.org/bots/api#linkpreviewoptions
 type LinkPreviewOptions struct {
 	IsDisabled       *bool   `json:"is_disabled,omitempty"`
 	URL              *string `json:"url,omitempty"`

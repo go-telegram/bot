@@ -14,12 +14,12 @@ const (
 	ChatBackgroundTypeChatTheme BackgroundTypeType = "chat_theme"
 )
 
-// ChatBackground https://core.telegram.org/bots/api#chatbackground
+// See Telegram API docs: https://core.telegram.org/bots/api#chatbackground
 type ChatBackground struct {
 	Type BackgroundType `json:"type"`
 }
 
-// BackgroundType https://core.telegram.org/bots/api#backgroundtype
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundtype
 type BackgroundType struct {
 	Type      BackgroundTypeType
 	Fill      *BackgroundTypeFill
@@ -74,14 +74,14 @@ func (cb *BackgroundType) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported ChatBackground type")
 }
 
-// BackgroundTypeFill https://core.telegram.org/bots/api#backgroundtypefill
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundtypefill
 type BackgroundTypeFill struct {
 	Type             BackgroundTypeType `json:"type"`
 	Fill             BackgroundFill     `json:"fill"`
 	DarkThemeDimming int                `json:"dark_theme_dimming"`
 }
 
-// BackgroundTypeWallpaper https://core.telegram.org/bots/api#backgroundtypewallpaper
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundtypewallpaper
 type BackgroundTypeWallpaper struct {
 	Type             BackgroundTypeType `json:"type"`
 	Document         Document           `json:"document"`
@@ -90,7 +90,7 @@ type BackgroundTypeWallpaper struct {
 	IsMoving         bool               `json:"is_moving,omitempty"`
 }
 
-// BackgroundTypePattern https://core.telegram.org/bots/api#backgroundtypepattern
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundtypepattern
 type BackgroundTypePattern struct {
 	Type       BackgroundTypeType `json:"type"`
 	Document   Document           `json:"document"`
@@ -100,7 +100,7 @@ type BackgroundTypePattern struct {
 	IsMoving   bool               `json:"is_moving,omitempty"`
 }
 
-// BackgroundTypeChatTheme https://core.telegram.org/bots/api#backgroundtypechattheme
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundtypechattheme
 type BackgroundTypeChatTheme struct {
 	Type      BackgroundTypeType `json:"type"`
 	ThemeName string             `json:"theme_name"`
@@ -163,13 +163,13 @@ func (bf *BackgroundFill) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported BackgroundFill type")
 }
 
-// BackgroundFillSolid https://core.telegram.org/bots/api#backgroundfillsolid
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundfillsolid
 type BackgroundFillSolid struct {
 	Type  BackgroundFillType `json:"type"`
 	Color int                `json:"color"`
 }
 
-// BackgroundFillGradient https://core.telegram.org/bots/api#backgroundfillgradient
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundfillgradient
 type BackgroundFillGradient struct {
 	Type          BackgroundFillType `json:"type"`
 	TopColor      int                `json:"top_color"`
@@ -177,7 +177,7 @@ type BackgroundFillGradient struct {
 	RotationAngle int                `json:"rotation_angle"`
 }
 
-// BackgroundFillFreeformGradient https://core.telegram.org/bots/api#backgroundfillfreeformgradient
+// See Telegram API docs: https://core.telegram.org/bots/api#backgroundfillfreeformgradient
 type BackgroundFillFreeformGradient struct {
 	Type   BackgroundFillType `json:"type"`
 	Colors []int              `json:"colors"`

@@ -1,6 +1,6 @@
 package models
 
-// StickerSet https://core.telegram.org/bots/api#stickerset
+// See Telegram API docs: https://core.telegram.org/bots/api#stickerset
 type StickerSet struct {
 	Name        string     `json:"name"`
 	Title       string     `json:"title"`

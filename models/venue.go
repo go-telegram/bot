@@ -1,6 +1,6 @@
 package models
 
-// Venue https://core.telegram.org/bots/api#venue
+// See Telegram API docs: https://core.telegram.org/bots/api#venue
 type Venue struct {
 	Location        Location `json:"location"`
 	Title           string   `json:"title"`

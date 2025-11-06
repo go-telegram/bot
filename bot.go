@@ -30,36 +30,42 @@ type Middleware func(next HandlerFunc) HandlerFunc
 type HandlerFunc func(ctx context.Context, bot *Bot, update *models.Update)
 type MatchFunc func(update *models.Update) bool
 
-// Bot represents Telegram Bot main object
+// Bot represents the main Telegram Bot instance with configuration and state management.
+// It handles updates processing, middleware execution, and provides methods for Telegram API calls.
+// The bot supports both polling and webhook modes with configurable concurrency and error handling.
 type Bot struct {
 	lastUpdateID int64
 
-	url                string
-	token              string
-	pollTimeout        time.Duration
-	skipGetMe          bool
-	webhookSecretToken string
-	testEnvironment    bool
-	workers            int
-	notAsyncHandlers   bool
+	// Connection and authentication
+	url                string        // Telegram API server URL
+	token              string        // Bot token from BotFather
+	pollTimeout        time.Duration // Timeout for long polling requests
+	skipGetMe          bool          // Skip getMe call during initialization
+	webhookSecretToken string        // Secret token for webhook validation
+	testEnvironment    bool          // Use Telegram test environment
 
-	defaultHandlerFunc HandlerFunc
+	// Concurrency and execution control
+	workers          int  // Number of worker goroutines for processing updates
+	notAsyncHandlers bool // Execute handlers synchronously instead of in goroutines
 
-	errorsHandler ErrorsHandler
-	debugHandler  DebugHandler
+	// Handler management
+	defaultHandlerFunc HandlerFunc  // Fallback handler when no specific handler matches
+	middlewares        []Middleware // Middleware chain applied to all handlers
+	handlersMx         sync.RWMutex // Mutex for thread-safe handler operations
+	handlers           []handler    // Registered update handlers
 
-	middlewares []Middleware
+	// Error and debug handling
+	errorsHandler ErrorsHandler // Custom error handler
+	debugHandler  DebugHandler  // Custom debug handler
 
-	handlersMx sync.RWMutex
-	handlers   []handler
+	// HTTP client and debugging
+	client           HttpClient    // HTTP client for API requests
+	isDebug          bool          // Enable debug logging
+	checkInitTimeout time.Duration // Timeout for bot initialization checks
 
-	client           HttpClient
-	isDebug          bool
-	checkInitTimeout time.Duration
-
-	allowedUpdates AllowedUpdates
-
-	updates chan *models.Update
+	// Update filtering and processing
+	allowedUpdates AllowedUpdates      // Filter which update types to receive
+	updates        chan *models.Update // Channel for incoming updates processing
 }
 
 // New creates new Bot instance

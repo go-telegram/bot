@@ -14,7 +14,7 @@ type InputPaidMedia interface {
 	GetMedia() string
 }
 
-// InputPaidMediaPhoto https://core.telegram.org/bots/api#inputpaidmediaphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#inputpaidmediaphoto
 type InputPaidMediaPhoto struct {
 	Media string `json:"media"`
 
@@ -43,7 +43,7 @@ func (m *InputPaidMediaPhoto) MarshalInputMedia() ([]byte, error) {
 	return json.Marshal(&ret)
 }
 
-// InputPaidMediaVideo https://core.telegram.org/bots/api#inputpaidmediavideo
+// See Telegram API docs: https://core.telegram.org/bots/api#inputpaidmediavideo
 type InputPaidMediaVideo struct {
 	Media             string    `json:"media"`
 	Thumbnail         InputFile `json:"thumbnail,omitempty"`
@@ -87,7 +87,7 @@ const (
 	PaidMediaTypeVideo   PaidMediaType = "video"
 )
 
-// PaidMedia https://core.telegram.org/bots/api#paidmedia
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmedia
 type PaidMedia struct {
 	Type PaidMediaType
 
@@ -122,7 +122,7 @@ func (p *PaidMedia) UnmarshalJSON(data []byte) error {
 	}
 }
 
-// PaidMediaPreview https://core.telegram.org/bots/api#paidmediapreview
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmediapreview
 type PaidMediaPreview struct {
 	Type PaidMediaType
 
@@ -131,38 +131,38 @@ type PaidMediaPreview struct {
 	Duration int `json:"duration,omitempty"`
 }
 
-// PaidMediaPhoto https://core.telegram.org/bots/api#paidmediaphoto
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmediaphoto
 type PaidMediaPhoto struct {
 	Type PaidMediaType
 
 	Photo []PhotoSize `json:"photo"`
 }
 
-// PaidMediaVideo https://core.telegram.org/bots/api#paidmediavideo
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmediavideo
 type PaidMediaVideo struct {
 	Type PaidMediaType
 
 	Video Video `json:"video"`
 }
 
-// PaidMediaInfo https://core.telegram.org/bots/api#paidmediainfo
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmediainfo
 type PaidMediaInfo struct {
 	StarCount int         `json:"star_count"`
 	PaidMedia []PaidMedia `json:"paid_media"`
 }
 
-// PaidMediaPurchased https://core.telegram.org/bots/api#paidmediapurchased
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmediapurchased
 type PaidMediaPurchased struct {
 	From             User   `json:"from"`
 	PaidMediaPayload string `json:"paid_media_payload"`
 }
 
-// PaidMessagePriceChanged https://core.telegram.org/bots/api#paidmessagepricechanged
+// See Telegram API docs: https://core.telegram.org/bots/api#paidmessagepricechanged
 type PaidMessagePriceChanged struct {
 	PaidMessageStarCount int `json:"paid_message_star_count"`
 }
 
-// DirectMessagePriceChanged https://core.telegram.org/bots/api#directmessagepricechanged
+// See Telegram API docs: https://core.telegram.org/bots/api#directmessagepricechanged
 type DirectMessagePriceChanged struct {
 	AreDirectMessagesEnabled bool `json:"are_direct_messages_enabled"`
 	DirectMessageStarCount   int  `json:"direct_message_star_count,omitempty"`

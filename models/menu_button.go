@@ -17,7 +17,7 @@ type InputMenuButton interface {
 	menuButtonTag()
 }
 
-// MenuButton https://core.telegram.org/bots/api#menubutton
+// See Telegram API docs: https://core.telegram.org/bots/api#menubutton
 type MenuButton struct {
 	Type MenuButtonType
 
@@ -68,14 +68,14 @@ func (c *MenuButton) MarshalJSON() ([]byte, error) {
 	return nil, fmt.Errorf("unsupported MenuButton type")
 }
 
-// MenuButtonCommands https://core.telegram.org/bots/api#menubuttoncommands
+// See Telegram API docs: https://core.telegram.org/bots/api#menubuttoncommands
 type MenuButtonCommands struct {
 	Type MenuButtonType `json:"type" rules:"required,equals:commands"`
 }
 
 func (MenuButtonCommands) menuButtonTag() {}
 
-// MenuButtonWebApp https://core.telegram.org/bots/api#menubuttonwebapp
+// See Telegram API docs: https://core.telegram.org/bots/api#menubuttonwebapp
 type MenuButtonWebApp struct {
 	Type   MenuButtonType `json:"type" rules:"required,equals:web_app"`
 	Text   string         `json:"text" rules:"required"`
@@ -84,7 +84,7 @@ type MenuButtonWebApp struct {
 
 func (MenuButtonWebApp) menuButtonTag() {}
 
-// MenuButtonDefault https://core.telegram.org/bots/api#menubuttondefault
+// See Telegram API docs: https://core.telegram.org/bots/api#menubuttondefault
 type MenuButtonDefault struct {
 	Type MenuButtonType `json:"type" rules:"required,equals:default"`
 }

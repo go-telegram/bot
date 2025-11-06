@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-// ReactionTypeType https://core.telegram.org/bots/api#reactiontype
+// See Telegram API docs: https://core.telegram.org/bots/api#reactiontype
 type ReactionTypeType string
 
 const (
@@ -14,7 +14,7 @@ const (
 	ReactionTypeTypePaid        ReactionTypeType = "paid"
 )
 
-// ReactionType https://core.telegram.org/bots/api#reactiontype
+// See Telegram API docs: https://core.telegram.org/bots/api#reactiontype
 type ReactionType struct {
 	Type ReactionTypeType
 
@@ -63,24 +63,24 @@ func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 	return fmt.Errorf("unsupported ReactionType type")
 }
 
-// ReactionTypeEmoji https://core.telegram.org/bots/api#reactiontypeemoji
+// See Telegram API docs: https://core.telegram.org/bots/api#reactiontypeemoji
 type ReactionTypeEmoji struct {
 	Type  ReactionTypeType `json:"type"`
 	Emoji string           `json:"emoji"`
 }
 
-// ReactionTypeCustomEmoji https://core.telegram.org/bots/api#reactiontypecustomemoji
+// See Telegram API docs: https://core.telegram.org/bots/api#reactiontypecustomemoji
 type ReactionTypeCustomEmoji struct {
 	Type          ReactionTypeType `json:"type"`
 	CustomEmojiID string           `json:"custom_emoji_id"`
 }
 
-// ReactionTypePaid https://core.telegram.org/bots/api#reactiontypepaid
+// See Telegram API docs: https://core.telegram.org/bots/api#reactiontypepaid
 type ReactionTypePaid struct {
 	Type string `json:"type"`
 }
 
-// MessageReactionUpdated https://core.telegram.org/bots/api#messagereactionupdated
+// See Telegram API docs: https://core.telegram.org/bots/api#messagereactionupdated
 type MessageReactionUpdated struct {
 	Chat        Chat           `json:"chat"`
 	MessageID   int            `json:"message_id"`
@@ -91,13 +91,13 @@ type MessageReactionUpdated struct {
 	NewReaction []ReactionType `json:"new_reaction"`
 }
 
-// ReactionCount https://core.telegram.org/bots/api#reactioncount
+// See Telegram API docs: https://core.telegram.org/bots/api#reactioncount
 type ReactionCount struct {
 	Type       ReactionType `json:"type"`
 	TotalCount int          `json:"total_count"`
 }
 
-// MessageReactionCountUpdated https://core.telegram.org/bots/api#messagereactioncountupdated
+// See Telegram API docs: https://core.telegram.org/bots/api#messagereactioncountupdated
 type MessageReactionCountUpdated struct {
 	Chat      Chat            `json:"chat"`
 	MessageID int             `json:"message_id"`

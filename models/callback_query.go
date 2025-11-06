@@ -1,6 +1,6 @@
 package models
 
-// CallbackQuery https://core.telegram.org/bots/api#callbackquery
+// See Telegram API docs: https://core.telegram.org/bots/api#callbackquery
 type CallbackQuery struct {
 	ID              string                   `json:"id"`
 	From            User                     `json:"from,omitempty"`
