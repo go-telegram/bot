@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: golang:1.18
-      options: --user root
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,37 +22,10 @@ jobs:
         with:
           version: v1.60
 
-  analyze:
-    runs-on: ubuntu-latest
-    container:
-      image: golang:1.18
-      options: --user root
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run gocyclo Analysis
-        uses: snkrheadz/gocyclo-analysis-reports@v0.1.1
-        id: gocyclo_analysis
-        with:
-          ignore_pattern: '_test|_mock|mock_|.pb.go|proto'
-          over: '20'
-          top: '10'
-
-      - name: Post Results
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          recreate: true
-          header: gocyclo Report
-          message: |
-            ${{ env.gocyclo_report }}
-
   test:
-    needs: [lint, analyze]
     runs-on: ubuntu-latest
     container:
       image: golang:1.18
-      options: --user root
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,7 +46,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: golang:1.18
-      options: --user root
     steps:
       - name: Download coverage
         uses: actions/download-artifact@v4
