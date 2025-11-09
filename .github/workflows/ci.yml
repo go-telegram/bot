@@ -47,6 +47,9 @@ jobs:
     container:
       image: golang:1.18
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
