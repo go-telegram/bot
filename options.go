@@ -83,6 +83,17 @@ func WithHTTPClient(pollTimeout time.Duration, client HttpClient) Option {
 	}
 }
 
+// WithProcessReceivedUpdatesBeforeShutdown allows to process all received updates
+// before shutting down the bot without losing any. The context used to process updates
+// will be canceled when the bot is shutting down, but the update will be sent
+// to the handlers anyway. It's up to the handlers to make a new context if needed.
+// Works only in long polling mode.
+func WithProcessReceivedUpdatesBeforeShutdown() Option {
+	return func(b *Bot) {
+		b.processReceivedUpdatesBeforeShutdown = true
+	}
+}
+
 // WithServerURL allows to set custom server url
 func WithServerURL(serverURL string) Option {
 	return func(b *Bot) {
