@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- add option `WithProcessReceivedUpdatesBeforeShutdown` to process received updates before shutdown in long-polling mode
+
 ## v1.17.0 (2025-08-18)
 
 - api 9.2 (#207) 

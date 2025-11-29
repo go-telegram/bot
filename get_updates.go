@@ -29,6 +29,8 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 
 	var timeoutAfterError time.Duration
 
+	defer close(b.updates)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -72,11 +74,15 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 
 		for _, upd := range updates {
 			atomic.StoreInt64(&b.lastUpdateID, upd.ID)
-			select {
-			case <-ctx.Done():
-				b.error("some updates lost, ctx done")
-				return
-			case b.updates <- upd:
+			if b.processReceivedUpdatesBeforeShutdown {
+				b.updates <- upd
+			} else {
+				select {
+				case <-ctx.Done():
+					b.error("some updates lost, ctx done")
+					return
+				case b.updates <- upd:
+				}
 			}
 		}
 	}

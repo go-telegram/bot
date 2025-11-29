@@ -43,6 +43,8 @@ type Bot struct {
 	workers            int
 	notAsyncHandlers   bool
 
+	processReceivedUpdatesBeforeShutdown bool
+
 	defaultHandlerFunc HandlerFunc
 
 	errorsHandler ErrorsHandler
