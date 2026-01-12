@@ -38,6 +38,8 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	}
 
 	chatID := update.Message.Chat.ID
+	// Pass the thread ID to keep the response in the same thread/topic
+	threadID := update.Message.MessageThreadID
 
 	// Simulate an LLM response that streams word by word
 	response := "Hello! I am an AI assistant. I can help you with many tasks, " +
@@ -48,14 +50,14 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	// Using a simple numeric string
 	draftID := fmt.Sprintf("%d", time.Now().UnixNano())
 
-	err := streamResponse(ctx, b, chatID, draftID, response)
+	err := streamResponse(ctx, b, chatID, threadID, draftID, response)
 	if err != nil {
 		fmt.Printf("error streaming response: %v\n", err)
 	}
 }
 
 // streamResponse uses sendMessageDraft to stream text progressively
-func streamResponse(ctx context.Context, b *bot.Bot, chatID int64, draftID, fullText string) error {
+func streamResponse(ctx context.Context, b *bot.Bot, chatID int64, threadID int, draftID, fullText string) error {
 	chunks := splitIntoChunks(fullText, 3) // ~3 words per chunk
 	var currentText string
 
@@ -69,9 +71,10 @@ func streamResponse(ctx context.Context, b *bot.Bot, chatID int64, draftID, full
 		}
 
 		_, err := b.SendMessageDraft(ctx, &bot.SendMessageDraftParams{
-			ChatID:  chatID,
-			DraftID: draftID,
-			Text:    displayText,
+			ChatID:          chatID,
+			MessageThreadID: threadID, // Keep response in same thread/topic
+			DraftID:         draftID,
+			Text:            displayText,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to send draft: %w", err)
