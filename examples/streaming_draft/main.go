@@ -84,6 +84,16 @@ func streamResponse(ctx context.Context, b *bot.Bot, chatID int64, threadID int,
 		time.Sleep(time.Millisecond * 200)
 	}
 
+	// Finalize the message with sendMessage
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID:          chatID,
+		MessageThreadID: threadID,
+		Text:            currentText,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to send final message: %w", err)
+	}
+
 	return nil
 }
 
