@@ -141,6 +141,7 @@ type Message struct {
 	ChatShared                    *ChatShared                    `json:"chat_shared,omitempty"`
 	Gift                          *GiftInfo                      `json:"gift,omitempty"`
 	UniqueGift                    *UniqueGiftInfo                `json:"unique_gift,omitempty"`
+	GiftUpgradeSent               *GiftInfo                      `json:"gift_upgrade_sent,omitempty"`
 	ConnectedWebsite              string                         `json:"connected_website,omitempty"`
 	WriteAccessAllowed            *WriteAccessAllowed            `json:"write_access_allowed,omitempty"`
 	PassportData                  *PassportData                  `json:"passport_data,omitempty"`

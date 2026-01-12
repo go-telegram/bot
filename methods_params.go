@@ -1205,15 +1205,17 @@ type TransferBusinessAccountStarsParams struct {
 
 // GetBusinessAccountGiftsParams https://core.telegram.org/bots/api#getbusinessaccountgifts
 type GetBusinessAccountGiftsParams struct {
-	BusinessConnectionID string `json:"business_connection_id"`
-	ExcludeUnsaved       bool   `json:"exclude_unsaved,omitempty"`
-	ExcludeSaved         bool   `json:"exclude_saved,omitempty"`
-	ExcludeUnlimited     bool   `json:"exclude_unlimited,omitempty"`
-	ExcludeLimited       bool   `json:"exclude_limited,omitempty"`
-	ExcludeUnique        bool   `json:"exclude_unique,omitempty"`
-	SortByPrice          bool   `json:"sort_by_price,omitempty"`
-	Offset               string `json:"offset,omitempty"`
-	Limit                int    `json:"limit,omitempty"`
+	BusinessConnectionID       string `json:"business_connection_id"`
+	ExcludeUnsaved             bool   `json:"exclude_unsaved,omitempty"`
+	ExcludeSaved               bool   `json:"exclude_saved,omitempty"`
+	ExcludeUnlimited           bool   `json:"exclude_unlimited,omitempty"`
+	ExcludeLimitedUpgradable   bool   `json:"exclude_limited_upgradable,omitempty"`
+	ExcludeLimitedNonUpgradable bool   `json:"exclude_limited_non_upgradable,omitempty"`
+	ExcludeUnique              bool   `json:"exclude_unique,omitempty"`
+	ExcludeFromBlockchain      bool   `json:"exclude_from_blockchain,omitempty"`
+	SortByPrice                bool   `json:"sort_by_price,omitempty"`
+	Offset                     string `json:"offset,omitempty"`
+	Limit                      int    `json:"limit,omitempty"`
 }
 
 // ConvertGiftToStarsParams https://core.telegram.org/bots/api#convertgifttostars
@@ -1276,4 +1278,29 @@ type GiftPremiumSubscriptionParams struct {
 	Text          string                 `json:"text,omitempty"`
 	TextParseMode string                 `json:"text_parse_mode,omitempty"`
 	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
+}
+
+// GetUserGiftsParams https://core.telegram.org/bots/api#getusergifts
+type GetUserGiftsParams struct {
+	UserID int64  `json:"user_id"`
+	Offset string `json:"offset,omitempty"`
+	Limit  int    `json:"limit,omitempty"`
+}
+
+// GetChatGiftsParams https://core.telegram.org/bots/api#getchatgifts
+type GetChatGiftsParams struct {
+	ChatID any    `json:"chat_id"`
+	Offset string `json:"offset,omitempty"`
+	Limit  int    `json:"limit,omitempty"`
+}
+
+// SendMessageDraftParams https://core.telegram.org/bots/api#sendmessagedraft
+type SendMessageDraftParams struct {
+	BusinessConnectionID string                 `json:"business_connection_id,omitempty"`
+	ChatID               any                    `json:"chat_id"`
+	MessageThreadID      int                    `json:"message_thread_id,omitempty"`
+	DraftID              string                 `json:"draft_id"`
+	Text                 string                 `json:"text"`
+	ParseMode            models.ParseMode       `json:"parse_mode,omitempty"`
+	Entities             []models.MessageEntity `json:"entities,omitempty"`
 }

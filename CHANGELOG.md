@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.18.0 (2026-01-12)
+
+- support API 9.3 (December 31, 2025 update)
+  - Topics in private chats:
+    - Added `has_topics_enabled` field to User
+  - Gifts:
+    - Added `getUserGifts` and `getChatGifts` methods
+    - Replaced `last_resale_star_count` with `last_resale_currency` and `last_resale_amount` in UniqueGiftInfo
+    - Replaced `exclude_limited` with `exclude_limited_upgradable` and `exclude_limited_non_upgradable` in getBusinessAccountGifts
+    - Added `gift_upgrade_sent` field to Message
+    - Added `gift_id`, `is_from_blockchain`, `is_premium`, `colors` fields to UniqueGift
+    - Added `personal_total_count`, `personal_remaining_count`, `is_premium`, `has_colors`, `background`, `unique_gift_variant_count` fields to Gift
+    - Added `is_upgrade_separate`, `unique_gift_number` fields to GiftInfo and OwnedGiftRegular
+    - Added `gifts_from_channels` field to AcceptedGiftTypes
+    - Added GiftBackground and UniqueGiftColors types
+    - Added `unique_gift_colors`, `paid_message_star_count` fields to ChatFullInfo
+  - Streaming:
+    - Added `sendMessageDraft` method for streaming partial messages
+
 ## v1.17.0 (2025-08-18)
 
 - api 9.2 (#207) 

@@ -128,6 +128,7 @@ type ChatFullInfo struct {
 	ProfileBackgroundCustomEmojiID     string                `json:"profile_background_custom_emoji_id,omitempty"`
 	EmojiStatusCustomEmojiID           string                `json:"emoji_status_custom_emoji_id,omitempty"`
 	EmojiStatusExpirationDate          int                   `json:"emoji_status_expiration_date,omitempty"`
+	UniqueGiftColors                   *UniqueGiftColors     `json:"unique_gift_colors,omitempty"`
 	Bio                                string                `json:"bio"`
 	HasPrivateForwards                 bool                  `json:"has_private_forwards,omitempty"`
 	HasRestrictedVoiceAndVideoMessages bool                  `json:"has_restricted_voice_and_video_messages,omitempty"`
@@ -151,4 +152,5 @@ type ChatFullInfo struct {
 	CustomEmojiStickerSetName          string                `json:"custom_emoji_sticker_set_name,omitempty"`
 	LinkedChatID                       int64                 `json:"linked_chat_id,omitempty"`
 	Location                           *ChatLocation         `json:"location,omitempty"`
+	PaidMessageStarCount               int                   `json:"paid_message_star_count,omitempty"`
 }
