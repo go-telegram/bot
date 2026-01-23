@@ -1104,3 +1104,24 @@ func (b *Bot) GiftPremiumSubscription(ctx context.Context, params *GiftPremiumSu
 	err := b.rawRequest(ctx, "giftPremiumSubscription", params, &result)
 	return result, err
 }
+
+// GetUserGifts https://core.telegram.org/bots/api#getusergifts
+func (b *Bot) GetUserGifts(ctx context.Context, params *GetUserGiftsParams) (*models.OwnedGifts, error) {
+	result := &models.OwnedGifts{}
+	err := b.rawRequest(ctx, "getUserGifts", params, &result)
+	return result, err
+}
+
+// GetChatGifts https://core.telegram.org/bots/api#getchatgifts
+func (b *Bot) GetChatGifts(ctx context.Context, params *GetChatGiftsParams) (*models.OwnedGifts, error) {
+	result := &models.OwnedGifts{}
+	err := b.rawRequest(ctx, "getChatGifts", params, &result)
+	return result, err
+}
+
+// SendMessageDraft https://core.telegram.org/bots/api#sendmessagedraft
+func (b *Bot) SendMessageDraft(ctx context.Context, params *SendMessageDraftParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "sendMessageDraft", params, &result)
+	return result, err
+}
