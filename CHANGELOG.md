@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.18.0 (2026-01-12)
+## v1.18.0 (2026-01-23)
 
 - support API 9.3 (December 31, 2025 update)
   - Topics in private chats:
