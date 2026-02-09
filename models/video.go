@@ -13,4 +13,14 @@ type Video struct {
 	FileName       string      `json:"file_name,omitempty"`
 	MimeType       string      `json:"mime_type,omitempty"`
 	FileSize       int64       `json:"file_size,omitempty"`
+	Qualities []VideoQuality   `json:"qualities,omitempty"`
+}
+
+type VideoQuality struct {
+    FileID       string `json:"file_id"`
+    FileUniqueID string `json:"file_unique_id"`
+    Width        int    `json:"width"`
+    Height       int    `json:"height"`
+    Codec        string `json:"codec"`
+    FileSize     int64  `json:"file_size,omitempty"`
 }
