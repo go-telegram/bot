@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.19.0 (2026-02-09)
+
+- support API 9.4 (February 9, 2026 update)
+  - Custom Emoji & Button Styling:
+    - Added `icon_custom_emoji_id` and `style` fields to KeyboardButton and InlineKeyboardButton
+  - Profile Management:
+    - Added `setMyProfilePhoto` method for bots to update profile picture
+    - Added `removeMyProfilePhoto` method to remove profile picture
+    - Added `getUserProfileAudios` method to fetch user profile audios
+    - Added UserProfileAudios type
+  - Video Quality:
+    - Added VideoQuality type for video quality information
+    - Added `qualities` field to Video type
+
 ## v1.18.0 (2026-01-23)
 
 - support API 9.3 (December 31, 2025 update)
