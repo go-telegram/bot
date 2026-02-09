@@ -42,6 +42,8 @@ type InlineKeyboardButton struct {
 	CopyText                     CopyTextButton               `json:"copy_text,omitempty"`
 	CallbackGame                 *CallbackGame                `json:"callback_game,omitempty"`
 	Pay                          bool                         `json:"pay,omitempty"`
+	IconCustomEmojiID            string                       `json:"icon_custom_emoji_id,omitempty"`
+	Style                        string                       `json:"style,omitempty"`
 }
 
 // ReplyKeyboardMarkup https://core.telegram.org/bots/api#replykeyboardmarkup
@@ -56,14 +58,16 @@ type ReplyKeyboardMarkup struct {
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
-	Text            string                      `json:"text"`
-	RequestUser     *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
-	RequestUsers    *KeyboardButtonRequestUsers `json:"request_users,omitempty"`
-	RequestChat     *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
-	RequestContact  bool                        `json:"request_contact,omitempty"`
-	RequestLocation bool                        `json:"request_location,omitempty"`
-	RequestPoll     *KeyboardButtonPollType     `json:"request_poll,omitempty"`
-	WebApp          *WebAppInfo                 `json:"web_app,omitempty"`
+	Text               string                      `json:"text"`
+	RequestUser        *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
+	RequestUsers       *KeyboardButtonRequestUsers `json:"request_users,omitempty"`
+	RequestChat        *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
+	RequestContact     bool                        `json:"request_contact,omitempty"`
+	RequestLocation    bool                        `json:"request_location,omitempty"`
+	RequestPoll        *KeyboardButtonPollType     `json:"request_poll,omitempty"`
+	WebApp             *WebAppInfo                 `json:"web_app,omitempty"`
+	IconCustomEmojiID  string                      `json:"icon_custom_emoji_id,omitempty"`
+	Style              string                      `json:"style,omitempty"`
 }
 
 // KeyboardButtonRequestUser https://core.telegram.org/bots/api#keyboardbuttonrequestuser

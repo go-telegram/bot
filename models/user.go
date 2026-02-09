@@ -22,3 +22,10 @@ type User struct {
 	CanConnectToBusiness    bool   `json:"can_connect_to_business,omitempty"`
 	HasTopicsEnabled        bool   `json:"has_topics_enabled,omitempty"`
 }
+
+
+// UserProfileAudios https://core.telegram.org/bots/api#userprofileaudios
+type UserProfileAudios struct {
+    TotalCount int     `json:"total_count"`
+    Audios     []Audio `json:"audios"`
+}
