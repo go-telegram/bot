@@ -1125,3 +1125,12 @@ func (b *Bot) SendMessageDraft(ctx context.Context, params *SendMessageDraftPara
 	err := b.rawRequest(ctx, "sendMessageDraft", params, &result)
 	return result, err
 }
+
+// SetMyProfilePhoto https://core.telegram.org/bots/api#setmyprofilephoto
+func (b *Bot) SetMyProfilePhoto(ctx context.Context, params *SetMyProfilePhotoParams) (bool, error)
+
+// RemoveMyProfilePhoto https://core.telegram.org/bots/api#removemyprofilephoto
+func (b *Bot) RemoveMyProfilePhoto(ctx context.Context) (bool, error)
+
+// GetUserProfileAudios https://core.telegram.org/bots/api#getuserprofileaudios
+func (b *Bot) GetUserProfileAudios(ctx context.Context, params *GetUserProfileAudiosParams) (*models.UserProfileAudios, error)

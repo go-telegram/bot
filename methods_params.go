@@ -1304,3 +1304,15 @@ type SendMessageDraftParams struct {
 	ParseMode            models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities             []models.MessageEntity `json:"entities,omitempty"`
 }
+
+// SetMyProfilePhotoParams https://core.telegram.org/bots/api#setmyprofilephoto
+type SetMyProfilePhotoParams struct {
+    Photo models.InputFile `json:"photo"`
+}
+
+// GetUserProfileAudiosParams https://core.telegram.org/bots/api#getuserprofileaudios
+type GetUserProfileAudiosParams struct {
+    UserID int64  `json:"user_id"`
+    Offset int    `json:"offset,omitempty"`
+    Limit  int    `json:"limit,omitempty"`
+}
