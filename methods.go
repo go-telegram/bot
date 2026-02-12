@@ -3,7 +3,7 @@ package bot
 import (
 	"context"
 
-	"github.com/go-telegram/bot/models"
+	"github.com/TGlimmer/gobot/models"
 )
 
 // SetWebhook https://core.telegram.org/bots/api#setwebhook

@@ -6,8 +6,8 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
+	"github.com/TGlimmer/gobot"
+	"github.com/TGlimmer/gobot/models"
 )
 
 // Send /select command to the bot to see the example in action.

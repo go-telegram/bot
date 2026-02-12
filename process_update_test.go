@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-telegram/bot/models"
+	"github.com/TGlimmer/gobot/models"
 )
 
 func Test_applyMiddlewares(t *testing.T) {

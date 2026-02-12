@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-telegram/bot/models"
+	"github.com/TGlimmer/gobot/models"
 )
 
 const (

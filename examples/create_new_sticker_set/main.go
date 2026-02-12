@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
+	"github.com/TGlimmer/gobot"
+	"github.com/TGlimmer/gobot/models"
 )
 
 // Send any text message to the bot after the bot has been started
@@ -50,7 +50,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	fileContent, _ := images.ReadFile("images/telegram.png")
 
 	inputSticker1 := models.InputSticker{
-		Sticker:   "https://github.com/go-telegram/bot/blob/main/examples/create_new_sticker_set/images/telegram.png?raw=true",
+		Sticker:   "https://github.com/TGlimmer/gobot/blob/main/examples/create_new_sticker_set/images/telegram.png?raw=true",
 		Format:    "static",
 		EmojiList: []string{"1️⃣"},
 	}
