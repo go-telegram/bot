@@ -68,6 +68,16 @@ type MessageAutoDeleteTimerChanged struct {
 	MessageAutoDeleteTime int `json:"message_auto_delete_time"`
 }
 
+// ChatOwnerLeft https://core.telegram.org/bots/api#chatownerleft
+type ChatOwnerLeft struct {
+	NewOwner *User `json:"new_owner,omitempty"`
+}
+
+// ChatOwnerChanged https://core.telegram.org/bots/api#chatownerchanged
+type ChatOwnerChanged struct {
+	NewOwner User `json:"new_owner"`
+}
+
 // Message https://core.telegram.org/bots/api#message
 type Message struct {
 	ID                            int                            `json:"message_id"`
@@ -162,6 +172,8 @@ type Message struct {
 	GiveawayWinners               *GiveawayWinners               `json:"giveaway_winners,omitempty"`
 	GiveawayCompleted             *GiveawayCompleted             `json:"giveaway_completed,omitempty"`
 	PaidMessagePriceChanged       *PaidMessagePriceChanged       `json:"paid_message_price_changed,omitempty"`
+	ChatOwnerLeft                 *ChatOwnerLeft                 `json:"chat_owner_left,omitempty"`
+	ChatOwnerChanged              *ChatOwnerChanged              `json:"chat_owner_changed,omitempty"`
 	SuggestedPostApproved         *SuggestedPostApproved         `json:"suggested_post_approved,omitempty"`
 	SuggestedPostApprovalFailed   *SuggestedPostApprovalFailed   `json:"suggested_post_approval_failed,omitempty"`
 	SuggestedPostDeclined         *SuggestedPostDeclined         `json:"suggested_post_declined,omitempty"`

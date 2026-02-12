@@ -19,6 +19,13 @@ type User struct {
 	CanJoinGroups           bool   `json:"can_join_groups,omitempty"`
 	CanReadAllGroupMessages bool   `json:"can_read_all_group_messages,omitempty"`
 	SupportInlineQueries    bool   `json:"support_inline_queries,omitempty"`
-	CanConnectToBusiness    bool   `json:"can_connect_to_business,omitempty"`
-	HasTopicsEnabled        bool   `json:"has_topics_enabled,omitempty"`
+	CanConnectToBusiness       bool   `json:"can_connect_to_business,omitempty"`
+	HasTopicsEnabled           bool   `json:"has_topics_enabled,omitempty"`
+	AllowsUsersToCreateTopics  bool   `json:"allows_users_to_create_topics,omitempty"`
+}
+
+// UserProfileAudios https://core.telegram.org/bots/api#userprofileaudios
+type UserProfileAudios struct {
+	TotalCount int     `json:"total_count"`
+	Audios     []Audio `json:"audios"`
 }

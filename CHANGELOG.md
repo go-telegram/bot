@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.19.0 (2026-02-12)
+
+- support API 9.4 (February 9, 2026 update)
+  - Bot Profile Management:
+    - Added `setMyProfilePhoto` and `removeMyProfilePhoto` methods
+  - Forum Topics in Private Chats:
+    - Added `allows_users_to_create_topics` field to User
+    - Added `is_name_implicit` field to ForumTopic and ForumTopicCreated
+  - Colored Buttons:
+    - Added `style` and `icon_custom_emoji_id` fields to KeyboardButton and InlineKeyboardButton
+  - Video Quality:
+    - Added VideoQuality type and `qualities` field to Video
+  - Chat Owner Events:
+    - Added ChatOwnerLeft and ChatOwnerChanged types
+    - Added `chat_owner_left` and `chat_owner_changed` fields to Message
+  - User Profile Audios:
+    - Added UserProfileAudios type and `getUserProfileAudios` method
+    - Added `first_profile_audio` field to ChatFullInfo
+  - Gifts:
+    - Added `rarity` field to UniqueGiftModel
+    - Added `is_burned` field to UniqueGift
+  - Miscellaneous:
+    - Added `repostStory` method
+    - Added UserRating type and `rating` field to ChatFullInfo
+    - Added `completed_by_chat` field to ChecklistTask
+    - Added `message_effect_id` to ForwardMessageParams and CopyMessageParams
+
 ## v1.18.0 (2026-01-23)
 
 - support API 9.3 (December 31, 2025 update)

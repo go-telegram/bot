@@ -153,4 +153,6 @@ type ChatFullInfo struct {
 	LinkedChatID                       int64                 `json:"linked_chat_id,omitempty"`
 	Location                           *ChatLocation         `json:"location,omitempty"`
 	PaidMessageStarCount               int                   `json:"paid_message_star_count,omitempty"`
+	Rating                             *UserRating           `json:"rating,omitempty"`
+	FirstProfileAudio                  *Audio                `json:"first_profile_audio,omitempty"`
 }
