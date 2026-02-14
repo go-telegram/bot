@@ -3,6 +3,7 @@ package bot
 import (
 	"time"
 
+	"github.com/go-telegram/bot/internal/machine"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -143,5 +144,12 @@ func WithNotAsyncHandlers() Option {
 func WithInitialOffset(offset int64) Option {
 	return func(b *Bot) {
 		b.lastUpdateID = offset
+	}
+}
+
+// WithMachine sets the state machine instance that the bot will use to manage conversations and user states
+func WithMachine(machine *machine.Machine) Option {
+	return func(b *Bot) {
+		b.machine = machine
 	}
 }
