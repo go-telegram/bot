@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 
+	"github.com/go-telegram/bot/internal/machine"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -19,7 +20,7 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 
 // ProcessUpdate allows you to process update
 func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
-	h := b.findHandler(upd)
+	h := b.findHandler(ctx, upd)
 
 	r := applyMiddlewares(h, b.middlewares...)
 
@@ -31,12 +32,27 @@ func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 	go r(ctx, b, upd)
 }
 
-func (b *Bot) findHandler(upd *models.Update) HandlerFunc {
+func (b *Bot) findHandler(ctx context.Context, upd *models.Update) HandlerFunc {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
 
+	var (
+		s   = states{def: machine.DefaultState, cur: machine.DefaultState}
+		err error
+	)
+
+	uid, ok := ExtractUserID(upd)
+
+	if b.machine != nil && ok {
+		s.def = b.machine.DefaultState()
+		s.cur, err = b.machine.Current(ctx, uid)
+		if err != nil {
+			return b.defaultHandlerFunc
+		}
+	}
+
 	for _, h := range b.handlers {
-		if h.match(upd) {
+		if h.match(upd, s) {
 			return h.handler
 		}
 	}
