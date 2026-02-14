@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/go-telegram/bot/internal/machine"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -27,6 +28,7 @@ const (
 
 	matchTypeRegexp
 	matchTypeFunc
+	matchTypeState
 )
 
 type handler struct {
@@ -38,11 +40,16 @@ type handler struct {
 	pattern   string
 	re        *regexp.Regexp
 	matchFunc MatchFunc
+	state     machine.State
 }
 
-func (h handler) match(update *models.Update) bool {
+func (h handler) match(update *models.Update, states states) bool {
+	if h.matchType == matchTypeState && states.isCur(h.state) {
+		return true
+	}
+
 	if h.matchType == matchTypeFunc {
-		return h.matchFunc(update)
+		return h.matchFunc(update) && states.isEqual()
 	}
 
 	var data string
@@ -73,16 +80,16 @@ func (h handler) match(update *models.Update) bool {
 		entities = update.Message.CaptionEntities
 	}
 
-	if h.matchType == MatchTypeExact {
+	if h.matchType == MatchTypeExact && states.isEqual() {
 		return data == h.pattern
 	}
-	if h.matchType == MatchTypePrefix {
+	if h.matchType == MatchTypePrefix && states.isEqual() {
 		return strings.HasPrefix(data, h.pattern)
 	}
-	if h.matchType == MatchTypeContains {
+	if h.matchType == MatchTypeContains && states.isEqual() {
 		return strings.Contains(data, h.pattern)
 	}
-	if h.matchType == MatchTypeCommand {
+	if h.matchType == MatchTypeCommand && states.isEqual() {
 		for _, e := range entities {
 			if e.Type == models.MessageEntityTypeBotCommand {
 				if data[e.Offset+1:e.Offset+e.Length] == h.pattern {
@@ -91,7 +98,7 @@ func (h handler) match(update *models.Update) bool {
 			}
 		}
 	}
-	if h.matchType == MatchTypeCommandStartOnly {
+	if h.matchType == MatchTypeCommandStartOnly && states.isEqual() {
 		for _, e := range entities {
 			if e.Type == models.MessageEntityTypeBotCommand {
 				if e.Offset == 0 && data[e.Offset+1:e.Offset+e.Length] == h.pattern {
@@ -100,7 +107,7 @@ func (h handler) match(update *models.Update) bool {
 			}
 		}
 	}
-	if h.matchType == matchTypeRegexp {
+	if h.matchType == matchTypeRegexp && states.isEqual() {
 		return h.re.Match([]byte(data))
 	}
 	return false
@@ -155,6 +162,23 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 		matchType:   matchType,
 		pattern:     pattern,
 		handler:     applyMiddlewares(f, m...),
+	}
+
+	b.handlers = append(b.handlers, h)
+
+	return id
+}
+
+func (b *Bot) RegisterHandlerMatchState(state machine.State, f HandlerFunc, m ...Middleware) string {
+	b.handlersMx.Lock()
+	defer b.handlersMx.Unlock()
+
+	id := RandomString(16)
+
+	h := handler{
+		id:        id,
+		matchType: matchTypeState,
+		handler:   applyMiddlewares(f, m...),
 	}
 
 	b.handlers = append(b.handlers, h)
