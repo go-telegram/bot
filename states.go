@@ -10,3 +10,7 @@ type states struct {
 func (s states) isEqual() bool {
 	return s.def == s.cur
 }
+
+func (s states) isCur(state machine.State) bool {
+	return s.cur == state
+}
