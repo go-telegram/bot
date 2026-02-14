@@ -126,7 +126,7 @@ func Test_findHandler(t *testing.T) {
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	handler := bot.findHandler(upd)
+	handler := bot.findHandler(ctx, upd)
 	handler(ctx, bot, upd)
 
 	if !called {
@@ -156,7 +156,7 @@ func Test_findPhotoCaptionHandler(t *testing.T) {
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Caption: "test"}}
 
-	handler := bot.findHandler(upd)
+	handler := bot.findHandler(ctx, upd)
 	handler(ctx, bot, upd)
 
 	if !called {
@@ -177,7 +177,7 @@ func Test_findHandler_Default(t *testing.T) {
 	ctx := context.Background()
 	upd := &models.Update{Message: &models.Message{Text: "test"}}
 
-	handler := bot.findHandler(upd)
+	handler := bot.findHandler(ctx, upd)
 	handler(ctx, bot, upd)
 
 	if !called {
