@@ -32,6 +32,8 @@ type CopyTextButton struct {
 // InlineKeyboardButton https://core.telegram.org/bots/api#inlinekeyboardbutton
 type InlineKeyboardButton struct {
 	Text                         string                       `json:"text"`
+	IconCustomEmojiID            string                       `json:"icon_custom_emoji_id,omitempty"`
+	Style                        string                       `json:"style,omitempty"`
 	URL                          string                       `json:"url,omitempty"`
 	CallbackData                 string                       `json:"callback_data,omitempty"`
 	WebApp                       *WebAppInfo                  `json:"web_app,omitempty"`
@@ -56,8 +58,10 @@ type ReplyKeyboardMarkup struct {
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton
 type KeyboardButton struct {
-	Text            string                      `json:"text"`
-	RequestUser     *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
+	Text              string                      `json:"text"`
+	IconCustomEmojiID string                      `json:"icon_custom_emoji_id,omitempty"`
+	Style             string                      `json:"style,omitempty"`
+	RequestUser       *KeyboardButtonRequestUsers `json:"request_user,omitempty"`
 	RequestUsers    *KeyboardButtonRequestUsers `json:"request_users,omitempty"`
 	RequestChat     *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
 	RequestContact  bool                        `json:"request_contact,omitempty"`

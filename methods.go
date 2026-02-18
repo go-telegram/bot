@@ -1125,3 +1125,31 @@ func (b *Bot) SendMessageDraft(ctx context.Context, params *SendMessageDraftPara
 	err := b.rawRequest(ctx, "sendMessageDraft", params, &result)
 	return result, err
 }
+
+// RepostStory https://core.telegram.org/bots/api#repoststory
+func (b *Bot) RepostStory(ctx context.Context, params *RepostStoryParams) (*models.Story, error) {
+	result := &models.Story{}
+	err := b.rawRequest(ctx, "repostStory", params, &result)
+	return result, err
+}
+
+// SetMyProfilePhoto https://core.telegram.org/bots/api#setmyprofilephoto
+func (b *Bot) SetMyProfilePhoto(ctx context.Context, params *SetMyProfilePhotoParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMyProfilePhoto", params, &result)
+	return result, err
+}
+
+// RemoveMyProfilePhoto https://core.telegram.org/bots/api#removemyprofilephoto
+func (b *Bot) RemoveMyProfilePhoto(ctx context.Context) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "removeMyProfilePhoto", nil, &result)
+	return result, err
+}
+
+// GetUserProfileAudios https://core.telegram.org/bots/api#getuserprofileaudios
+func (b *Bot) GetUserProfileAudios(ctx context.Context, params *GetUserProfileAudiosParams) (*models.UserProfileAudios, error) {
+	result := &models.UserProfileAudios{}
+	err := b.rawRequest(ctx, "getUserProfileAudios", params, &result)
+	return result, err
+}

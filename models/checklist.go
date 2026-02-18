@@ -6,6 +6,7 @@ type ChecklistTask struct {
 	Text            string          `json:"text"`
 	TextEntities    []MessageEntity `json:"text_entities,omitempty"`
 	CompletedByUser *User           `json:"completed_by_user,omitempty"`
+	CompletedByChat *Chat           `json:"completed_by_chat,omitempty"`
 	CompletionDate  int             `json:"completion_date,omitempty"`
 }
 

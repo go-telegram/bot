@@ -146,6 +146,7 @@ type UniqueGift struct {
 	Backdrop         UniqueGiftBackdrop `json:"backdrop"`
 	IsPremium        bool               `json:"is_premium,omitempty"`
 	IsFromBlockchain bool               `json:"is_from_blockchain,omitempty"`
+	IsBurned         bool               `json:"is_burned,omitempty"`
 	Colors           *UniqueGiftColors  `json:"colors,omitempty"`
 	PublisherChat    *Chat              `json:"publisher_chat,omitempty"`
 }
@@ -155,6 +156,7 @@ type UniqueGiftModel struct {
 	Name           string  `json:"name"`
 	Sticker        Sticker `json:"sticker"`
 	RarityPerMille int     `json:"rarity_per_mille"`
+	Rarity         string  `json:"rarity,omitempty"`
 }
 
 // UniqueGiftSymbol https://core.telegram.org/bots/api#uniquegiftsymbol
