@@ -38,14 +38,13 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 				}
 				return
 			}
-
-			errFormClose := form.Close()
-			if errFormClose != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, errFormClose)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
+		}
+		errFormClose := form.Close()
+		if errFormClose != nil {
+			if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, errFormClose)); errClose != nil {
+				b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
 			}
+			return
 		}
 		if errClose := pw.Close(); errClose != nil {
 			b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
