@@ -25,32 +25,37 @@ type apiResponse struct {
 	} `json:"parameters,omitempty"`
 }
 
+// rawRequest sends one Telegram Bot API call as a multipart/form-data POST.
+//
+// The body is built into a bytes.Buffer up front, then handed to
+// http.NewRequestWithContext as a *bytes.Reader. That lets net/http
+// auto-populate Request.GetBody and Request.ContentLength, which the
+// http2.Transport needs in order to retry the request when Telegram's
+// server sends a GOAWAY frame mid-flight (a routine part of HTTP/2
+// connection draining). The earlier io.Pipe-based body could not be
+// replayed, so every POST issued on a draining connection failed with
+// "cannot retry err [http2: ...] after Request.Body was written;
+// define Request.GetBody to avoid this error". Long-poll getUpdates
+// (a GET, no body) was unaffected, so a bot would keep receiving
+// updates while silently failing every reply.
+//
+// Trade-off: the entire request body is held in memory until the
+// request is sent. For the vast majority of methods (sendMessage,
+// editMessageText, callback answers, …) the body is a few KB. For
+// file uploads the body is bounded by Telegram's bot-API per-request
+// limit (~50 MB) and only held for the duration of the upload.
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
-	pr, pw := io.Pipe()
-	form := multipart.NewWriter(pw)
+	var bodyBuf bytes.Buffer
+	form := multipart.NewWriter(&bodyBuf)
 
-	go func() {
-		if params != nil && !reflect.ValueOf(params).IsNil() {
-			_, errFormData := buildRequestForm(form, params)
-			if errFormData != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error build request form for method %s, %w", method, errFormData)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
-
-			errFormClose := form.Close()
-			if errFormClose != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, errFormClose)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
+	if params != nil && !reflect.ValueOf(params).IsNil() {
+		if _, errFormData := buildRequestForm(form, params); errFormData != nil {
+			return fmt.Errorf("error build request form for method %s, %w", method, errFormData)
 		}
-		if errClose := pw.Close(); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
+		if errFormClose := form.Close(); errFormClose != nil {
+			return fmt.Errorf("error form close for method %s, %w", method, errFormClose)
 		}
-	}()
+	}
 
 	u := b.url + "/bot" + b.token + "/"
 	if b.testEnvironment {
@@ -63,7 +68,7 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		b.debugHandler("request url: %s, payload: %s", strings.Replace(u, b.token, "***", 1), requestDebugData)
 	}
 
-	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, pr)
+	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewReader(bodyBuf.Bytes()))
 	if errRequest != nil {
 		return fmt.Errorf("error create request for method %s, %w", method, errRequest)
 	}
@@ -72,9 +77,6 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 
 	resp, errDo := b.client.Do(req)
 	if errDo != nil {
-		if errClose := pr.CloseWithError(errDo); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe reader for method %s, %w", method, errClose))
-		}
 		var netErr *url.Error
 		if errors.As(errDo, &netErr) {
 			netErr.URL = strings.Replace(netErr.URL, b.token, "***", -1)
