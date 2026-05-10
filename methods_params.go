@@ -1311,7 +1311,7 @@ type SendMessageDraftParams struct {
 // RepostStoryParams https://core.telegram.org/bots/api#repoststory
 type RepostStoryParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
-	FromChatID           int64    `json:"from_chat_id"`
+	FromChatID           int64  `json:"from_chat_id"`
 	FromStoryID          int    `json:"from_story_id"`
 	ActivePeriod         int    `json:"active_period"`
 	PostToChatPage       bool   `json:"post_to_chat_page,omitempty"`
