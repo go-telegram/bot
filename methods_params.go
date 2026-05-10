@@ -509,12 +509,12 @@ type SetChatAdministratorCustomTitleParams struct {
 }
 
 type BanChatSenderChatParams struct {
-	ChatID       any   `json:"chat_id"`
+	ChatID       any `json:"chat_id"`
 	SenderChatID int `json:"sender_chat_id"`
 }
 
 type UnbanChatSenderChatParams struct {
-	ChatID       any   `json:"chat_id"`
+	ChatID       any `json:"chat_id"`
 	SenderChatID int `json:"sender_chat_id"`
 }
 
@@ -839,8 +839,8 @@ type StopPollParams struct {
 // ApproveSuggestedPostParams https://core.telegram.org/bots/api#approvesuggestedpost
 type ApproveSuggestedPostParams struct {
 	ChatID    int `json:"chat_id"`
-	MessageID int   `json:"message_id"`
-	SendDate  int   `json:"send_date,omitempty"`
+	MessageID int `json:"message_id"`
+	SendDate  int `json:"send_date,omitempty"`
 }
 
 // DeclineSuggestedPostParams https://core.telegram.org/bots/api#declinesuggestedpost
@@ -1311,7 +1311,7 @@ type SendMessageDraftParams struct {
 // RepostStoryParams https://core.telegram.org/bots/api#repoststory
 type RepostStoryParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
-	FromChatID           int    `json:"from_chat_id"`
+	FromChatID           int64    `json:"from_chat_id"`
 	FromStoryID          int    `json:"from_story_id"`
 	ActivePeriod         int    `json:"active_period"`
 	PostToChatPage       bool   `json:"post_to_chat_page,omitempty"`
