@@ -117,8 +117,21 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 	return fieldsCount, nil
 }
 
+func readerIsNil(r io.Reader) bool {
+	if r == nil {
+		return true
+	}
+	v := reflect.ValueOf(r)
+	switch v.Kind() {
+	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func:
+		return v.IsNil()
+	default:
+		return false
+	}
+}
+
 func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value *models.InputFileUpload) error {
-	if value.Data == nil || reflect.ValueOf(value.Data).IsNil() {
+	if readerIsNil(value.Data) {
 		return fmt.Errorf("nil data for field %s", fieldName)
 	}
 	w, errCreateField := form.CreateFormFile(fieldName, value.Filename)

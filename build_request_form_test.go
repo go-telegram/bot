@@ -2,12 +2,51 @@ package bot
 
 import (
 	"bytes"
+	"io"
 	"mime/multipart"
 	"strings"
 	"testing"
 
 	"github.com/go-telegram/bot/models"
 )
+
+type structReader struct{}
+
+func (structReader) Read(p []byte) (int, error) {
+	return 0, io.EOF
+}
+
+func Test_addFormFieldInputFileUpload_structReaderDoesNotPanic(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	err := addFormFieldInputFileUpload(form, "file", &models.InputFileUpload{
+		Filename: "x.bin",
+		Data:     structReader{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func Test_readerIsNil(t *testing.T) {
+	if !readerIsNil(nil) {
+		t.Fatal("nil reader")
+	}
+	var p *strings.Reader
+	var iface io.Reader = p
+	if !readerIsNil(iface) {
+		t.Fatal("typed nil pointer in interface")
+	}
+	if readerIsNil(strings.NewReader("a")) {
+		t.Fatal("non-nil reader")
+	}
+	if readerIsNil(structReader{}) {
+		t.Fatal("struct value reader is usable, not nil")
+	}
+}
 
 func assertFormData(t *testing.T, data, expect string) {
 	if !strings.Contains(expect, "\r\n") {

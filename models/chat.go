@@ -54,7 +54,7 @@ type ChatAdministratorRights struct {
 
 // ChatPermissions https://core.telegram.org/bots/api#chatpermissions
 type ChatPermissions struct {
-	CanSendMessages       bool `json:"can_send_messages,omitempty"`
+	CanSendMessages       bool `json:"can_send_messages"`
 	CanSendAudios         bool `json:"can_send_audios"`
 	CanSendDocuments      bool `json:"can_send_documents"`
 	CanSendPhotos         bool `json:"can_send_photos"`

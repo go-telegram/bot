@@ -377,6 +377,40 @@ func TestBot_ID(t *testing.T) {
 	}
 }
 
+func TestBot_BotID(t *testing.T) {
+	tests := []struct {
+		name    string
+		token   string
+		wantID  int64
+		wantErr bool
+	}{
+		{name: "empty token", token: "", wantErr: true},
+		{name: "no colon", token: "xxx", wantErr: true},
+		{name: "bad prefix", token: "123xxx:secret", wantErr: true},
+		{name: "empty prefix", token: ":secret", wantErr: true},
+		{name: "ok", token: "123456:secret", wantID: 123456},
+		{name: "two colons", token: "123456:5678:secret", wantID: 123456},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &Bot{token: tt.token}
+			id, err := b.BotID()
+			if tt.wantErr {
+				if err == nil {
+					t.Fatal("expected error")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if id != tt.wantID {
+				t.Fatalf("BotID() = %v, want %v", id, tt.wantID)
+			}
+		})
+	}
+}
+
 func TestBot_Token(t *testing.T) {
 	b := &Bot{token: "123456:xxx"}
 
