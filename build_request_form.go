@@ -88,6 +88,8 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 			err = addFormFieldInputFileUpload(form, fieldName, vv)
 		case *models.InputFileString:
 			err = addFormFieldString(form, fieldName, vv.Data)
+		case *models.InputMediaLivePhoto:
+			err = addFormFieldInputMedia(form, fieldName, vv)
 		case []models.InputMedia:
 			var ss []inputMedia
 			for _, m := range vv {
@@ -152,6 +154,19 @@ func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byt
 		_, errCopy := io.Copy(mediaAttachmentField, value.Attachment())
 		if errCopy != nil {
 			return nil, errCopy
+		}
+	}
+	if live, ok := value.(*models.InputMediaLivePhoto); ok && strings.HasPrefix(live.Photo, "attach://") {
+		filename := strings.TrimPrefix(live.Photo, "attach://")
+		if readerIsNil(live.PhotoAttachment) {
+			return nil, fmt.Errorf("nil PhotoAttachment for attach://%s", filename)
+		}
+		photoField, errCreate := form.CreateFormFile(filename, filename)
+		if errCreate != nil {
+			return nil, errCreate
+		}
+		if _, err := io.Copy(photoField, live.PhotoAttachment); err != nil {
+			return nil, err
 		}
 	}
 	return value.MarshalInputMedia()

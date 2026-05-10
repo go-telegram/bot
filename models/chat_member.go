@@ -164,6 +164,7 @@ type ChatMemberRestricted struct {
 	CanPinMessages        bool           `json:"can_pin_messages"`
 	CanManageTopics       bool           `json:"can_manage_topics,omitempty"`
 	CanEditTag            bool           `json:"can_edit_tag,omitempty"`
+	CanReactToMessages    bool           `json:"can_react_to_messages,omitempty"`
 	UntilDate             int            `json:"until_date"`
 	Tag                   string         `json:"tag,omitempty"`
 }

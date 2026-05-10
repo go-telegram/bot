@@ -21,6 +21,8 @@ type Update struct {
 	PurchasedPaidMedia      *PaidMediaPurchased          `json:"purchased_paid_media,omitempty"`
 	Poll                    *Poll                        `json:"poll,omitempty"`
 	PollAnswer              *PollAnswer                  `json:"poll_answer,omitempty"`
+	ManagedBot              *ManagedBotUpdated           `json:"managed_bot,omitempty"`
+	GuestMessage            *Message                     `json:"guest_message,omitempty"`
 	MyChatMember            *ChatMemberUpdated           `json:"my_chat_member,omitempty"`
 	ChatMember              *ChatMemberUpdated           `json:"chat_member,omitempty"`
 	ChatJoinRequest         *ChatJoinRequest             `json:"chat_join_request,omitempty"`
@@ -53,4 +55,6 @@ const (
 	AllowedUpdateChatJoinRequest         string = "chat_join_request"
 	AllowedUpdateChatBoost               string = "chat_boost"
 	AllowedUpdateRemovedChatBoost        string = "removed_chat_boost"
+	AllowedUpdateManagedBot              string = "managed_bot"
+	AllowedUpdateGuestMessage            string = "guest_message"
 )

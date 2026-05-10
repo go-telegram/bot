@@ -1166,3 +1166,63 @@ func (b *Bot) SetChatMemberTag(ctx context.Context, params *SetChatMemberTagPara
 	err := b.rawRequest(ctx, "setChatMemberTag", params, &result)
 	return result, err
 }
+
+func (b *Bot) GetManagedBotToken(ctx context.Context, params *GetManagedBotTokenParams) (string, error) {
+	var result string
+	err := b.rawRequest(ctx, "getManagedBotToken", params, &result)
+	return result, err
+}
+
+func (b *Bot) ReplaceManagedBotToken(ctx context.Context, params *ReplaceManagedBotTokenParams) (string, error) {
+	var result string
+	err := b.rawRequest(ctx, "replaceManagedBotToken", params, &result)
+	return result, err
+}
+
+func (b *Bot) SavePreparedKeyboardButton(ctx context.Context, params *SavePreparedKeyboardButtonParams) (*models.PreparedKeyboardButton, error) {
+	result := &models.PreparedKeyboardButton{}
+	err := b.rawRequest(ctx, "savePreparedKeyboardButton", params, result)
+	return result, err
+}
+
+func (b *Bot) AnswerGuestQuery(ctx context.Context, params *AnswerGuestQueryParams) (*models.SentGuestMessage, error) {
+	result := &models.SentGuestMessage{}
+	err := b.rawRequest(ctx, "answerGuestQuery", params, result)
+	return result, err
+}
+
+func (b *Bot) DeleteAllMessageReactions(ctx context.Context, params *DeleteAllMessageReactionsParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteAllMessageReactions", params, &result)
+	return result, err
+}
+
+func (b *Bot) DeleteMessageReaction(ctx context.Context, params *DeleteMessageReactionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteMessageReaction", params, &result)
+	return result, err
+}
+
+func (b *Bot) SendLivePhoto(ctx context.Context, params *SendLivePhotoParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendLivePhoto", params, result)
+	return result, err
+}
+
+func (b *Bot) GetManagedBotAccessSettings(ctx context.Context, params *GetManagedBotAccessSettingsParams) (*models.BotAccessSettings, error) {
+	result := &models.BotAccessSettings{}
+	err := b.rawRequest(ctx, "getManagedBotAccessSettings", params, result)
+	return result, err
+}
+
+func (b *Bot) SetManagedBotAccessSettings(ctx context.Context, params *SetManagedBotAccessSettingsParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setManagedBotAccessSettings", params, &result)
+	return result, err
+}
+
+func (b *Bot) GetUserPersonalChatMessages(ctx context.Context, params *GetUserPersonalChatMessagesParams) ([]models.Message, error) {
+	var result []models.Message
+	err := b.rawRequest(ctx, "getUserPersonalChatMessages", params, &result)
+	return result, err
+}

@@ -22,6 +22,8 @@ type User struct {
 	CanConnectToBusiness       bool   `json:"can_connect_to_business,omitempty"`
 	HasTopicsEnabled           bool   `json:"has_topics_enabled,omitempty"`
 	AllowsUsersToCreateTopics  bool   `json:"allows_users_to_create_topics,omitempty"`
+	CanManageBots              bool   `json:"can_manage_bots,omitempty"`
+	SupportsGuestQueries       bool   `json:"supports_guest_queries,omitempty"`
 }
 
 // UserProfileAudios https://core.telegram.org/bots/api#userprofileaudios

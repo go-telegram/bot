@@ -66,8 +66,9 @@ type KeyboardButton struct {
 	RequestChat     *KeyboardButtonRequestChat  `json:"request_chat,omitempty"`
 	RequestContact  bool                        `json:"request_contact,omitempty"`
 	RequestLocation bool                        `json:"request_location,omitempty"`
-	RequestPoll     *KeyboardButtonPollType     `json:"request_poll,omitempty"`
-	WebApp          *WebAppInfo                 `json:"web_app,omitempty"`
+	RequestPoll          *KeyboardButtonPollType          `json:"request_poll,omitempty"`
+	RequestManagedBot    *KeyboardButtonRequestManagedBot `json:"request_managed_bot,omitempty"`
+	WebApp               *WebAppInfo                      `json:"web_app,omitempty"`
 }
 
 // KeyboardButtonRequestUser https://core.telegram.org/bots/api#keyboardbuttonrequestuser
