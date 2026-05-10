@@ -402,7 +402,7 @@ type SendPollParams struct {
 // SendChecklistParams https://core.telegram.org/bots/api#sendchecklist
 type SendChecklistParams struct {
 	BusinessConnectionID string                  `json:"business_connection_id,omitempty"`
-	ChatID               int                     `json:"chat_id"`
+	ChatID               int64                   `json:"chat_id"`
 	Checklist            models.InputChecklist   `json:"checklist"`
 	DisableNotification  bool                    `json:"disable_notification,omitempty"`
 	ProtectContent       bool                    `json:"protect_content,omitempty"`
@@ -509,13 +509,13 @@ type SetChatAdministratorCustomTitleParams struct {
 }
 
 type BanChatSenderChatParams struct {
-	ChatID       any `json:"chat_id"`
-	SenderChatID int `json:"sender_chat_id"`
+	ChatID       any   `json:"chat_id"`
+	SenderChatID int64 `json:"sender_chat_id"`
 }
 
 type UnbanChatSenderChatParams struct {
-	ChatID       any `json:"chat_id"`
-	SenderChatID int `json:"sender_chat_id"`
+	ChatID       any   `json:"chat_id"`
+	SenderChatID int64 `json:"sender_chat_id"`
 }
 
 type SetChatPermissionsParams struct {
@@ -815,7 +815,7 @@ type EditMessageMediaParams struct {
 // EditMessageChecklistParams https://core.telegram.org/bots/api#editmessagechecklist
 type EditMessageChecklistParams struct {
 	BusinessConnectionID string                `json:"business_connection_id,omitempty"`
-	ChatID               int                   `json:"chat_id,omitempty"`
+	ChatID               int64                 `json:"chat_id,omitempty"`
 	MessageID            int                   `json:"message_id,omitempty"`
 	Checklist            models.InputChecklist `json:"checklist"`
 	ReplyMarkup          models.ReplyMarkup    `json:"reply_markup,omitempty"`
@@ -838,14 +838,14 @@ type StopPollParams struct {
 
 // ApproveSuggestedPostParams https://core.telegram.org/bots/api#approvesuggestedpost
 type ApproveSuggestedPostParams struct {
-	ChatID    int `json:"chat_id"`
-	MessageID int `json:"message_id"`
-	SendDate  int `json:"send_date,omitempty"`
+	ChatID    int64 `json:"chat_id"`
+	MessageID int   `json:"message_id"`
+	SendDate  int   `json:"send_date,omitempty"`
 }
 
 // DeclineSuggestedPostParams https://core.telegram.org/bots/api#declinesuggestedpost
 type DeclineSuggestedPostParams struct {
-	ChatID    int    `json:"chat_id"`
+	ChatID    int64  `json:"chat_id"`
 	MessageID int    `json:"message_id"`
 	Comment   string `json:"comment,omitempty"`
 }
@@ -1146,7 +1146,7 @@ type RemoveChatVerificationParams struct {
 // ReadBusinessMessageParams https://core.telegram.org/bots/api#readbusinessmessage
 type ReadBusinessMessageParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
-	ChatID               int    `json:"chat_id"`
+	ChatID               int64  `json:"chat_id"`
 	MessageID            int    `json:"message_id"`
 }
 
@@ -1239,7 +1239,7 @@ type UpgradeGiftParams struct {
 type TransferGiftParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
 	OwnedGiftID          string `json:"owned_gift_id"`
-	NewOwnerChatID       int    `json:"new_owner_chat_id"`
+	NewOwnerChatID       int64  `json:"new_owner_chat_id"`
 	StarCount            int    `json:"star_count"`
 }
 
