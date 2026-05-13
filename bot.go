@@ -101,23 +101,10 @@ func New(token string, options ...Option) (*Bot, error) {
 	return b, nil
 }
 
-// BotID parses the bot user id from the token prefix ("<id>:<secret>").
-func (b *Bot) BotID() (int64, error) {
-	parts := strings.Split(b.token, ":")
-	if len(parts) < 2 || parts[0] == "" {
-		return 0, fmt.Errorf("invalid bot token format")
-	}
-	id, err := strconv.ParseInt(parts[0], 10, 64)
-	if err != nil {
-		return 0, fmt.Errorf("parse bot id from token: %w", err)
-	}
-	return id, nil
-}
-
-// ID returns the bot user id from the token prefix. On malformed tokens it returns 0; use BotID for errors.
+// ID returns the bot user id from the token prefix ("<id>:<secret>").
 func (b *Bot) ID() int64 {
-	id, _ := b.BotID()
-	return id
+	i, _ := strconv.ParseInt(strings.Split(b.token, ":")[0], 10, 64)
+	return i
 }
 
 // SetToken sets the bot token

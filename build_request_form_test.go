@@ -88,9 +88,9 @@ func Test_buildRequestForm(t *testing.T) {
 		InlineQueryResultInterface: &models.InlineQueryResultArticle{Title: "foo", Description: "bar", InputMessageContent: &models.InputTextMessageContent{MessageText: "foo"}},
 		InputStickerSlice: []models.InputSticker{
 			{
-				Sticker:   "attach://sticker.png",
-				Format:    "foo",
-				EmojiList: []string{"bar"},
+				Sticker:           "attach://sticker.png",
+				Format:            "foo",
+				EmojiList:         []string{"bar"},
 				StickerAttachment: strings.NewReader("sticker file"),
 			},
 			{

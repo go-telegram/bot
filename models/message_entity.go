@@ -27,12 +27,12 @@ const (
 
 // MessageEntity https://core.telegram.org/bots/api#messageentity
 type MessageEntity struct {
-	Type          MessageEntityType `json:"type"`
-	Offset        int               `json:"offset"`
-	Length        int               `json:"length"`
-	URL           string            `json:"url,omitempty"`
-	User          *User             `json:"user,omitempty"`
-	Language      string            `json:"language,omitempty"`
+	Type           MessageEntityType `json:"type"`
+	Offset         int               `json:"offset"`
+	Length         int               `json:"length"`
+	URL            string            `json:"url,omitempty"`
+	User           *User             `json:"user,omitempty"`
+	Language       string            `json:"language,omitempty"`
 	CustomEmojiID  string            `json:"custom_emoji_id,omitempty"`
 	UnixTime       int               `json:"unix_time,omitempty"`
 	DateTimeFormat string            `json:"date_time_format,omitempty"`

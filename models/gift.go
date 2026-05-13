@@ -127,12 +127,12 @@ type OwnedGifts struct {
 
 // UniqueGiftColors https://core.telegram.org/bots/api#uniquegiftcolors
 type UniqueGiftColors struct {
-	ModelCustomEmojiID   string `json:"model_custom_emoji_id"`
-	SymbolCustomEmojiID  string `json:"symbol_custom_emoji_id"`
-	LightThemeMainColor  int    `json:"light_theme_main_color"`
-	LightThemeOtherColors []int `json:"light_theme_other_colors"`
-	DarkThemeMainColor   int    `json:"dark_theme_main_color"`
-	DarkThemeOtherColors []int  `json:"dark_theme_other_colors"`
+	ModelCustomEmojiID    string `json:"model_custom_emoji_id"`
+	SymbolCustomEmojiID   string `json:"symbol_custom_emoji_id"`
+	LightThemeMainColor   int    `json:"light_theme_main_color"`
+	LightThemeOtherColors []int  `json:"light_theme_other_colors"`
+	DarkThemeMainColor    int    `json:"dark_theme_main_color"`
+	DarkThemeOtherColors  []int  `json:"dark_theme_other_colors"`
 }
 
 // UniqueGift https://core.telegram.org/bots/api#uniquegift

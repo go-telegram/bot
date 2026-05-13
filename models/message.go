@@ -180,10 +180,10 @@ type Message struct {
 	SuggestedPostDeclined         *SuggestedPostDeclined         `json:"suggested_post_declined,omitempty"`
 	SuggestedPostPaid             *SuggestedPostPaid             `json:"suggested_post_paid,omitempty"`
 	SuggestedPostRefunded         *SuggestedPostRefunded         `json:"suggested_post_refunded,omitempty"`
-	VoiceChatScheduled            *VoiceChatScheduled            `json:"video_chat_scheduled,omitempty"`
-	VoiceChatStarted              *VoiceChatStarted              `json:"video_chat_started,omitempty"`
-	VoiceChatEnded                *VoiceChatEnded                `json:"video_chat_ended,omitempty"`
-	VoiceChatParticipantsInvited  *VoiceChatParticipantsInvited  `json:"video_chat_participants_invited,omitempty"`
+	VideoChatScheduled            *VideoChatScheduled            `json:"video_chat_scheduled,omitempty"`
+	VideoChatStarted              *VideoChatStarted              `json:"video_chat_started,omitempty"`
+	VideoChatEnded                *VideoChatEnded                `json:"video_chat_ended,omitempty"`
+	VideoChatParticipantsInvited  *VideoChatParticipantsInvited  `json:"video_chat_participants_invited,omitempty"`
 	WebAppData                    *WebAppData                    `json:"web_app_data,omitempty"`
 	ManagedBotCreated             *ManagedBotCreated             `json:"managed_bot_created,omitempty"`
 	PollOptionAdded               *PollOptionAdded               `json:"poll_option_added,omitempty"`
