@@ -110,6 +110,7 @@ type Message struct {
 	Text                          string                         `json:"text,omitempty"`
 	Entities                      []MessageEntity                `json:"entities,omitempty"`
 	LinkPreviewOptions            *LinkPreviewOptions            `json:"link_preview_options,omitempty"`
+	RichMessage                   *RichMessage                   `json:"rich_message,omitempty"`
 	SuggestedPostInfo             *SuggestedPostInfo             `json:"suggested_post_info,omitempty"`
 	EffectID                      string                         `json:"effect_id,omitempty"`
 	Animation                     *Animation                     `json:"animation,omitempty"`

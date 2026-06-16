@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Support Bot API 10.1 Rich Messages: add `InputRichMessage`, `RichMessage`, `RichText`/`RichBlock` types, `InputRichMessageContent`, `Message.RichMessage`, and `sendRichMessage` / `sendRichMessageDraft` methods
+
 ## v1.21.0 (2026-05-22)
 
 - Support Bot API 9.6 & 10.0, multipart fixes — closes #279 #280, fixes #273 #274 #271 #277 (#281)
