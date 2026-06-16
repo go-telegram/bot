@@ -653,6 +653,16 @@ type InputContactMessageContent struct {
 
 func (InputContactMessageContent) inputMessageContentTag() {}
 
+// InputRichMessageContent https://core.telegram.org/bots/api#inputrichmessagecontent
+//
+// Represents the content of a rich message to be sent as the result of an
+// inline query.
+type InputRichMessageContent struct {
+	RichMessage InputRichMessage `json:"rich_message"`
+}
+
+func (InputRichMessageContent) inputMessageContentTag() {}
+
 // LabeledPrice https://core.telegram.org/bots/api#labeledprice
 type LabeledPrice struct {
 	Label  string `json:"label"`

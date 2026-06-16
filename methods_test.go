@@ -1389,3 +1389,41 @@ func TestBot_Methods(t *testing.T) {
 	})
 
 }
+
+func TestBot_SendRichMessage(t *testing.T) {
+	t.Parallel()
+
+	c := &httpClient{t: t, resp: `{"message_id":99,"text":"foo"}`, reqFields: map[string]string{
+		"chat_id":      "123",
+		"rich_message": `{"markdown":"# Title\n\nDescription"}`,
+	}}
+	b := &Bot{client: c}
+	resp, err := b.SendRichMessage(context.Background(), &SendRichMessageParams{
+		ChatID: 123,
+		RichMessage: models.InputRichMessage{
+			Markdown: "# Title\n\nDescription",
+		},
+	})
+	assertNoErr(t, err)
+	assertEqualInt(t, 99, resp.ID)
+}
+
+func TestBot_SendRichMessageDraft(t *testing.T) {
+	t.Parallel()
+
+	c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+		"chat_id":      "123",
+		"draft_id":     "5",
+		"rich_message": `{"markdown":"**hi**"}`,
+	}}
+	b := &Bot{client: c}
+	resp, err := b.SendRichMessageDraft(context.Background(), &SendRichMessageDraftParams{
+		ChatID:  123,
+		DraftID: 5,
+		RichMessage: models.InputRichMessage{
+			Markdown: "**hi**",
+		},
+	})
+	assertNoErr(t, err)
+	assertTrue(t, resp)
+}
