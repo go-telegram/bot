@@ -799,6 +799,7 @@ type EditMessageTextParams struct {
 	ParseMode            models.ParseMode           `json:"parse_mode,omitempty"`
 	Entities             []models.MessageEntity     `json:"entities,omitempty"`
 	LinkPreviewOptions   *models.LinkPreviewOptions `json:"link_preview_options,omitempty"`
+	RichMessage          *models.InputRichMessage   `json:"rich_message,omitempty"`
 	ReplyMarkup          models.ReplyMarkup         `json:"reply_markup,omitempty"`
 }
 
@@ -1318,6 +1319,30 @@ type SendMessageDraftParams struct {
 	Text                 string                 `json:"text"`
 	ParseMode            models.ParseMode       `json:"parse_mode,omitempty"`
 	Entities             []models.MessageEntity `json:"entities,omitempty"`
+}
+
+// SendRichMessageParams https://core.telegram.org/bots/api#sendrichmessage
+type SendRichMessageParams struct {
+	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
+	ChatID                  any                             `json:"chat_id"`
+	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
+	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	RichMessage             models.InputRichMessage         `json:"rich_message"`
+	DisableNotification     bool                            `json:"disable_notification,omitempty"`
+	ProtectContent          bool                            `json:"protect_content,omitempty"`
+	AllowPaidBroadcast      bool                            `json:"allow_paid_broadcast,omitempty"`
+	MessageEffectID         string                          `json:"message_effect_id,omitempty"`
+	SuggestedPostParameters *models.SuggestedPostParameters `json:"suggested_post_parameters,omitempty"`
+	ReplyParameters         *models.ReplyParameters         `json:"reply_parameters,omitempty"`
+	ReplyMarkup             models.ReplyMarkup              `json:"reply_markup,omitempty"`
+}
+
+// SendRichMessageDraftParams https://core.telegram.org/bots/api#sendrichmessagedraft
+type SendRichMessageDraftParams struct {
+	ChatID          any                     `json:"chat_id"`
+	MessageThreadID int                     `json:"message_thread_id,omitempty"`
+	DraftID         int                     `json:"draft_id"`
+	RichMessage     models.InputRichMessage `json:"rich_message"`
 }
 
 // RepostStoryParams https://core.telegram.org/bots/api#repoststory

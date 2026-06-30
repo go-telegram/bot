@@ -1114,6 +1114,20 @@ func (b *Bot) SendMessageDraft(ctx context.Context, params *SendMessageDraftPara
 	return result, err
 }
 
+// SendRichMessage https://core.telegram.org/bots/api#sendrichmessage
+func (b *Bot) SendRichMessage(ctx context.Context, params *SendRichMessageParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendRichMessage", params, result)
+	return result, err
+}
+
+// SendRichMessageDraft https://core.telegram.org/bots/api#sendrichmessagedraft
+func (b *Bot) SendRichMessageDraft(ctx context.Context, params *SendRichMessageDraftParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "sendRichMessageDraft", params, &result)
+	return result, err
+}
+
 // RepostStory https://core.telegram.org/bots/api#repoststory
 func (b *Bot) RepostStory(ctx context.Context, params *RepostStoryParams) (*models.Story, error) {
 	result := &models.Story{}

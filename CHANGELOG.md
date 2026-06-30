@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.22.0
+
+- Support Bot API 10.1 (June 11, 2026 update) — Rich Messages:
+  - Methods: `sendRichMessage`, `sendRichMessageDraft`, and a `rich_message`
+    parameter on `editMessageText`.
+  - Send types: `InputRichMessage` (carries `<tg-thinking>` for reasoning),
+    `InputRichMessageContent`.
+  - Receive types: `RichMessage` (+ `rich_message` field on `Message`), the
+    `RichBlock` union (21 blocks incl. `RichBlockThinking`) and the polymorphic
+    `RichText` union (string | array | 25 tagged variants), plus `RichBlockCaption`,
+    `RichBlockListItem`, `RichBlockTableCell`.
+
 ## v1.21.0 (2026-05-22)
 
 - Support Bot API 9.6 & 10.0, multipart fixes — closes #279 #280, fixes #273 #274 #271 #277 (#281)

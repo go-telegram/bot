@@ -109,6 +109,7 @@ type Message struct {
 	PaidStarCount                 int                            `json:"paid_star_count,omitempty"`
 	Text                          string                         `json:"text,omitempty"`
 	Entities                      []MessageEntity                `json:"entities,omitempty"`
+	RichMessage                   *RichMessage                   `json:"rich_message,omitempty"`
 	LinkPreviewOptions            *LinkPreviewOptions            `json:"link_preview_options,omitempty"`
 	SuggestedPostInfo             *SuggestedPostInfo             `json:"suggested_post_info,omitempty"`
 	EffectID                      string                         `json:"effect_id,omitempty"`

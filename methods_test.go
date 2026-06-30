@@ -1389,3 +1389,37 @@ func TestBot_Methods(t *testing.T) {
 	})
 
 }
+
+func TestBot_RichMessageMethods(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SendRichMessage", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":      "123",
+			"rich_message": `{"html":"hello"}`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendRichMessage(context.Background(), &SendRichMessageParams{
+			ChatID:      123,
+			RichMessage: models.InputRichMessage{HTML: "hello"},
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+	})
+
+	t.Run("SendRichMessageDraft", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":      "123",
+			"draft_id":     "1",
+			"rich_message": `{"html":"hello"}`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendRichMessageDraft(context.Background(), &SendRichMessageDraftParams{
+			ChatID:      123,
+			DraftID:     1,
+			RichMessage: models.InputRichMessage{HTML: "hello"},
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+}
