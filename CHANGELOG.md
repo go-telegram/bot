@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.22.0
+## v1.22.0 (2026-06-30)
 
 - Support Bot API 10.1 (June 11, 2026 update) — Rich Messages:
   - Methods: `sendRichMessage`, `sendRichMessageDraft`, and a `rich_message`
