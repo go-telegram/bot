@@ -1,6 +1,9 @@
 package models
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestUnmarshalMaybeInaccessibleMessage_inaccessible(t *testing.T) {
 	src := `{"date":0,"chat":{"id":123},"message_id":987}`
@@ -51,5 +54,26 @@ func TestUnmarshalMaybeInaccessibleMessage_message(t *testing.T) {
 
 	if mim.Message.ID != 987 {
 		t.Fatal("wrong message id")
+	}
+}
+
+func TestUnmarshalMessage_replyToStory(t *testing.T) {
+	src := `{"date":0,"chat":{"id":123},"message_id":987,"reply_to_story":{"chat":{"id":42},"id":7}}`
+
+	msg := Message{}
+	if err := json.Unmarshal([]byte(src), &msg); err != nil {
+		t.Fatal(err)
+	}
+
+	if msg.ReplyToStory == nil {
+		t.Fatal("ReplyToStory is nil")
+	}
+
+	if msg.ReplyToStory.ID != 7 {
+		t.Fatal("wrong story id")
+	}
+
+	if msg.ReplyToStory.Chat.ID != 42 {
+		t.Fatal("wrong story chat id")
 	}
 }
