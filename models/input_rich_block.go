@@ -36,9 +36,64 @@ type InputRichBlock struct {
 	InputRichBlockThinking               *InputRichBlockThinking
 }
 
+// variantIsNil reports whether the variant pointer matching Type is unset. An
+// InputRichBlock is built by the caller, so a Type without its variant is a
+// plausible mistake that must not reach json.Marshal as a nil dereference.
+func (rb InputRichBlock) variantIsNil() bool {
+	switch rb.Type {
+	case RichBlockTypeParagraph:
+		return rb.InputRichBlockParagraph == nil
+	case RichBlockTypeSectionHeading:
+		return rb.InputRichBlockSectionHeading == nil
+	case RichBlockTypePreformatted:
+		return rb.InputRichBlockPreformatted == nil
+	case RichBlockTypeFooter:
+		return rb.InputRichBlockFooter == nil
+	case RichBlockTypeDivider:
+		return rb.InputRichBlockDivider == nil
+	case RichBlockTypeMathematicalExpression:
+		return rb.InputRichBlockMathematicalExpression == nil
+	case RichBlockTypeAnchor:
+		return rb.InputRichBlockAnchor == nil
+	case RichBlockTypeList:
+		return rb.InputRichBlockList == nil
+	case RichBlockTypeBlockQuotation:
+		return rb.InputRichBlockBlockQuotation == nil
+	case RichBlockTypePullQuotation:
+		return rb.InputRichBlockPullQuotation == nil
+	case RichBlockTypeCollage:
+		return rb.InputRichBlockCollage == nil
+	case RichBlockTypeSlideshow:
+		return rb.InputRichBlockSlideshow == nil
+	case RichBlockTypeTable:
+		return rb.InputRichBlockTable == nil
+	case RichBlockTypeDetails:
+		return rb.InputRichBlockDetails == nil
+	case RichBlockTypeMap:
+		return rb.InputRichBlockMap == nil
+	case RichBlockTypeAnimation:
+		return rb.InputRichBlockAnimation == nil
+	case RichBlockTypeAudio:
+		return rb.InputRichBlockAudio == nil
+	case RichBlockTypePhoto:
+		return rb.InputRichBlockPhoto == nil
+	case RichBlockTypeVideo:
+		return rb.InputRichBlockVideo == nil
+	case RichBlockTypeVoiceNote:
+		return rb.InputRichBlockVoiceNote == nil
+	case RichBlockTypeThinking:
+		return rb.InputRichBlockThinking == nil
+	}
+	return true
+}
+
 // MarshalJSON implements json.Marshaler. The value receiver ensures the encoding
 // is applied even when an InputRichBlock is reached as a (non-pointer) struct field.
 func (rb InputRichBlock) MarshalJSON() ([]byte, error) {
+	if rb.variantIsNil() {
+		return nil, fmt.Errorf("nil variant for InputRichBlock type %q", rb.Type)
+	}
+
 	switch rb.Type {
 	case RichBlockTypeParagraph:
 		rb.InputRichBlockParagraph.Type = RichBlockTypeParagraph

@@ -85,3 +85,72 @@ func TestInputMediaVoiceNote(t *testing.T) {
 		t.Fatalf("expected voice_note type: %s", out)
 	}
 }
+
+// TestInputMedia_NestedTypeDiscriminator verifies InputMedia values keep their
+// required "type" field when reached through a plain json.Marshal, which is how
+// they are encoded once nested inside a rich message.
+func TestInputMedia_NestedTypeDiscriminator(t *testing.T) {
+	cases := []struct {
+		name  string
+		media any
+		want  string
+	}{
+		{"photo", InputMediaPhoto{Media: "id"}, `"type":"photo"`},
+		{"video", InputMediaVideo{Media: "id"}, `"type":"video"`},
+		{"animation", InputMediaAnimation{Media: "id"}, `"type":"animation"`},
+		{"audio", InputMediaAudio{Media: "id"}, `"type":"audio"`},
+		{"voice_note", InputMediaVoiceNote{Media: "id"}, `"type":"voice_note"`},
+		{"document", InputMediaDocument{Media: "id"}, `"type":"document"`},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			out, err := json.Marshal(c.media)
+			if err != nil {
+				t.Fatalf("marshal: %v", err)
+			}
+			if !strings.Contains(string(out), c.want) {
+				t.Fatalf("expected %s in %s", c.want, out)
+			}
+		})
+	}
+}
+
+// TestInputRichMessage_NestedMediaType verifies the nested InputMedia inside a
+// rich message carries its type through the json.Marshal path used when sending.
+func TestInputRichMessage_NestedMediaType(t *testing.T) {
+	in := InputRichMessage{
+		Markdown: "![img](tg://photo?id=abc)",
+		Media:    []InputRichMessageMedia{{ID: "abc", Media: &InputMediaPhoto{Media: "file_id_123"}}},
+		Blocks: []InputRichBlock{
+			{Type: RichBlockTypePhoto, InputRichBlockPhoto: &InputRichBlockPhoto{Photo: InputMediaPhoto{Media: "p"}}},
+			{Type: RichBlockTypeAnimation, InputRichBlockAnimation: &InputRichBlockAnimation{Animation: InputMediaAnimation{Media: "a"}}},
+			{Type: RichBlockTypeVoiceNote, InputRichBlockVoiceNote: &InputRichBlockVoiceNote{VoiceNote: InputMediaVoiceNote{Media: "v"}}},
+		},
+	}
+	out, err := json.Marshal(in)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	s := string(out)
+	for _, want := range []string{
+		`"media":{"type":"photo"`,
+		`"photo":{"type":"photo"`,
+		`"animation":{"type":"animation"`,
+		`"voice_note":{"type":"voice_note"`,
+	} {
+		if !strings.Contains(s, want) {
+			t.Fatalf("expected %s in %s", want, s)
+		}
+	}
+}
+
+// TestInputRichBlock_NilVariant verifies a Type set without its matching variant
+// pointer returns an error instead of panicking.
+func TestInputRichBlock_NilVariant(t *testing.T) {
+	if _, err := json.Marshal(InputRichBlock{Type: RichBlockTypeParagraph}); err == nil {
+		t.Fatal("expected error for nil variant pointer")
+	}
+	if _, err := json.Marshal(InputRichBlock{}); err == nil {
+		t.Fatal("expected error for empty InputRichBlock")
+	}
+}

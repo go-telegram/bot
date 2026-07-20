@@ -19,6 +19,12 @@
     on `ChatFullInfo`.
   - General: new `BotSubscriptionUpdated` with the `subscription` field on
     `Update` (and `subscription` allowed-update constant).
+- Fix: `InputMedia` values now implement `json.Marshaler`, so the required `type`
+  discriminator is kept when they are encoded through a plain `json.Marshal`
+  (e.g. nested inside a rich message). Previously `type` was only emitted by
+  `MarshalInputMedia`, which nested values never reached.
+- Fix: `InputRichBlock.MarshalJSON` returns an error instead of panicking when
+  `Type` is set without its matching variant pointer.
 
 ## v1.22.0 (2026-06-30)
 
