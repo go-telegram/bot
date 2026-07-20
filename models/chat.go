@@ -115,6 +115,7 @@ type ChatFullInfo struct {
 	LastName                           string                `json:"last_name,omitempty"`
 	IsForum                            bool                  `json:"is_forum,omitempty"`
 	IsDirectMessages                   bool                  `json:"is_direct_messages,omitempty"`
+	Community                          *Community            `json:"community,omitempty"`
 	Photo                              *ChatPhoto            `json:"photo,omitempty"`
 	ActiveUsernames                    []string              `json:"active_usernames,omitempty"`
 	Birthdate                          Birthdate             `json:"birthdate,omitempty"`

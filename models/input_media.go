@@ -157,6 +157,37 @@ func (m InputMediaAudio) MarshalInputMedia() ([]byte, error) {
 
 func (InputMediaAudio) inputMediaTag() {}
 
+// InputMediaVoiceNote https://core.telegram.org/bots/api#inputmediavoicenote
+type InputMediaVoiceNote struct {
+	Media           string          `json:"media"`
+	Caption         string          `json:"caption,omitempty"`
+	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
+	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
+	Duration        int             `json:"duration,omitempty"`
+
+	MediaAttachment io.Reader `json:"-"`
+}
+
+func (m *InputMediaVoiceNote) Attachment() io.Reader {
+	return m.MediaAttachment
+}
+
+func (m *InputMediaVoiceNote) GetMedia() string {
+	return m.Media
+}
+
+func (m InputMediaVoiceNote) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(&struct {
+		Type string `json:"type"`
+		InputMediaVoiceNote
+	}{
+		Type:                "voice_note",
+		InputMediaVoiceNote: m,
+	})
+}
+
+func (InputMediaVoiceNote) inputMediaTag() {}
+
 // InputMediaDocument https://core.telegram.org/bots/api#inputmediadocument
 type InputMediaDocument struct {
 	Media                       string          `json:"media"`
