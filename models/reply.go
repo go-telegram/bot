@@ -45,7 +45,8 @@ type ExternalReplyInfo struct {
 
 // ReplyParameters https://core.telegram.org/bots/api#replyparameters
 type ReplyParameters struct {
-	MessageID                int             `json:"message_id"`
+	MessageID                int             `json:"message_id,omitempty"`
+	EphemeralMessageID       int             `json:"ephemeral_message_id,omitempty"`
 	ChatID                   any             `json:"chat_id,omitempty"`
 	AllowSendingWithoutReply bool            `json:"allow_sending_without_reply,omitempty"`
 	Quote                    string          `json:"quote,omitempty"`

@@ -1423,3 +1423,92 @@ func TestBot_RichMessageMethods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 }
+
+func TestBot_EphemeralMessageMethods(t *testing.T) {
+	t.Parallel()
+
+	t.Run("EditEphemeralMessageText", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+			"text":                 "hi",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageText(context.Background(), &EditEphemeralMessageTextParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+			Text:               "hi",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditEphemeralMessageCaption", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+			"caption":              "cap",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageCaption(context.Background(), &EditEphemeralMessageCaptionParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+			Caption:            "cap",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditEphemeralMessageReplyMarkup", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageReplyMarkup(context.Background(), &EditEphemeralMessageReplyMarkupParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditEphemeralMessageMedia", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageMedia(context.Background(), &EditEphemeralMessageMediaParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+			Media:              &models.InputMediaPhoto{Media: "file_id"},
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("DeleteEphemeralMessage", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.DeleteEphemeralMessage(context.Background(), &DeleteEphemeralMessageParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+}

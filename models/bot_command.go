@@ -4,6 +4,7 @@ package models
 type BotCommand struct {
 	Command     string `json:"command" rules:"min:1,max:32"`
 	Description string `json:"description" rules:"min:1,max:256"`
+	IsEphemeral bool   `json:"is_ephemeral,omitempty"`
 }
 
 // BotName https://core.telegram.org/bots/api#botname

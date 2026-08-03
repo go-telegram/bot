@@ -34,16 +34,24 @@ func (m *InputMediaPhoto) GetMedia() string {
 	return m.Media
 }
 
-func (m *InputMediaPhoto) MarshalInputMedia() ([]byte, error) {
-	ret := struct {
-		Type string `json:"type"`
-		*InputMediaPhoto
-	}{
-		Type:            "photo",
-		InputMediaPhoto: m,
-	}
+// inputMediaPhotoAlias strips the methods of InputMediaPhoto so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaPhotoAlias InputMediaPhoto
 
-	return json.Marshal(&ret)
+func (m InputMediaPhoto) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(struct {
+		Type string `json:"type"`
+		inputMediaPhotoAlias
+	}{
+		Type:                 "photo",
+		inputMediaPhotoAlias: inputMediaPhotoAlias(m),
+	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaPhoto) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaPhoto) inputMediaTag() {}
@@ -75,14 +83,24 @@ func (m *InputMediaVideo) GetMedia() string {
 	return m.Media
 }
 
+// inputMediaVideoAlias strips the methods of InputMediaVideo so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaVideoAlias InputMediaVideo
+
 func (m InputMediaVideo) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		InputMediaVideo
+		inputMediaVideoAlias
 	}{
-		Type:            "video",
-		InputMediaVideo: m,
+		Type:                 "video",
+		inputMediaVideoAlias: inputMediaVideoAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaVideo) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaVideo) inputMediaTag() {}
@@ -111,14 +129,24 @@ func (m *InputMediaAnimation) GetMedia() string {
 	return m.Media
 }
 
+// inputMediaAnimationAlias strips the methods of InputMediaAnimation so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaAnimationAlias InputMediaAnimation
+
 func (m InputMediaAnimation) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		InputMediaAnimation
+		inputMediaAnimationAlias
 	}{
-		Type:                "animation",
-		InputMediaAnimation: m,
+		Type:                     "animation",
+		inputMediaAnimationAlias: inputMediaAnimationAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaAnimation) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaAnimation) inputMediaTag() {}
@@ -145,17 +173,68 @@ func (m *InputMediaAudio) GetMedia() string {
 	return m.Media
 }
 
+// inputMediaAudioAlias strips the methods of InputMediaAudio so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaAudioAlias InputMediaAudio
+
 func (m InputMediaAudio) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		InputMediaAudio
+		inputMediaAudioAlias
 	}{
-		Type:            "audio",
-		InputMediaAudio: m,
+		Type:                 "audio",
+		inputMediaAudioAlias: inputMediaAudioAlias(m),
 	})
 }
 
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaAudio) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
+}
+
 func (InputMediaAudio) inputMediaTag() {}
+
+// InputMediaVoiceNote https://core.telegram.org/bots/api#inputmediavoicenote
+type InputMediaVoiceNote struct {
+	Media           string          `json:"media"`
+	Caption         string          `json:"caption,omitempty"`
+	ParseMode       ParseMode       `json:"parse_mode,omitempty"`
+	CaptionEntities []MessageEntity `json:"caption_entities,omitempty"`
+	Duration        int             `json:"duration,omitempty"`
+
+	MediaAttachment io.Reader `json:"-"`
+}
+
+func (m *InputMediaVoiceNote) Attachment() io.Reader {
+	return m.MediaAttachment
+}
+
+func (m *InputMediaVoiceNote) GetMedia() string {
+	return m.Media
+}
+
+// inputMediaVoiceNoteAlias strips the methods of InputMediaVoiceNote so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaVoiceNoteAlias InputMediaVoiceNote
+
+func (m InputMediaVoiceNote) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(struct {
+		Type string `json:"type"`
+		inputMediaVoiceNoteAlias
+	}{
+		Type:                     "voice_note",
+		inputMediaVoiceNoteAlias: inputMediaVoiceNoteAlias(m),
+	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaVoiceNote) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
+}
+
+func (InputMediaVoiceNote) inputMediaTag() {}
 
 // InputMediaDocument https://core.telegram.org/bots/api#inputmediadocument
 type InputMediaDocument struct {
@@ -177,14 +256,24 @@ func (m *InputMediaDocument) GetMedia() string {
 	return m.Media
 }
 
+// inputMediaDocumentAlias strips the methods of InputMediaDocument so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaDocumentAlias InputMediaDocument
+
 func (m InputMediaDocument) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		InputMediaDocument
+		inputMediaDocumentAlias
 	}{
-		Type:               "document",
-		InputMediaDocument: m,
+		Type:                    "document",
+		inputMediaDocumentAlias: inputMediaDocumentAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaDocument) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaDocument) inputMediaTag() {}
@@ -210,14 +299,24 @@ func (m *InputMediaLivePhoto) GetMedia() string {
 	return m.Media
 }
 
+// inputMediaLivePhotoAlias strips the methods of InputMediaLivePhoto so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaLivePhotoAlias InputMediaLivePhoto
+
 func (m InputMediaLivePhoto) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		InputMediaLivePhoto
+		inputMediaLivePhotoAlias
 	}{
-		Type:                "live_photo",
-		InputMediaLivePhoto: m,
+		Type:                     "live_photo",
+		inputMediaLivePhotoAlias: inputMediaLivePhotoAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaLivePhoto) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaLivePhoto) inputMediaTag() {}
@@ -237,14 +336,24 @@ func (m *InputMediaLocation) GetMedia() string {
 	return ""
 }
 
-func (m *InputMediaLocation) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+// inputMediaLocationAlias strips the methods of InputMediaLocation so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaLocationAlias InputMediaLocation
+
+func (m InputMediaLocation) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		*InputMediaLocation
+		inputMediaLocationAlias
 	}{
-		Type:               "location",
-		InputMediaLocation: m,
+		Type:                    "location",
+		inputMediaLocationAlias: inputMediaLocationAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaLocation) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaLocation) inputMediaTag() {}
@@ -264,14 +373,24 @@ func (m *InputMediaSticker) GetMedia() string {
 	return m.Media
 }
 
-func (m *InputMediaSticker) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+// inputMediaStickerAlias strips the methods of InputMediaSticker so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaStickerAlias InputMediaSticker
+
+func (m InputMediaSticker) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		*InputMediaSticker
+		inputMediaStickerAlias
 	}{
-		Type:              "sticker",
-		InputMediaSticker: m,
+		Type:                   "sticker",
+		inputMediaStickerAlias: inputMediaStickerAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaSticker) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaSticker) inputMediaTag() {}
@@ -296,14 +415,24 @@ func (m *InputMediaVenue) GetMedia() string {
 	return ""
 }
 
-func (m *InputMediaVenue) MarshalInputMedia() ([]byte, error) {
-	return json.Marshal(&struct {
+// inputMediaVenueAlias strips the methods of InputMediaVenue so the embedded value below is
+// encoded as plain fields instead of recursing back into MarshalJSON.
+type inputMediaVenueAlias InputMediaVenue
+
+func (m InputMediaVenue) MarshalInputMedia() ([]byte, error) {
+	return json.Marshal(struct {
 		Type string `json:"type"`
-		*InputMediaVenue
+		inputMediaVenueAlias
 	}{
-		Type:            "venue",
-		InputMediaVenue: m,
+		Type:                 "venue",
+		inputMediaVenueAlias: inputMediaVenueAlias(m),
 	})
+}
+
+// MarshalJSON keeps the required "type" discriminator when the value is reached
+// through a plain json.Marshal, e.g. nested inside a rich message.
+func (m InputMediaVenue) MarshalJSON() ([]byte, error) {
+	return m.MarshalInputMedia()
 }
 
 func (InputMediaVenue) inputMediaTag() {}

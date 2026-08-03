@@ -708,6 +708,41 @@ func (b *Bot) DeleteMessages(ctx context.Context, params *DeleteMessagesParams) 
 	return result, err
 }
 
+// EditEphemeralMessageText https://core.telegram.org/bots/api#editephemeralmessagetext
+func (b *Bot) EditEphemeralMessageText(ctx context.Context, params *EditEphemeralMessageTextParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editEphemeralMessageText", params, &result)
+	return result, err
+}
+
+// EditEphemeralMessageMedia https://core.telegram.org/bots/api#editephemeralmessagemedia
+func (b *Bot) EditEphemeralMessageMedia(ctx context.Context, params *EditEphemeralMessageMediaParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editEphemeralMessageMedia", params, &result)
+	return result, err
+}
+
+// EditEphemeralMessageCaption https://core.telegram.org/bots/api#editephemeralmessagecaption
+func (b *Bot) EditEphemeralMessageCaption(ctx context.Context, params *EditEphemeralMessageCaptionParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editEphemeralMessageCaption", params, &result)
+	return result, err
+}
+
+// EditEphemeralMessageReplyMarkup https://core.telegram.org/bots/api#editephemeralmessagereplymarkup
+func (b *Bot) EditEphemeralMessageReplyMarkup(ctx context.Context, params *EditEphemeralMessageReplyMarkupParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editEphemeralMessageReplyMarkup", params, &result)
+	return result, err
+}
+
+// DeleteEphemeralMessage https://core.telegram.org/bots/api#deleteephemeralmessage
+func (b *Bot) DeleteEphemeralMessage(ctx context.Context, params *DeleteEphemeralMessageParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteEphemeralMessage", params, &result)
+	return result, err
+}
+
 // SendSticker https://core.telegram.org/bots/api#sendsticker
 func (b *Bot) SendSticker(ctx context.Context, params *SendStickerParams) (*models.Message, error) {
 	result := &models.Message{}

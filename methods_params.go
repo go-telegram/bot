@@ -24,6 +24,8 @@ type SendMessageParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Text                    string                          `json:"text"`
 	ParseMode               models.ParseMode                `json:"parse_mode,omitempty"`
 	Entities                []models.MessageEntity          `json:"entities,omitempty"`
@@ -101,6 +103,8 @@ type SendPhotoParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Photo                   models.InputFile                `json:"photo"`
 	Caption                 string                          `json:"caption,omitempty"`
 	ParseMode               models.ParseMode                `json:"parse_mode,omitempty"`
@@ -122,6 +126,8 @@ type SendAudioParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Audio                   models.InputFile                `json:"audio"`
 	Caption                 string                          `json:"caption,omitempty"`
 	ParseMode               models.ParseMode                `json:"parse_mode,omitempty"`
@@ -145,6 +151,8 @@ type SendDocumentParams struct {
 	ChatID                      any                             `json:"chat_id"`
 	MessageThreadID             int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID       int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID              int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID             string                          `json:"callback_query_id,omitempty"`
 	Document                    models.InputFile                `json:"document"`
 	Thumbnail                   models.InputFile                `json:"thumbnail,omitempty"`
 	Caption                     string                          `json:"caption,omitempty"`
@@ -166,6 +174,8 @@ type SendVideoParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Video                   models.InputFile                `json:"video"`
 	Duration                int                             `json:"duration,omitempty"`
 	Width                   int                             `json:"width,omitempty"`
@@ -194,6 +204,8 @@ type SendAnimationParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Animation               models.InputFile                `json:"animation"`
 	Duration                int                             `json:"duration,omitempty"`
 	Width                   int                             `json:"width,omitempty"`
@@ -219,6 +231,8 @@ type SendVoiceParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Voice                   models.InputFile                `json:"voice"`
 	Caption                 string                          `json:"caption,omitempty"`
 	ParseMode               models.ParseMode                `json:"parse_mode,omitempty"`
@@ -239,6 +253,8 @@ type SendVideoNoteParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	VideoNote               models.InputFile                `json:"video_note"`
 	Duration                int                             `json:"duration,omitempty"`
 	Length                  int                             `json:"length,omitempty"`
@@ -293,6 +309,8 @@ type SendLocationParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Latitude                float64                         `json:"latitude"`
 	Longitude               float64                         `json:"longitude"`
 	HorizontalAccuracy      float64                         `json:"horizontal_accuracy,omitempty"`
@@ -336,6 +354,8 @@ type SendVenueParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Latitude                float64                         `json:"latitude"`
 	Longitude               float64                         `json:"longitude"`
 	Title                   string                          `json:"title"`
@@ -359,6 +379,8 @@ type SendContactParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	PhoneNumber             string                          `json:"phone_number"`
 	FirstName               string                          `json:"first_name"`
 	LastName                string                          `json:"last_name,omitempty"`
@@ -875,12 +897,61 @@ type DeleteMessagesParams struct {
 	MessageIDs []int `json:"message_ids"`
 }
 
+// EditEphemeralMessageTextParams https://core.telegram.org/bots/api#editephemeralmessagetext
+type EditEphemeralMessageTextParams struct {
+	ChatID             any                          `json:"chat_id"`
+	ReceiverUserID     int64                        `json:"receiver_user_id"`
+	EphemeralMessageID int                          `json:"ephemeral_message_id"`
+	Text               string                       `json:"text"`
+	ParseMode          models.ParseMode             `json:"parse_mode,omitempty"`
+	Entities           []models.MessageEntity       `json:"entities,omitempty"`
+	LinkPreviewOptions *models.LinkPreviewOptions   `json:"link_preview_options,omitempty"`
+	ReplyMarkup        *models.InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+}
+
+// EditEphemeralMessageMediaParams https://core.telegram.org/bots/api#editephemeralmessagemedia
+type EditEphemeralMessageMediaParams struct {
+	ChatID             any                          `json:"chat_id"`
+	ReceiverUserID     int64                        `json:"receiver_user_id"`
+	EphemeralMessageID int                          `json:"ephemeral_message_id"`
+	Media              models.InputMedia            `json:"media"`
+	ReplyMarkup        *models.InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+}
+
+// EditEphemeralMessageCaptionParams https://core.telegram.org/bots/api#editephemeralmessagecaption
+type EditEphemeralMessageCaptionParams struct {
+	ChatID             any                          `json:"chat_id"`
+	ReceiverUserID     int64                        `json:"receiver_user_id"`
+	EphemeralMessageID int                          `json:"ephemeral_message_id"`
+	Caption            string                       `json:"caption,omitempty"`
+	ParseMode          models.ParseMode             `json:"parse_mode,omitempty"`
+	CaptionEntities    []models.MessageEntity       `json:"caption_entities,omitempty"`
+	ReplyMarkup        *models.InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+}
+
+// EditEphemeralMessageReplyMarkupParams https://core.telegram.org/bots/api#editephemeralmessagereplymarkup
+type EditEphemeralMessageReplyMarkupParams struct {
+	ChatID             any                          `json:"chat_id"`
+	ReceiverUserID     int64                        `json:"receiver_user_id"`
+	EphemeralMessageID int                          `json:"ephemeral_message_id"`
+	ReplyMarkup        *models.InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+}
+
+// DeleteEphemeralMessageParams https://core.telegram.org/bots/api#deleteephemeralmessage
+type DeleteEphemeralMessageParams struct {
+	ChatID             any   `json:"chat_id"`
+	ReceiverUserID     int64 `json:"receiver_user_id"`
+	EphemeralMessageID int   `json:"ephemeral_message_id"`
+}
+
 // SendStickerParams https://core.telegram.org/bots/api#sendsticker
 type SendStickerParams struct {
 	BusinessConnectionID    string                          `json:"business_connection_id,omitempty"`
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	Sticker                 models.InputFile                `json:"sticker"`
 	Emoji                   string                          `json:"emoji,omitempty"`
 	DisableNotification     bool                            `json:"disable_notification,omitempty"`
@@ -1410,6 +1481,8 @@ type SendLivePhotoParams struct {
 	ChatID                  any                             `json:"chat_id"`
 	MessageThreadID         int                             `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID   int                             `json:"direct_messages_topic_id,omitempty"`
+	ReceiverUserID          int64                           `json:"receiver_user_id,omitempty"`
+	CallbackQueryID         string                          `json:"callback_query_id,omitempty"`
 	LivePhoto               models.InputFile                `json:"live_photo"`
 	Photo                   models.InputFile                `json:"photo"`
 	Caption                 string                          `json:"caption,omitempty"`

@@ -13,10 +13,21 @@ type RichMessage struct {
 // Describes a rich formatted message to be sent. The thinking block is expressed
 // by the custom HTML tag <tg-thinking> within HTML.
 type InputRichMessage struct {
-	HTML                string `json:"html,omitempty"`
-	Markdown            string `json:"markdown,omitempty"`
-	IsRTL               bool   `json:"is_rtl,omitempty"`
-	SkipEntityDetection bool   `json:"skip_entity_detection,omitempty"`
+	Blocks              []InputRichBlock        `json:"blocks,omitempty"`
+	HTML                string                  `json:"html,omitempty"`
+	Markdown            string                  `json:"markdown,omitempty"`
+	Media               []InputRichMessageMedia `json:"media,omitempty"`
+	IsRTL               bool                    `json:"is_rtl,omitempty"`
+	SkipEntityDetection bool                    `json:"skip_entity_detection,omitempty"`
+}
+
+// InputRichMessageMedia https://core.telegram.org/bots/api#inputrichmessagemedia
+//
+// Media referenced from the markdown or html fields of an InputRichMessage via
+// tg://photo?id=, tg://video?id=, and tg://audio?id= links.
+type InputRichMessageMedia struct {
+	ID    string     `json:"id"`
+	Media InputMedia `json:"media"`
 }
 
 // InputRichMessageContent https://core.telegram.org/bots/api#inputrichmessagecontent

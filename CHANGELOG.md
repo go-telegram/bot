@@ -1,5 +1,31 @@
 # Changelog
 
+## v1.23.0 (2026-08-03)
+
+- Support Bot API 10.2 (July 14, 2026 update):
+  - Rich Messages: new `InputRichMessageMedia`, `InputMediaVoiceNote`, the 21
+    `InputRichBlock*` block types (via the `InputRichBlock` tagged union) and
+    `InputRichBlockListItem`; added `blocks` and `media` fields to
+    `InputRichMessage`.
+  - Ephemeral Messages: new methods `editEphemeralMessageText`,
+    `editEphemeralMessageMedia`, `editEphemeralMessageCaption`,
+    `editEphemeralMessageReplyMarkup`, `deleteEphemeralMessage`; added
+    `receiver_user_id` and `callback_query_id` params to the 13 send methods;
+    `is_ephemeral` on `BotCommand`; `receiver_user` and `ephemeral_message_id`
+    on `Message`; `ephemeral_message_id` on `ReplyParameters` (and `message_id`
+    made optional).
+  - Communities: new `Community`, `CommunityChatAdded`, `CommunityChatRemoved`;
+    `community_chat_added` / `community_chat_removed` on `Message`; `community`
+    on `ChatFullInfo`.
+  - General: new `BotSubscriptionUpdated` with the `subscription` field on
+    `Update` (and `subscription` allowed-update constant).
+- Fix: `InputMedia` values now implement `json.Marshaler`, so the required `type`
+  discriminator is kept when they are encoded through a plain `json.Marshal`
+  (e.g. nested inside a rich message). Previously `type` was only emitted by
+  `MarshalInputMedia`, which nested values never reached.
+- Fix: `InputRichBlock.MarshalJSON` returns an error instead of panicking when
+  `Type` is set without its matching variant pointer.
+
 ## v1.22.0 (2026-06-30)
 
 - Support Bot API 10.1 (June 11, 2026 update) — Rich Messages:
