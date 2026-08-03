@@ -154,3 +154,32 @@ func TestInputRichBlock_NilVariant(t *testing.T) {
 		t.Fatal("expected error for empty InputRichBlock")
 	}
 }
+
+// TestInputRichBlock_UnknownType verifies an unrecognised discriminator is
+// reported as unsupported rather than as a missing variant pointer.
+func TestInputRichBlock_UnknownType(t *testing.T) {
+	_, err := json.Marshal(InputRichBlock{Type: "definitely_not_a_real_type"})
+	if err == nil {
+		t.Fatal("expected error for unknown block type")
+	}
+	if !strings.Contains(err.Error(), `unsupported InputRichBlock type "definitely_not_a_real_type"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// TestInputRichBlock_MarshalDoesNotMutate verifies encoding stamps the union
+// discriminator on a copy, leaving the caller's variant untouched. Without it
+// two goroutines encoding the same block would race on the Type field.
+func TestInputRichBlock_MarshalDoesNotMutate(t *testing.T) {
+	variant := &InputRichBlockParagraph{Text: RichText{PlainText: "x"}}
+	out, err := json.Marshal(InputRichBlock{Type: RichBlockTypeParagraph, InputRichBlockParagraph: variant})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"type":"paragraph"`) {
+		t.Fatalf("missing discriminator in %s", out)
+	}
+	if variant.Type != "" {
+		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
+	}
+}

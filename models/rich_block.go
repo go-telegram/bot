@@ -67,68 +67,47 @@ type RichBlock struct {
 func (rb RichBlock) MarshalJSON() ([]byte, error) {
 	switch rb.Type {
 	case RichBlockTypeParagraph:
-		rb.RichBlockParagraph.Type = RichBlockTypeParagraph
-		return json.Marshal(rb.RichBlockParagraph)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockParagraph, func(v *RichBlockParagraph) { v.Type = rb.Type })
 	case RichBlockTypeSectionHeading:
-		rb.RichBlockSectionHeading.Type = RichBlockTypeSectionHeading
-		return json.Marshal(rb.RichBlockSectionHeading)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockSectionHeading, func(v *RichBlockSectionHeading) { v.Type = rb.Type })
 	case RichBlockTypePreformatted:
-		rb.RichBlockPreformatted.Type = RichBlockTypePreformatted
-		return json.Marshal(rb.RichBlockPreformatted)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockPreformatted, func(v *RichBlockPreformatted) { v.Type = rb.Type })
 	case RichBlockTypeFooter:
-		rb.RichBlockFooter.Type = RichBlockTypeFooter
-		return json.Marshal(rb.RichBlockFooter)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockFooter, func(v *RichBlockFooter) { v.Type = rb.Type })
 	case RichBlockTypeDivider:
-		rb.RichBlockDivider.Type = RichBlockTypeDivider
-		return json.Marshal(rb.RichBlockDivider)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockDivider, func(v *RichBlockDivider) { v.Type = rb.Type })
 	case RichBlockTypeMathematicalExpression:
-		rb.RichBlockMathematicalExpression.Type = RichBlockTypeMathematicalExpression
-		return json.Marshal(rb.RichBlockMathematicalExpression)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockMathematicalExpression, func(v *RichBlockMathematicalExpression) { v.Type = rb.Type })
 	case RichBlockTypeAnchor:
-		rb.RichBlockAnchor.Type = RichBlockTypeAnchor
-		return json.Marshal(rb.RichBlockAnchor)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockAnchor, func(v *RichBlockAnchor) { v.Type = rb.Type })
 	case RichBlockTypeList:
-		rb.RichBlockList.Type = RichBlockTypeList
-		return json.Marshal(rb.RichBlockList)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockList, func(v *RichBlockList) { v.Type = rb.Type })
 	case RichBlockTypeBlockQuotation:
-		rb.RichBlockBlockQuotation.Type = RichBlockTypeBlockQuotation
-		return json.Marshal(rb.RichBlockBlockQuotation)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockBlockQuotation, func(v *RichBlockBlockQuotation) { v.Type = rb.Type })
 	case RichBlockTypePullQuotation:
-		rb.RichBlockPullQuotation.Type = RichBlockTypePullQuotation
-		return json.Marshal(rb.RichBlockPullQuotation)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockPullQuotation, func(v *RichBlockPullQuotation) { v.Type = rb.Type })
 	case RichBlockTypeCollage:
-		rb.RichBlockCollage.Type = RichBlockTypeCollage
-		return json.Marshal(rb.RichBlockCollage)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockCollage, func(v *RichBlockCollage) { v.Type = rb.Type })
 	case RichBlockTypeSlideshow:
-		rb.RichBlockSlideshow.Type = RichBlockTypeSlideshow
-		return json.Marshal(rb.RichBlockSlideshow)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockSlideshow, func(v *RichBlockSlideshow) { v.Type = rb.Type })
 	case RichBlockTypeTable:
-		rb.RichBlockTable.Type = RichBlockTypeTable
-		return json.Marshal(rb.RichBlockTable)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockTable, func(v *RichBlockTable) { v.Type = rb.Type })
 	case RichBlockTypeDetails:
-		rb.RichBlockDetails.Type = RichBlockTypeDetails
-		return json.Marshal(rb.RichBlockDetails)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockDetails, func(v *RichBlockDetails) { v.Type = rb.Type })
 	case RichBlockTypeMap:
-		rb.RichBlockMap.Type = RichBlockTypeMap
-		return json.Marshal(rb.RichBlockMap)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockMap, func(v *RichBlockMap) { v.Type = rb.Type })
 	case RichBlockTypeAnimation:
-		rb.RichBlockAnimation.Type = RichBlockTypeAnimation
-		return json.Marshal(rb.RichBlockAnimation)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockAnimation, func(v *RichBlockAnimation) { v.Type = rb.Type })
 	case RichBlockTypeAudio:
-		rb.RichBlockAudio.Type = RichBlockTypeAudio
-		return json.Marshal(rb.RichBlockAudio)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockAudio, func(v *RichBlockAudio) { v.Type = rb.Type })
 	case RichBlockTypePhoto:
-		rb.RichBlockPhoto.Type = RichBlockTypePhoto
-		return json.Marshal(rb.RichBlockPhoto)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockPhoto, func(v *RichBlockPhoto) { v.Type = rb.Type })
 	case RichBlockTypeVideo:
-		rb.RichBlockVideo.Type = RichBlockTypeVideo
-		return json.Marshal(rb.RichBlockVideo)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockVideo, func(v *RichBlockVideo) { v.Type = rb.Type })
 	case RichBlockTypeVoiceNote:
-		rb.RichBlockVoiceNote.Type = RichBlockTypeVoiceNote
-		return json.Marshal(rb.RichBlockVoiceNote)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockVoiceNote, func(v *RichBlockVoiceNote) { v.Type = rb.Type })
 	case RichBlockTypeThinking:
-		rb.RichBlockThinking.Type = RichBlockTypeThinking
-		return json.Marshal(rb.RichBlockThinking)
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockThinking, func(v *RichBlockThinking) { v.Type = rb.Type })
 	}
 
 	return nil, fmt.Errorf("unsupported RichBlock type %q", rb.Type)

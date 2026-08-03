@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
@@ -88,5 +89,29 @@ func TestRichMessage_RoundTrip(t *testing.T) {
 	}
 	if string(out) != src {
 		t.Fatalf("round-trip mismatch:\n got %s\nwant %s", out, src)
+	}
+}
+
+// TestRichBlock_NilVariant verifies a Type set without its matching variant
+// pointer returns an error instead of panicking.
+func TestRichBlock_NilVariant(t *testing.T) {
+	if _, err := json.Marshal(RichBlock{Type: RichBlockTypeParagraph}); err == nil {
+		t.Fatal("expected error for nil variant pointer")
+	}
+}
+
+// TestRichBlock_MarshalDoesNotMutate verifies encoding stamps the union
+// discriminator on a copy, leaving the caller's variant untouched.
+func TestRichBlock_MarshalDoesNotMutate(t *testing.T) {
+	variant := &RichBlockParagraph{Text: RichText{PlainText: "x"}}
+	out, err := json.Marshal(RichBlock{Type: RichBlockTypeParagraph, RichBlockParagraph: variant})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"type":"paragraph"`) {
+		t.Fatalf("missing discriminator in %s", out)
+	}
+	if variant.Type != "" {
+		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
 	}
 }

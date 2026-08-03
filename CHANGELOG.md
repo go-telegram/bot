@@ -23,8 +23,15 @@
   discriminator is kept when they are encoded through a plain `json.Marshal`
   (e.g. nested inside a rich message). Previously `type` was only emitted by
   `MarshalInputMedia`, which nested values never reached.
-- Fix: `InputRichBlock.MarshalJSON` returns an error instead of panicking when
-  `Type` is set without its matching variant pointer.
+- Fix: `MarshalJSON` on the `InputRichBlock`, `RichBlock` and `RichText` tagged
+  unions returns an error instead of panicking when `Type` is set without its
+  matching variant pointer, and reports an unknown `Type` as unsupported rather
+  than as a missing variant.
+- Fix: marshaling those unions no longer writes the discriminator back into the
+  caller's variant. The `type` field is stamped on a copy, so encoding has no
+  side effects and the same value can be encoded from several goroutines.
+- Fix: `EditMessageCaptionParams.ShowCaptionAboveMedia` was sent under the field
+  name `k` instead of `show_caption_above_media`, so it never took effect.
 
 ## v1.22.0 (2026-06-30)
 

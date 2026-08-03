@@ -1512,3 +1512,23 @@ func TestBot_EphemeralMessageMethods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 }
+
+func TestBot_EditMessageCaption_ShowCaptionAboveMedia(t *testing.T) {
+	t.Parallel()
+
+	c := &httpClient{t: t, resp: `{"message_id":1}`, reqFields: map[string]string{
+		"chat_id":                  "123",
+		"message_id":               "5",
+		"caption":                  "cap",
+		"show_caption_above_media": "true",
+	}}
+	b := &Bot{client: c}
+	resp, err := b.EditMessageCaption(context.Background(), &EditMessageCaptionParams{
+		ChatID:                123,
+		MessageID:             5,
+		Caption:               "cap",
+		ShowCaptionAboveMedia: true,
+	})
+	assertNoErr(t, err)
+	assertEqualInt(t, resp.ID, 1)
+}

@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
@@ -115,5 +116,30 @@ func TestRichText_UnknownType(t *testing.T) {
 	err := rt.UnmarshalJSON([]byte(`{"type":"definitely_not_a_real_type"}`))
 	if err == nil {
 		t.Fatal("expected error for unknown RichText type")
+	}
+}
+
+// TestRichText_NilVariant verifies a Type set without its matching variant
+// pointer returns an error instead of panicking.
+func TestRichText_NilVariant(t *testing.T) {
+	if _, err := json.Marshal(RichText{Type: RichTextTypeBold}); err == nil {
+		t.Fatal("expected error for nil variant pointer")
+	}
+}
+
+// TestRichText_MarshalDoesNotMutate verifies encoding stamps the union
+// discriminator on a copy, leaving the caller's variant untouched. RichText is
+// reachable on the outgoing path through the InputRichBlock* types.
+func TestRichText_MarshalDoesNotMutate(t *testing.T) {
+	variant := &RichTextBold{Text: RichText{PlainText: "x"}}
+	out, err := json.Marshal(RichText{Type: RichTextTypeBold, RichTextBold: variant})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"type":"bold"`) {
+		t.Fatalf("missing discriminator in %s", out)
+	}
+	if variant.Type != "" {
+		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
 	}
 }

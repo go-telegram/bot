@@ -833,7 +833,7 @@ type EditMessageCaptionParams struct {
 	Caption               string                 `json:"caption,omitempty"`
 	ParseMode             models.ParseMode       `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity `json:"caption_entities,omitempty"`
-	ShowCaptionAboveMedia bool                   `json:"k,omitempty"`
+	ShowCaptionAboveMedia bool                   `json:"show_caption_above_media,omitempty"`
 	DisableWebPagePreview bool                   `json:"disable_web_page_preview,omitempty"`
 	ReplyMarkup           models.ReplyMarkup     `json:"reply_markup,omitempty"`
 }

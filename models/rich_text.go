@@ -87,80 +87,55 @@ func (rt RichText) MarshalJSON() ([]byte, error) {
 	case "":
 		return json.Marshal(rt.PlainText)
 	case RichTextTypeBold:
-		rt.RichTextBold.Type = RichTextTypeBold
-		return json.Marshal(rt.RichTextBold)
+		return marshalVariant("RichText", rt.Type, rt.RichTextBold, func(v *RichTextBold) { v.Type = rt.Type })
 	case RichTextTypeItalic:
-		rt.RichTextItalic.Type = RichTextTypeItalic
-		return json.Marshal(rt.RichTextItalic)
+		return marshalVariant("RichText", rt.Type, rt.RichTextItalic, func(v *RichTextItalic) { v.Type = rt.Type })
 	case RichTextTypeUnderline:
-		rt.RichTextUnderline.Type = RichTextTypeUnderline
-		return json.Marshal(rt.RichTextUnderline)
+		return marshalVariant("RichText", rt.Type, rt.RichTextUnderline, func(v *RichTextUnderline) { v.Type = rt.Type })
 	case RichTextTypeStrikethrough:
-		rt.RichTextStrikethrough.Type = RichTextTypeStrikethrough
-		return json.Marshal(rt.RichTextStrikethrough)
+		return marshalVariant("RichText", rt.Type, rt.RichTextStrikethrough, func(v *RichTextStrikethrough) { v.Type = rt.Type })
 	case RichTextTypeSpoiler:
-		rt.RichTextSpoiler.Type = RichTextTypeSpoiler
-		return json.Marshal(rt.RichTextSpoiler)
+		return marshalVariant("RichText", rt.Type, rt.RichTextSpoiler, func(v *RichTextSpoiler) { v.Type = rt.Type })
 	case RichTextTypeDateTime:
-		rt.RichTextDateTime.Type = RichTextTypeDateTime
-		return json.Marshal(rt.RichTextDateTime)
+		return marshalVariant("RichText", rt.Type, rt.RichTextDateTime, func(v *RichTextDateTime) { v.Type = rt.Type })
 	case RichTextTypeTextMention:
-		rt.RichTextTextMention.Type = RichTextTypeTextMention
-		return json.Marshal(rt.RichTextTextMention)
+		return marshalVariant("RichText", rt.Type, rt.RichTextTextMention, func(v *RichTextTextMention) { v.Type = rt.Type })
 	case RichTextTypeSubscript:
-		rt.RichTextSubscript.Type = RichTextTypeSubscript
-		return json.Marshal(rt.RichTextSubscript)
+		return marshalVariant("RichText", rt.Type, rt.RichTextSubscript, func(v *RichTextSubscript) { v.Type = rt.Type })
 	case RichTextTypeSuperscript:
-		rt.RichTextSuperscript.Type = RichTextTypeSuperscript
-		return json.Marshal(rt.RichTextSuperscript)
+		return marshalVariant("RichText", rt.Type, rt.RichTextSuperscript, func(v *RichTextSuperscript) { v.Type = rt.Type })
 	case RichTextTypeMarked:
-		rt.RichTextMarked.Type = RichTextTypeMarked
-		return json.Marshal(rt.RichTextMarked)
+		return marshalVariant("RichText", rt.Type, rt.RichTextMarked, func(v *RichTextMarked) { v.Type = rt.Type })
 	case RichTextTypeCode:
-		rt.RichTextCode.Type = RichTextTypeCode
-		return json.Marshal(rt.RichTextCode)
+		return marshalVariant("RichText", rt.Type, rt.RichTextCode, func(v *RichTextCode) { v.Type = rt.Type })
 	case RichTextTypeCustomEmoji:
-		rt.RichTextCustomEmoji.Type = RichTextTypeCustomEmoji
-		return json.Marshal(rt.RichTextCustomEmoji)
+		return marshalVariant("RichText", rt.Type, rt.RichTextCustomEmoji, func(v *RichTextCustomEmoji) { v.Type = rt.Type })
 	case RichTextTypeMathematicalExpression:
-		rt.RichTextMathematicalExpression.Type = RichTextTypeMathematicalExpression
-		return json.Marshal(rt.RichTextMathematicalExpression)
+		return marshalVariant("RichText", rt.Type, rt.RichTextMathematicalExpression, func(v *RichTextMathematicalExpression) { v.Type = rt.Type })
 	case RichTextTypeURL:
-		rt.RichTextURL.Type = RichTextTypeURL
-		return json.Marshal(rt.RichTextURL)
+		return marshalVariant("RichText", rt.Type, rt.RichTextURL, func(v *RichTextURL) { v.Type = rt.Type })
 	case RichTextTypeEmailAddress:
-		rt.RichTextEmailAddress.Type = RichTextTypeEmailAddress
-		return json.Marshal(rt.RichTextEmailAddress)
+		return marshalVariant("RichText", rt.Type, rt.RichTextEmailAddress, func(v *RichTextEmailAddress) { v.Type = rt.Type })
 	case RichTextTypePhoneNumber:
-		rt.RichTextPhoneNumber.Type = RichTextTypePhoneNumber
-		return json.Marshal(rt.RichTextPhoneNumber)
+		return marshalVariant("RichText", rt.Type, rt.RichTextPhoneNumber, func(v *RichTextPhoneNumber) { v.Type = rt.Type })
 	case RichTextTypeBankCardNumber:
-		rt.RichTextBankCardNumber.Type = RichTextTypeBankCardNumber
-		return json.Marshal(rt.RichTextBankCardNumber)
+		return marshalVariant("RichText", rt.Type, rt.RichTextBankCardNumber, func(v *RichTextBankCardNumber) { v.Type = rt.Type })
 	case RichTextTypeMention:
-		rt.RichTextMention.Type = RichTextTypeMention
-		return json.Marshal(rt.RichTextMention)
+		return marshalVariant("RichText", rt.Type, rt.RichTextMention, func(v *RichTextMention) { v.Type = rt.Type })
 	case RichTextTypeHashtag:
-		rt.RichTextHashtag.Type = RichTextTypeHashtag
-		return json.Marshal(rt.RichTextHashtag)
+		return marshalVariant("RichText", rt.Type, rt.RichTextHashtag, func(v *RichTextHashtag) { v.Type = rt.Type })
 	case RichTextTypeCashtag:
-		rt.RichTextCashtag.Type = RichTextTypeCashtag
-		return json.Marshal(rt.RichTextCashtag)
+		return marshalVariant("RichText", rt.Type, rt.RichTextCashtag, func(v *RichTextCashtag) { v.Type = rt.Type })
 	case RichTextTypeBotCommand:
-		rt.RichTextBotCommand.Type = RichTextTypeBotCommand
-		return json.Marshal(rt.RichTextBotCommand)
+		return marshalVariant("RichText", rt.Type, rt.RichTextBotCommand, func(v *RichTextBotCommand) { v.Type = rt.Type })
 	case RichTextTypeAnchor:
-		rt.RichTextAnchor.Type = RichTextTypeAnchor
-		return json.Marshal(rt.RichTextAnchor)
+		return marshalVariant("RichText", rt.Type, rt.RichTextAnchor, func(v *RichTextAnchor) { v.Type = rt.Type })
 	case RichTextTypeAnchorLink:
-		rt.RichTextAnchorLink.Type = RichTextTypeAnchorLink
-		return json.Marshal(rt.RichTextAnchorLink)
+		return marshalVariant("RichText", rt.Type, rt.RichTextAnchorLink, func(v *RichTextAnchorLink) { v.Type = rt.Type })
 	case RichTextTypeReference:
-		rt.RichTextReference.Type = RichTextTypeReference
-		return json.Marshal(rt.RichTextReference)
+		return marshalVariant("RichText", rt.Type, rt.RichTextReference, func(v *RichTextReference) { v.Type = rt.Type })
 	case RichTextTypeReferenceLink:
-		rt.RichTextReferenceLink.Type = RichTextTypeReferenceLink
-		return json.Marshal(rt.RichTextReferenceLink)
+		return marshalVariant("RichText", rt.Type, rt.RichTextReferenceLink, func(v *RichTextReferenceLink) { v.Type = rt.Type })
 	}
 
 	return nil, fmt.Errorf("unsupported RichText type %q", rt.Type)
