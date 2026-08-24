@@ -13,27 +13,30 @@ import (
 type InputRichBlock struct {
 	Type RichBlockType
 
-	InputRichBlockParagraph              *InputRichBlockParagraph
-	InputRichBlockSectionHeading         *InputRichBlockSectionHeading
-	InputRichBlockPreformatted           *InputRichBlockPreformatted
-	InputRichBlockFooter                 *InputRichBlockFooter
-	InputRichBlockDivider                *InputRichBlockDivider
-	InputRichBlockMathematicalExpression *InputRichBlockMathematicalExpression
-	InputRichBlockAnchor                 *InputRichBlockAnchor
-	InputRichBlockList                   *InputRichBlockList
-	InputRichBlockBlockQuotation         *InputRichBlockBlockQuotation
-	InputRichBlockPullQuotation          *InputRichBlockPullQuotation
-	InputRichBlockCollage                *InputRichBlockCollage
-	InputRichBlockSlideshow              *InputRichBlockSlideshow
-	InputRichBlockTable                  *InputRichBlockTable
-	InputRichBlockDetails                *InputRichBlockDetails
-	InputRichBlockMap                    *InputRichBlockMap
-	InputRichBlockAnimation              *InputRichBlockAnimation
-	InputRichBlockAudio                  *InputRichBlockAudio
-	InputRichBlockPhoto                  *InputRichBlockPhoto
-	InputRichBlockVideo                  *InputRichBlockVideo
-	InputRichBlockVoiceNote              *InputRichBlockVoiceNote
-	InputRichBlockThinking               *InputRichBlockThinking
+	InputRichBlockParagraph                *InputRichBlockParagraph
+	InputRichBlockSectionHeading           *InputRichBlockSectionHeading
+	InputRichBlockPreformatted             *InputRichBlockPreformatted
+	InputRichBlockFooter                   *InputRichBlockFooter
+	InputRichBlockDivider                  *InputRichBlockDivider
+	InputRichBlockMathematicalExpression   *InputRichBlockMathematicalExpression
+	InputRichBlockAnchor                   *InputRichBlockAnchor
+	InputRichBlockList                     *InputRichBlockList
+	InputRichBlockBlockQuotation           *InputRichBlockBlockQuotation
+	InputRichBlockExpandableBlockQuotation *InputRichBlockExpandableBlockQuotation
+	InputRichBlockPullQuotation            *InputRichBlockPullQuotation
+	InputRichBlockCollage                  *InputRichBlockCollage
+	InputRichBlockSlideshow                *InputRichBlockSlideshow
+	InputRichBlockTable                    *InputRichBlockTable
+	InputRichBlockDetails                  *InputRichBlockDetails
+	InputRichBlockMap                      *InputRichBlockMap
+	InputRichBlockButtons                  *InputRichBlockButtons
+	InputRichBlockAnimation                *InputRichBlockAnimation
+	InputRichBlockAudio                    *InputRichBlockAudio
+	InputRichBlockDocument                 *InputRichBlockDocument
+	InputRichBlockPhoto                    *InputRichBlockPhoto
+	InputRichBlockVideo                    *InputRichBlockVideo
+	InputRichBlockVoiceNote                *InputRichBlockVoiceNote
+	InputRichBlockThinking                 *InputRichBlockThinking
 }
 
 // MarshalJSON implements json.Marshaler. The value receiver ensures the encoding
@@ -58,6 +61,8 @@ func (rb InputRichBlock) MarshalJSON() ([]byte, error) {
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockList, func(v *InputRichBlockList) { v.Type = rb.Type })
 	case RichBlockTypeBlockQuotation:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockBlockQuotation, func(v *InputRichBlockBlockQuotation) { v.Type = rb.Type })
+	case RichBlockTypeExpandableBlockQuotation:
+		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockExpandableBlockQuotation, func(v *InputRichBlockExpandableBlockQuotation) { v.Type = rb.Type })
 	case RichBlockTypePullQuotation:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockPullQuotation, func(v *InputRichBlockPullQuotation) { v.Type = rb.Type })
 	case RichBlockTypeCollage:
@@ -70,10 +75,14 @@ func (rb InputRichBlock) MarshalJSON() ([]byte, error) {
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockDetails, func(v *InputRichBlockDetails) { v.Type = rb.Type })
 	case RichBlockTypeMap:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockMap, func(v *InputRichBlockMap) { v.Type = rb.Type })
+	case RichBlockTypeButtons:
+		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockButtons, func(v *InputRichBlockButtons) { v.Type = rb.Type })
 	case RichBlockTypeAnimation:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockAnimation, func(v *InputRichBlockAnimation) { v.Type = rb.Type })
 	case RichBlockTypeAudio:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockAudio, func(v *InputRichBlockAudio) { v.Type = rb.Type })
+	case RichBlockTypeDocument:
+		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockDocument, func(v *InputRichBlockDocument) { v.Type = rb.Type })
 	case RichBlockTypePhoto:
 		return marshalVariant("InputRichBlock", rb.Type, rb.InputRichBlockPhoto, func(v *InputRichBlockPhoto) { v.Type = rb.Type })
 	case RichBlockTypeVideo:
@@ -132,6 +141,10 @@ func (rb *InputRichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeBlockQuotation
 		rb.InputRichBlockBlockQuotation = &InputRichBlockBlockQuotation{}
 		return json.Unmarshal(data, rb.InputRichBlockBlockQuotation)
+	case RichBlockTypeExpandableBlockQuotation:
+		rb.Type = RichBlockTypeExpandableBlockQuotation
+		rb.InputRichBlockExpandableBlockQuotation = &InputRichBlockExpandableBlockQuotation{}
+		return json.Unmarshal(data, rb.InputRichBlockExpandableBlockQuotation)
 	case RichBlockTypePullQuotation:
 		rb.Type = RichBlockTypePullQuotation
 		rb.InputRichBlockPullQuotation = &InputRichBlockPullQuotation{}
@@ -156,6 +169,10 @@ func (rb *InputRichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeMap
 		rb.InputRichBlockMap = &InputRichBlockMap{}
 		return json.Unmarshal(data, rb.InputRichBlockMap)
+	case RichBlockTypeButtons:
+		rb.Type = RichBlockTypeButtons
+		rb.InputRichBlockButtons = &InputRichBlockButtons{}
+		return json.Unmarshal(data, rb.InputRichBlockButtons)
 	case RichBlockTypeAnimation:
 		rb.Type = RichBlockTypeAnimation
 		rb.InputRichBlockAnimation = &InputRichBlockAnimation{}
@@ -164,6 +181,10 @@ func (rb *InputRichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeAudio
 		rb.InputRichBlockAudio = &InputRichBlockAudio{}
 		return json.Unmarshal(data, rb.InputRichBlockAudio)
+	case RichBlockTypeDocument:
+		rb.Type = RichBlockTypeDocument
+		rb.InputRichBlockDocument = &InputRichBlockDocument{}
+		return json.Unmarshal(data, rb.InputRichBlockDocument)
 	case RichBlockTypePhoto:
 		rb.Type = RichBlockTypePhoto
 		rb.InputRichBlockPhoto = &InputRichBlockPhoto{}
@@ -252,6 +273,13 @@ type InputRichBlockBlockQuotation struct {
 	Credit *RichText        `json:"credit,omitempty"`
 }
 
+// InputRichBlockExpandableBlockQuotation https://core.telegram.org/bots/api#inputrichblockexpandableblockquotation
+type InputRichBlockExpandableBlockQuotation struct {
+	Type   RichBlockType `json:"type"` // always "expandable_blockquote"
+	Text   RichText      `json:"text"`
+	Credit *RichText     `json:"credit,omitempty"`
+}
+
 // InputRichBlockPullQuotation https://core.telegram.org/bots/api#inputrichblockpullquotation
 type InputRichBlockPullQuotation struct {
 	Type   RichBlockType `json:"type"` // always "pullquote"
@@ -279,6 +307,7 @@ type InputRichBlockTable struct {
 	Cells      [][]RichBlockTableCell `json:"cells"`
 	IsBordered bool                   `json:"is_bordered,omitempty"`
 	IsStriped  bool                   `json:"is_striped,omitempty"`
+	IsCompact  bool                   `json:"is_compact,omitempty"`
 	Caption    *RichText              `json:"caption,omitempty"`
 }
 
@@ -300,6 +329,13 @@ type InputRichBlockMap struct {
 	Caption  *RichBlockCaption `json:"caption,omitempty"`
 }
 
+// InputRichBlockButtons https://core.telegram.org/bots/api#inputrichblockbuttons
+type InputRichBlockButtons struct {
+	Type    RichBlockType       `json:"type"` // always "buttons"
+	Buttons []RichMessageButton `json:"buttons"`
+	Align   string              `json:"align,omitempty"`
+}
+
 // InputRichBlockAnimation https://core.telegram.org/bots/api#inputrichblockanimation
 type InputRichBlockAnimation struct {
 	Type      RichBlockType       `json:"type"` // always "animation"
@@ -312,6 +348,13 @@ type InputRichBlockAudio struct {
 	Type    RichBlockType     `json:"type"` // always "audio"
 	Audio   InputMediaAudio   `json:"audio"`
 	Caption *RichBlockCaption `json:"caption,omitempty"`
+}
+
+// InputRichBlockDocument https://core.telegram.org/bots/api#inputrichblockdocument
+type InputRichBlockDocument struct {
+	Type     RichBlockType      `json:"type"` // always "document"
+	Document InputMediaDocument `json:"document"`
+	Caption  *RichBlockCaption  `json:"caption,omitempty"`
 }
 
 // InputRichBlockPhoto https://core.telegram.org/bots/api#inputrichblockphoto

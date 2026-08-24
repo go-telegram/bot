@@ -88,3 +88,18 @@ func TestReplyParameters_Ephemeral(t *testing.T) {
 		t.Fatalf("message_id should be omitted when zero: %s", s)
 	}
 }
+
+// TestMessage_CommunityChatJoined verifies the 10.3 community join service message decodes.
+func TestMessage_CommunityChatJoined(t *testing.T) {
+	src := `{"message_id":1,"date":1,"chat":{"id":1,"type":"supergroup"},"community_chat_joined":{"community":{"id":555,"name":"Gophers"}}}`
+	var m Message
+	if err := json.Unmarshal([]byte(src), &m); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if m.CommunityChatJoined == nil {
+		t.Fatal("community_chat_joined not decoded")
+	}
+	if m.CommunityChatJoined.Community.ID != 555 || m.CommunityChatJoined.Community.Name != "Gophers" {
+		t.Fatalf("bad community: %+v", m.CommunityChatJoined.Community)
+	}
+}

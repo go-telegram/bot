@@ -115,3 +115,40 @@ func TestRichBlock_MarshalDoesNotMutate(t *testing.T) {
 		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
 	}
 }
+
+func TestRichBlock_ExpandableBlockQuotation(t *testing.T) {
+	rb := richBlockRoundTrip(t, `{"type":"expandable_blockquote","text":"quoted","credit":"author"}`)
+	if rb.Type != RichBlockTypeExpandableBlockQuotation {
+		t.Fatalf("wrong type %q", rb.Type)
+	}
+	if rb.RichBlockExpandableBlockQuotation == nil || rb.RichBlockExpandableBlockQuotation.Text.PlainText != "quoted" {
+		t.Fatal("expandable blockquote text not decoded")
+	}
+}
+
+func TestRichBlock_Buttons(t *testing.T) {
+	rb := richBlockRoundTrip(t, `{"type":"buttons","buttons":[{"text":"Go","style":"primary","callback_data":"go"},{"text":"Off","disabled":{}}],"align":"center"}`)
+	if rb.RichBlockButtons == nil || len(rb.RichBlockButtons.Buttons) != 2 {
+		t.Fatal("buttons not decoded")
+	}
+	if rb.RichBlockButtons.Buttons[0].CallbackData != "go" {
+		t.Fatal("callback_data not decoded")
+	}
+	if rb.RichBlockButtons.Buttons[1].Disabled == nil {
+		t.Fatal("disabled button not decoded")
+	}
+}
+
+func TestRichBlock_Document(t *testing.T) {
+	rb := richBlockRoundTrip(t, `{"type":"document","document":{"file_id":"f","file_unique_id":"u","file_name":"a.pdf"},"caption":{"text":"cap"}}`)
+	if rb.RichBlockDocument == nil || rb.RichBlockDocument.Document.FileID != "f" {
+		t.Fatal("document not decoded")
+	}
+}
+
+func TestRichBlock_TableIsCompact(t *testing.T) {
+	rb := richBlockRoundTrip(t, `{"type":"table","cells":[[{"align":"left","valign":"top"}]],"is_compact":true}`)
+	if rb.RichBlockTable == nil || !rb.RichBlockTable.IsCompact {
+		t.Fatal("is_compact not decoded")
+	}
+}

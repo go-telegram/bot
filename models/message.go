@@ -179,6 +179,7 @@ type Message struct {
 	ChatOwnerLeft                 *ChatOwnerLeft                 `json:"chat_owner_left,omitempty"`
 	ChatOwnerChanged              *ChatOwnerChanged              `json:"chat_owner_changed,omitempty"`
 	CommunityChatAdded            *CommunityChatAdded            `json:"community_chat_added,omitempty"`
+	CommunityChatJoined           *CommunityChatJoined           `json:"community_chat_joined,omitempty"`
 	CommunityChatRemoved          *CommunityChatRemoved          `json:"community_chat_removed,omitempty"`
 	SuggestedPostApproved         *SuggestedPostApproved         `json:"suggested_post_approved,omitempty"`
 	SuggestedPostApprovalFailed   *SuggestedPostApprovalFailed   `json:"suggested_post_approval_failed,omitempty"`

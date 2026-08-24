@@ -19,6 +19,9 @@ func TestInputRichBlock_Marshal(t *testing.T) {
 		{"divider", InputRichBlock{Type: RichBlockTypeDivider, InputRichBlockDivider: &InputRichBlockDivider{}}, "divider"},
 		{"math", InputRichBlock{Type: RichBlockTypeMathematicalExpression, InputRichBlockMathematicalExpression: &InputRichBlockMathematicalExpression{Expression: "x^2"}}, "mathematical_expression"},
 		{"thinking", InputRichBlock{Type: RichBlockTypeThinking, InputRichBlockThinking: &InputRichBlockThinking{Text: RichText{PlainText: "reasoning"}}}, "thinking"},
+		{"expandable_blockquote", InputRichBlock{Type: RichBlockTypeExpandableBlockQuotation, InputRichBlockExpandableBlockQuotation: &InputRichBlockExpandableBlockQuotation{Text: RichText{PlainText: "q"}}}, "expandable_blockquote"},
+		{"buttons", InputRichBlock{Type: RichBlockTypeButtons, InputRichBlockButtons: &InputRichBlockButtons{Buttons: []RichMessageButton{{Text: RichText{PlainText: "Go"}, CallbackData: "go"}}, Align: "right"}}, "buttons"},
+		{"document", InputRichBlock{Type: RichBlockTypeDocument, InputRichBlockDocument: &InputRichBlockDocument{Document: InputMediaDocument{Media: "d"}}}, "document"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -181,5 +184,33 @@ func TestInputRichBlock_MarshalDoesNotMutate(t *testing.T) {
 	}
 	if variant.Type != "" {
 		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
+	}
+}
+
+// TestInputRichBlockDocument_NestedMediaType verifies the InputMediaDocument
+// nested in a document block carries its type discriminator.
+func TestInputRichBlockDocument_NestedMediaType(t *testing.T) {
+	block := InputRichBlock{Type: RichBlockTypeDocument, InputRichBlockDocument: &InputRichBlockDocument{Document: InputMediaDocument{Media: "d"}}}
+	out, err := json.Marshal(block)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"document":{"type":"document"`) {
+		t.Fatalf("expected nested document type in %s", out)
+	}
+}
+
+// TestInputRichBlockTable_IsCompact verifies the 10.3 is_compact flag on tables.
+func TestInputRichBlockTable_IsCompact(t *testing.T) {
+	block := InputRichBlock{Type: RichBlockTypeTable, InputRichBlockTable: &InputRichBlockTable{
+		Cells:     [][]RichBlockTableCell{{{Align: "left", Valign: "top"}}},
+		IsCompact: true,
+	}}
+	out, err := json.Marshal(block)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"is_compact":true`) {
+		t.Fatalf("expected is_compact in %s", out)
 	}
 }

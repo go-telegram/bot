@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.24.0 (2026-08-24)
+
+- Support Bot API 10.3 (August 24, 2026 update):
+  - Rich Messages: new `RichMessageButton`; `RichTextButton` (via the `RichText`
+    union); `RichBlockButtons`, `RichBlockExpandableBlockQuotation`,
+    `RichBlockDocument` and their `InputRichBlock*` counterparts (via the
+    `RichBlock` / `InputRichBlock` unions); `is_compact` on `RichBlockTable` and
+    `InputRichBlockTable`; `tg://document?id=` links for `InputRichMessageMedia`.
+  - Ephemeral Messages: new `EphemeralMessageParameters` (with
+    `replace_callback_query_message`), sent as `ephemeral_message_parameters` by
+    the 13 send methods and `sendRichMessage`; `rich_message` on
+    `editEphemeralMessageText` (and `text` made optional);
+    `show_caption_above_media` on `editEphemeralMessageCaption`; upload of new
+    files in `editEphemeralMessageMedia`; `can_send_welcome_messages` on
+    `ChatAdministratorRights`, `ChatMemberAdministrator` and `promoteChatMember`.
+  - Reply markup: new `DisabledButton` with the `disabled` field on
+    `InlineKeyboardButton`; `force_reply` on `InlineKeyboardMarkup` and
+    `ReplyKeyboardMarkup`.
+  - General: `can_stop` and `keep_on_stop` on `sendMessageDraft` and
+    `sendRichMessageDraft`; new `MessageGenerationStopped` with the
+    `stopped_message_generation` field on `Update` (and the matching
+    allowed-update constant); new `CommunityChatJoined` with
+    `community_chat_joined` on `Message`; `text`, `entities` and `is_private` on
+    `UniqueGiftInfo`.
+- Breaking: `ReceiverUserID` and `CallbackQueryID` are removed from the send
+  method params (`SendMessageParams`, `SendPhotoParams`, ...); Bot API 10.3
+  replaced them with `EphemeralMessageParameters`.
+
 ## v1.23.0 (2026-08-03)
 
 - Support Bot API 10.2 (July 14, 2026 update):

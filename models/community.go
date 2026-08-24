@@ -15,6 +15,13 @@ type CommunityChatAdded struct {
 	Community Community `json:"community"`
 }
 
+// CommunityChatJoined https://core.telegram.org/bots/api#communitychatjoined
+//
+// Describes a service message about a chat being joined by a user from a community.
+type CommunityChatJoined struct {
+	Community Community `json:"community"`
+}
+
 // CommunityChatRemoved https://core.telegram.org/bots/api#communitychatremoved
 //
 // Describes a service message about a chat being removed from a community.

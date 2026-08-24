@@ -31,6 +31,7 @@ const (
 	RichTextTypeHashtag                RichTextType = "hashtag"
 	RichTextTypeCashtag                RichTextType = "cashtag"
 	RichTextTypeBotCommand             RichTextType = "bot_command"
+	RichTextTypeButton                 RichTextType = "button"
 	RichTextTypeAnchor                 RichTextType = "anchor"
 	RichTextTypeAnchorLink             RichTextType = "anchor_link"
 	RichTextTypeReference              RichTextType = "reference"
@@ -70,6 +71,7 @@ type RichText struct {
 	RichTextHashtag                *RichTextHashtag
 	RichTextCashtag                *RichTextCashtag
 	RichTextBotCommand             *RichTextBotCommand
+	RichTextButton                 *RichTextButton
 	RichTextAnchor                 *RichTextAnchor
 	RichTextAnchorLink             *RichTextAnchorLink
 	RichTextReference              *RichTextReference
@@ -128,6 +130,8 @@ func (rt RichText) MarshalJSON() ([]byte, error) {
 		return marshalVariant("RichText", rt.Type, rt.RichTextCashtag, func(v *RichTextCashtag) { v.Type = rt.Type })
 	case RichTextTypeBotCommand:
 		return marshalVariant("RichText", rt.Type, rt.RichTextBotCommand, func(v *RichTextBotCommand) { v.Type = rt.Type })
+	case RichTextTypeButton:
+		return marshalVariant("RichText", rt.Type, rt.RichTextButton, func(v *RichTextButton) { v.Type = rt.Type })
 	case RichTextTypeAnchor:
 		return marshalVariant("RichText", rt.Type, rt.RichTextAnchor, func(v *RichTextAnchor) { v.Type = rt.Type })
 	case RichTextTypeAnchorLink:
@@ -252,6 +256,10 @@ func (rt *RichText) UnmarshalJSON(data []byte) error {
 		rt.Type = RichTextTypeBotCommand
 		rt.RichTextBotCommand = &RichTextBotCommand{}
 		return json.Unmarshal(trimmed, rt.RichTextBotCommand)
+	case RichTextTypeButton:
+		rt.Type = RichTextTypeButton
+		rt.RichTextButton = &RichTextButton{}
+		return json.Unmarshal(trimmed, rt.RichTextButton)
 	case RichTextTypeAnchor:
 		rt.Type = RichTextTypeAnchor
 		rt.RichTextAnchor = &RichTextAnchor{}
@@ -409,6 +417,12 @@ type RichTextBotCommand struct {
 	Type       RichTextType `json:"type"`
 	Text       RichText     `json:"text"`
 	BotCommand string       `json:"bot_command"`
+}
+
+// RichTextButton https://core.telegram.org/bots/api#richtextbutton
+type RichTextButton struct {
+	Type   RichTextType      `json:"type"`
+	Button RichMessageButton `json:"button"`
 }
 
 // RichTextAnchor https://core.telegram.org/bots/api#richtextanchor

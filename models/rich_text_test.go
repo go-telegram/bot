@@ -143,3 +143,13 @@ func TestRichText_MarshalDoesNotMutate(t *testing.T) {
 		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
 	}
 }
+
+func TestRichText_Button(t *testing.T) {
+	rt := richTextRoundTrip(t, `{"type":"button","button":{"text":"Open","url":"https://example.com"}}`)
+	if rt.Type != RichTextTypeButton {
+		t.Fatalf("wrong type %q", rt.Type)
+	}
+	if rt.RichTextButton == nil || rt.RichTextButton.Button.URL != "https://example.com" {
+		t.Fatal("button not decoded")
+	}
+}
