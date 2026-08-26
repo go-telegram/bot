@@ -45,7 +45,7 @@ type BusinessOpeningHoursInterval struct {
 type BusinessBotRights struct {
 	CanReply                   bool `json:"can_reply,omitempty"`
 	CanReadMessages            bool `json:"can_read_messages,omitempty"`
-	CanDeleteOutgoingMessages  bool `json:"can_delete_outgoing_messages,omitempty"`
+	CanDeleteSentMessages      bool `json:"can_delete_sent_messages,omitempty"`
 	CanDeleteAllMessages       bool `json:"can_delete_all_messages,omitempty"`
 	CanEditName                bool `json:"can_edit_name,omitempty"`
 	CanEditBio                 bool `json:"can_edit_bio,omitempty"`
@@ -57,4 +57,8 @@ type BusinessBotRights struct {
 	CanTransferAndUpgradeGifts bool `json:"can_transfer_and_upgrade_gifts,omitempty"`
 	CanTransferStars           bool `json:"can_transfer_stars,omitempty"`
 	CanManageStories           bool `json:"can_manage_stories,omitempty"`
+
+	// Deprecated: historically mistagged as can_delete_outgoing_messages and so
+	// never populated by Telegram. Use CanDeleteSentMessages.
+	CanDeleteOutgoingMessages bool `json:"-"`
 }
