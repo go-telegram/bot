@@ -67,6 +67,10 @@ func (m *InputPaidMediaVideo) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputPaidMediaVideo) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 func (m *InputPaidMediaVideo) MarshalInputMedia() ([]byte, error) {
 	ret := struct {
 		Type string `json:"type"`

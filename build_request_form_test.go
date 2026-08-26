@@ -355,3 +355,83 @@ func Test_addFormFieldInputRichMessage_nilAttachment(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func Test_buildRequestForm_inputMediaThumbnail(t *testing.T) {
+	params := struct {
+		Media     []models.InputMedia     `json:"media"`
+		PaidMedia []models.InputPaidMedia `json:"paid_media"`
+	}{
+		Media: []models.InputMedia{
+			&models.InputMediaVideo{
+				Media:           "attach://video.mp4",
+				MediaAttachment: strings.NewReader("video content"),
+				Thumbnail:       &models.InputFileUpload{Filename: "thumb.jpg", Data: strings.NewReader("thumb content")},
+			},
+			&models.InputMediaAudio{
+				Media:     "file_id",
+				Thumbnail: &models.InputFileString{Data: "https://domain.com/thumb.jpg"},
+			},
+		},
+		PaidMedia: []models.InputPaidMedia{
+			&models.InputPaidMediaVideo{
+				Media:     "file_id",
+				Thumbnail: &models.InputFileUpload{Filename: "paid_thumb.jpg", Data: strings.NewReader("paid thumb content")},
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	fieldsCount, errBuild := buildRequestForm(form, &params)
+	if errBuild != nil {
+		t.Error(errBuild)
+		return
+	}
+	if err := form.Close(); err != nil {
+		t.Errorf("failed to close form: %v", err)
+	}
+
+	expect := `--XXX
+Content-Disposition: form-data; name="video.mp4"; filename="video.mp4"
+Content-Type: application/octet-stream
+
+video content
+--XXX
+Content-Disposition: form-data; name="thumb.jpg"; filename="thumb.jpg"
+Content-Type: application/octet-stream
+
+thumb content
+--XXX
+Content-Disposition: form-data; name="media"
+
+[{"type":"video","media":"attach://video.mp4","thumbnail":"attach://thumb.jpg"},{"type":"audio","media":"file_id","thumbnail":"https://domain.com/thumb.jpg"}]
+--XXX
+Content-Disposition: form-data; name="paid_thumb.jpg"; filename="paid_thumb.jpg"
+Content-Type: application/octet-stream
+
+paid thumb content
+--XXX
+Content-Disposition: form-data; name="paid_media"
+
+[{"type":"video","media":"file_id","thumbnail":"attach://paid_thumb.jpg"}]
+--XXX--
+`
+	assertEqualInt(t, fieldsCount, 2)
+	assertFormData(t, buf.String(), expect)
+}
+
+func Test_addFormFieldInputMedia_nilThumbnailData(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputMedia(form, "media", &models.InputMediaVideo{
+		Media:     "file_id",
+		Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg"},
+	})
+	if err == nil {
+		t.Fatal("expected error for thumbnail with nil Data")
+	}
+	if !strings.Contains(err.Error(), "nil data for attach://thumb.jpg") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}

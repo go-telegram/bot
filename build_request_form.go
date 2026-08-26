@@ -22,6 +22,12 @@ type customMarshal interface {
 	MarshalCustom() ([]byte, error)
 }
 
+// mediaThumbnail is implemented by the media types carrying a thumbnail, which is
+// uploaded as its own attach:// part instead of a form field of its own.
+type mediaThumbnail interface {
+	GetThumbnail() models.InputFile
+}
+
 var customMarshalInterface = reflect.TypeOf(new(customMarshal)).Elem()
 var inputMediaInterface = reflect.TypeOf(new(inputMedia)).Elem()
 
@@ -171,6 +177,11 @@ func addInputMediaAttachment(form *multipart.Writer, value inputMedia) error {
 			return errCopy
 		}
 	}
+	if thumbnailed, ok := value.(mediaThumbnail); ok {
+		if err := addInputFileAttachment(form, thumbnailed.GetThumbnail()); err != nil {
+			return err
+		}
+	}
 	if live, ok := value.(*models.InputMediaLivePhoto); ok && strings.HasPrefix(live.Photo, "attach://") {
 		filename := strings.TrimPrefix(live.Photo, "attach://")
 		if readerIsNil(live.PhotoAttachment) {
@@ -185,6 +196,25 @@ func addInputMediaAttachment(form *multipart.Writer, value inputMedia) error {
 		}
 	}
 	return nil
+}
+
+// addInputFileAttachment uploads a nested InputFile, which is marshalled as an
+// attach:// reference instead of becoming a form field of its own. Anything but an
+// upload (a file_id or an URL) carries no content and is left to the encoder.
+func addInputFileAttachment(form *multipart.Writer, value models.InputFile) error {
+	upload, ok := value.(*models.InputFileUpload)
+	if !ok {
+		return nil
+	}
+	if readerIsNil(upload.Data) {
+		return fmt.Errorf("nil data for attach://%s", upload.Filename)
+	}
+	w, errCreateField := form.CreateFormFile(upload.Filename, upload.Filename)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	_, errCopy := io.Copy(w, upload.Data)
+	return errCopy
 }
 
 func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value customMarshal) error {

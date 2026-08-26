@@ -19,8 +19,11 @@ type InputFileUpload struct {
 
 func (*InputFileUpload) inputFileTag() {}
 
+// MarshalJSON encodes the upload as its attach:// reference, for the places the
+// value is marshalled instead of becoming a form field of its own, e.g. the
+// thumbnail of an InputMedia. Filename doubles as the name of the form part.
 func (i *InputFileUpload) MarshalJSON() ([]byte, error) {
-	return []byte(`"@` + i.Filename + `"`), nil
+	return []byte(`"attach://` + i.Filename + `"`), nil
 }
 
 type InputFileString struct {

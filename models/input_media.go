@@ -83,6 +83,10 @@ func (m *InputMediaVideo) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaVideo) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaVideoAlias strips the methods of InputMediaVideo so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaVideoAlias InputMediaVideo
@@ -129,6 +133,10 @@ func (m *InputMediaAnimation) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaAnimation) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaAnimationAlias strips the methods of InputMediaAnimation so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaAnimationAlias InputMediaAnimation
@@ -171,6 +179,10 @@ func (m *InputMediaAudio) Attachment() io.Reader {
 
 func (m *InputMediaAudio) GetMedia() string {
 	return m.Media
+}
+
+func (m *InputMediaAudio) GetThumbnail() InputFile {
+	return m.Thumbnail
 }
 
 // inputMediaAudioAlias strips the methods of InputMediaAudio so the embedded value below is
@@ -254,6 +266,10 @@ func (m *InputMediaDocument) Attachment() io.Reader {
 
 func (m *InputMediaDocument) GetMedia() string {
 	return m.Media
+}
+
+func (m *InputMediaDocument) GetThumbnail() InputFile {
+	return m.Thumbnail
 }
 
 // inputMediaDocumentAlias strips the methods of InputMediaDocument so the embedded value below is

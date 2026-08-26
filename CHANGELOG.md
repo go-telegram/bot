@@ -34,6 +34,14 @@
   `json.Marshal` and the `attach://` references in `InputRichMessage.Media` and
   in the media `InputRichBlock*` blocks were serialized without their file parts,
   leaving Telegram nothing to resolve them against (#298).
+- Fix: the thumbnail of an `InputMedia` is uploaded. `InputFileUpload` nested in
+  an `InputMediaVideo`, `InputMediaAnimation`, `InputMediaAudio`,
+  `InputMediaDocument` or `InputPaidMediaVideo` was encoded as `"@<filename>"`,
+  which is not a Bot API reference, and no file part was written, so the
+  thumbnail was silently dropped by Telegram. It is now marshalled as
+  `attach://<filename>` and uploaded under that name. `InputFileUpload.MarshalJSON`
+  emits the same reference everywhere; at the top level of a request the field is
+  still sent as its own form part, so that path is unchanged.
 - Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
   longer marked `omitempty` on `ChatAdministratorRights` and
   `ChatMemberAdministrator`. They are required fields in the Bot API, so they

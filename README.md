@@ -321,6 +321,20 @@ bot.SendMediaGroup(ctx, params)
 
 [Demo in examples](examples/send_media_group/main.go)
 
+A thumbnail is always a new upload, never a `file_id` or an URL. Pass an
+`InputFileUpload`; it is sent as a separate part and referenced by `attach://` with
+the `Filename` as the part name.
+
+```go
+thumbContent, _ := os.ReadFile("/path/to/thumb.jpg")
+
+media := &models.InputMediaVideo{
+	Media:           "attach://video.mp4",
+	MediaAttachment: bytes.NewReader(videoContent),
+	Thumbnail:       &models.InputFileUpload{Filename: "thumb.jpg", Data: bytes.NewReader(thumbContent)},
+}
+```
+
 ## InputSticker
 
 For `CreateNewStickerSet` method you can send sticker by file path or file contents.
