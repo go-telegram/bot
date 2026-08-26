@@ -147,6 +147,9 @@ func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value
 func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byte, error) {
 	if strings.HasPrefix(value.GetMedia(), "attach://") {
 		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
+		if readerIsNil(value.Attachment()) {
+			return nil, fmt.Errorf("nil attachment for attach://%s", filename)
+		}
 		mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
 		if errCreateMediaAttachmentField != nil {
 			return nil, errCreateMediaAttachmentField
@@ -240,6 +243,9 @@ func addFormFieldInputStickerSlice(form *multipart.Writer, fieldName string, val
 	for _, sticker := range value {
 		if strings.HasPrefix(sticker.Sticker, "attach://") {
 			filename := strings.TrimPrefix(sticker.Sticker, "attach://")
+			if readerIsNil(sticker.StickerAttachment) {
+				return fmt.Errorf("nil StickerAttachment for attach://%s", filename)
+			}
 			attachmentField, errCreateAttachmentField := form.CreateFormFile(filename, filename)
 			if errCreateAttachmentField != nil {
 				return errCreateAttachmentField

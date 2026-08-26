@@ -169,3 +169,30 @@ Content-Disposition: form-data; name="input_sticker_slice"
 	assertEqualInt(t, fieldsCount, 7)
 	assertFormData(t, buf.String(), expect)
 }
+
+func Test_addFormFieldInputMedia_nilAttachment(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputMedia(form, "media", &models.InputMediaPhoto{
+		Media: "attach://photo.png",
+	})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil MediaAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil attachment") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func Test_addFormFieldInputStickerSlice_nilAttachment(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputStickerSlice(form, "stickers", []models.InputSticker{{
+		Sticker: "attach://sticker.png",
+		Format:  "static",
+	}})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil StickerAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil StickerAttachment") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
