@@ -29,6 +29,12 @@
   reader without checking it, and since the form is built in a goroutine with no
   recover, a missing `MediaAttachment` or `StickerAttachment` took the process
   down instead of failing the call (#296).
+- Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
+  longer marked `omitempty` on `ChatAdministratorRights` and
+  `ChatMemberAdministrator`. They are required fields in the Bot API, so they
+  are now always sent, matching the rest of the required rights in those types.
+  The parameters of the same name on `promoteChatMember` are optional and are
+  unchanged.
 - [BREAKING] `ReceiverUserID` and `CallbackQueryID` are removed from the send
   method params (`SendMessageParams`, `SendPhotoParams`, ...); Bot API 10.3
   replaced them with `EphemeralMessageParameters`.

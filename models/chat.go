@@ -44,9 +44,9 @@ type ChatAdministratorRights struct {
 	CanPostMessages         bool `json:"can_post_messages,omitempty"`
 	CanEditMessages         bool `json:"can_edit_messages,omitempty"`
 	CanPinMessages          bool `json:"can_pin_messages,omitempty"`
-	CanPostStories          bool `json:"can_post_stories,omitempty"`
-	CanEditStories          bool `json:"can_edit_stories,omitempty"`
-	CanDeleteStories        bool `json:"can_delete_stories,omitempty"`
+	CanPostStories          bool `json:"can_post_stories"`
+	CanEditStories          bool `json:"can_edit_stories"`
+	CanDeleteStories        bool `json:"can_delete_stories"`
 	CanManageTopics         bool `json:"can_manage_topics,omitempty"`
 	CanManageDirectMessages bool `json:"can_manage_direct_messages,omitempty"`
 	CanManageTags           bool `json:"can_manage_tags,omitempty"`
