@@ -2,6 +2,7 @@ package bot
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"mime/multipart"
 	"strings"
@@ -434,4 +435,366 @@ func Test_addFormFieldInputMedia_nilThumbnailData(t *testing.T) {
 	if !strings.Contains(err.Error(), "nil data for attach://thumb.jpg") {
 		t.Fatalf("unexpected error: %v", err)
 	}
+}
+
+type errWriter struct{}
+
+func (errWriter) Write([]byte) (int, error) {
+	return 0, errors.New("write failed")
+}
+
+// formFileNames returns the name of every file part of a built form, in order.
+func formFileNames(t *testing.T, body, boundary string) string {
+	t.Helper()
+
+	var names []string
+	r := multipart.NewReader(strings.NewReader(body), boundary)
+	for {
+		part, err := r.NextPart()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if part.FileName() != "" {
+			names = append(names, part.FormName())
+		}
+	}
+
+	return strings.Join(names, ",")
+}
+
+func richDocumentBlock(name string) models.InputRichBlock {
+	return models.InputRichBlock{
+		Type: models.RichBlockTypeDocument,
+		InputRichBlockDocument: &models.InputRichBlockDocument{
+			Document: models.InputMediaDocument{
+				Media:           "attach://" + name,
+				MediaAttachment: strings.NewReader(name + " content"),
+			},
+		},
+	}
+}
+
+func Test_addInputRichBlockAttachments_mediaBlocks(t *testing.T) {
+	blocks := []models.InputRichBlock{
+		{
+			Type: models.RichBlockTypeAnimation,
+			InputRichBlockAnimation: &models.InputRichBlockAnimation{
+				Animation: models.InputMediaAnimation{Media: "attach://animation.gif", MediaAttachment: strings.NewReader("animation")},
+			},
+		},
+		{
+			Type: models.RichBlockTypeAudio,
+			InputRichBlockAudio: &models.InputRichBlockAudio{
+				Audio: models.InputMediaAudio{Media: "attach://audio.mp3", MediaAttachment: strings.NewReader("audio")},
+			},
+		},
+		richDocumentBlock("document.pdf"),
+		{
+			Type: models.RichBlockTypePhoto,
+			InputRichBlockPhoto: &models.InputRichBlockPhoto{
+				Photo: models.InputMediaPhoto{Media: "attach://photo.jpg", MediaAttachment: strings.NewReader("photo")},
+			},
+		},
+		{
+			Type: models.RichBlockTypeVideo,
+			InputRichBlockVideo: &models.InputRichBlockVideo{
+				Video: models.InputMediaVideo{
+					Media:           "attach://video.mp4",
+					MediaAttachment: strings.NewReader("video"),
+					Thumbnail:       &models.InputFileUpload{Filename: "video_thumb.jpg", Data: strings.NewReader("thumb")},
+				},
+			},
+		},
+		{
+			Type: models.RichBlockTypeVoiceNote,
+			InputRichBlockVoiceNote: &models.InputRichBlockVoiceNote{
+				VoiceNote: models.InputMediaVoiceNote{Media: "attach://voice.ogg", MediaAttachment: strings.NewReader("voice")},
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if err := addInputRichBlockSliceAttachments(form, blocks); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t,
+		formFileNames(t, buf.String(), "XXX"),
+		"animation.gif,audio.mp3,document.pdf,photo.jpg,video.mp4,video_thumb.jpg,voice.ogg",
+	)
+}
+
+func Test_addInputRichBlockAttachments_containerBlocks(t *testing.T) {
+	blocks := []models.InputRichBlock{
+		{
+			Type: models.RichBlockTypeList,
+			InputRichBlockList: &models.InputRichBlockList{
+				Items: []models.InputRichBlockListItem{{Blocks: []models.InputRichBlock{richDocumentBlock("list.pdf")}}},
+			},
+		},
+		{
+			Type: models.RichBlockTypeBlockQuotation,
+			InputRichBlockBlockQuotation: &models.InputRichBlockBlockQuotation{
+				Blocks: []models.InputRichBlock{richDocumentBlock("quote.pdf")},
+			},
+		},
+		{
+			Type: models.RichBlockTypeCollage,
+			InputRichBlockCollage: &models.InputRichBlockCollage{
+				Blocks: []models.InputRichBlock{richDocumentBlock("collage.pdf")},
+			},
+		},
+		{
+			Type: models.RichBlockTypeSlideshow,
+			InputRichBlockSlideshow: &models.InputRichBlockSlideshow{
+				Blocks: []models.InputRichBlock{richDocumentBlock("slideshow.pdf")},
+			},
+		},
+		{
+			Type: models.RichBlockTypeDetails,
+			InputRichBlockDetails: &models.InputRichBlockDetails{
+				Blocks: []models.InputRichBlock{richDocumentBlock("details.pdf")},
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if err := addInputRichBlockSliceAttachments(form, blocks); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t,
+		formFileNames(t, buf.String(), "XXX"),
+		"list.pdf,quote.pdf,collage.pdf,slideshow.pdf,details.pdf",
+	)
+}
+
+// A block whose variant pointer is not set carries no attachment. The encoder
+// reports the broken union; the walk must not panic on the way there.
+func Test_addInputRichBlockAttachments_missingVariant(t *testing.T) {
+	types := []models.RichBlockType{
+		models.RichBlockTypeAnimation,
+		models.RichBlockTypeAudio,
+		models.RichBlockTypeDocument,
+		models.RichBlockTypePhoto,
+		models.RichBlockTypeVideo,
+		models.RichBlockTypeVoiceNote,
+		models.RichBlockTypeList,
+		models.RichBlockTypeBlockQuotation,
+		models.RichBlockTypeCollage,
+		models.RichBlockTypeSlideshow,
+		models.RichBlockTypeDetails,
+		models.RichBlockTypeParagraph,
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	for _, blockType := range types {
+		if err := addInputRichBlockAttachments(form, models.InputRichBlock{Type: blockType}); err != nil {
+			t.Fatalf("%s: %v", blockType, err)
+		}
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "")
+}
+
+func Test_addFormFieldInputRichMessage_nilAttachmentInNestedBlock(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
+		Blocks: []models.InputRichBlock{
+			{
+				Type: models.RichBlockTypeCollage,
+				InputRichBlockCollage: &models.InputRichBlockCollage{
+					Blocks: []models.InputRichBlock{
+						{
+							Type: models.RichBlockTypeDocument,
+							InputRichBlockDocument: &models.InputRichBlockDocument{
+								Document: models.InputMediaDocument{Media: "attach://doc1.pdf"},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil MediaAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil attachment for attach://doc1.pdf") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func Test_addInputRichBlockAttachments_nilAttachmentInListItem(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addInputRichBlockAttachments(form, models.InputRichBlock{
+		Type: models.RichBlockTypeList,
+		InputRichBlockList: &models.InputRichBlockList{
+			Items: []models.InputRichBlockListItem{
+				{
+					Blocks: []models.InputRichBlock{
+						{
+							Type: models.RichBlockTypeDocument,
+							InputRichBlockDocument: &models.InputRichBlockDocument{
+								Document: models.InputMediaDocument{Media: "attach://doc1.pdf"},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil MediaAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil attachment for attach://doc1.pdf") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// An InputRichMessageMedia with no media has nothing to upload; the encoder is
+// left to report it.
+func Test_addFormFieldInputRichMessage_nilMedia(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
+		Media: []models.InputRichMessageMedia{{ID: "doc1"}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "")
+}
+
+func Test_addFormFieldInputMedia_livePhoto(t *testing.T) {
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	err := addFormFieldInputMedia(form, "media", &models.InputMediaLivePhoto{
+		Media:           "attach://live.jpg",
+		MediaAttachment: strings.NewReader("still content"),
+		Photo:           "attach://live.mov",
+		PhotoAttachment: strings.NewReader("motion content"),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "live.jpg,live.mov")
+}
+
+func Test_addFormFieldInputMedia_livePhotoNilPhotoAttachment(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputMedia(form, "media", &models.InputMediaLivePhoto{
+		Media: "file_id",
+		Photo: "attach://live.mov",
+	})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil PhotoAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil PhotoAttachment for attach://live.mov") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func Test_addInputMediaAttachment_readErrors(t *testing.T) {
+	t.Run("media", func(t *testing.T) {
+		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		err := addInputMediaAttachment(form, &models.InputMediaPhoto{
+			Media:           "attach://photo.jpg",
+			MediaAttachment: errReader(errors.New("read failed")),
+		})
+		if err == nil || !strings.Contains(err.Error(), "read failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("live photo", func(t *testing.T) {
+		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		err := addInputMediaAttachment(form, &models.InputMediaLivePhoto{
+			Media:           "file_id",
+			Photo:           "attach://live.mov",
+			PhotoAttachment: errReader(errors.New("read failed")),
+		})
+		if err == nil || !strings.Contains(err.Error(), "read failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("thumbnail", func(t *testing.T) {
+		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		err := addInputMediaAttachment(form, &models.InputMediaVideo{
+			Media:     "file_id",
+			Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg", Data: errReader(errors.New("read failed"))},
+		})
+		if err == nil || !strings.Contains(err.Error(), "read failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+}
+
+func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
+	t.Run("media", func(t *testing.T) {
+		form := multipart.NewWriter(errWriter{})
+		err := addInputMediaAttachment(form, &models.InputMediaPhoto{
+			Media:           "attach://photo.jpg",
+			MediaAttachment: strings.NewReader("photo"),
+		})
+		if err == nil || !strings.Contains(err.Error(), "write failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("live photo", func(t *testing.T) {
+		form := multipart.NewWriter(errWriter{})
+		err := addInputMediaAttachment(form, &models.InputMediaLivePhoto{
+			Media:           "file_id",
+			Photo:           "attach://live.mov",
+			PhotoAttachment: strings.NewReader("motion"),
+		})
+		if err == nil || !strings.Contains(err.Error(), "write failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
+
+	t.Run("thumbnail", func(t *testing.T) {
+		form := multipart.NewWriter(errWriter{})
+		err := addInputMediaAttachment(form, &models.InputMediaVideo{
+			Media:     "file_id",
+			Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg", Data: strings.NewReader("thumb")},
+		})
+		if err == nil || !strings.Contains(err.Error(), "write failed") {
+			t.Fatalf("unexpected error: %v", err)
+		}
+	})
 }
