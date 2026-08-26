@@ -64,7 +64,14 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 				return
 			}
 			b.error("error get updates, %w", errRequest)
-			timeoutAfterError = incErrTimeout(timeoutAfterError)
+
+			var tooManyRequestsErr *TooManyRequestsError
+			if errors.As(errRequest, &tooManyRequestsErr) && tooManyRequestsErr.RetryAfter > 0 {
+				timeoutAfterError = time.Duration(tooManyRequestsErr.RetryAfter) * time.Second
+			} else {
+				timeoutAfterError = incErrTimeout(timeoutAfterError)
+			}
+
 			continue
 		}
 
