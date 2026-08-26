@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.24.0 (2026-08-24)
+## v1.24.0 (2026-08-26)
 
 - Support Bot API 10.3 (August 24, 2026 update):
   - Rich Messages: new `RichMessageButton`; `RichTextButton` (via the `RichText`
@@ -24,7 +24,12 @@
     allowed-update constant); new `CommunityChatJoined` with
     `community_chat_joined` on `Message`; `text`, `entities` and `is_private` on
     `UniqueGiftInfo`.
-- Breaking: `ReceiverUserID` and `CallbackQueryID` are removed from the send
+- Fix: `attach://` with a nil reader returns an error instead of panicking.
+  `addFormFieldInputMediaItem` and `addFormFieldInputStickerSlice` copied the
+  reader without checking it, and since the form is built in a goroutine with no
+  recover, a missing `MediaAttachment` or `StickerAttachment` took the process
+  down instead of failing the call (#296).
+- [BREAKING] `ReceiverUserID` and `CallbackQueryID` are removed from the send
   method params (`SendMessageParams`, `SendPhotoParams`, ...); Bot API 10.3
   replaced them with `EphemeralMessageParameters`.
 
