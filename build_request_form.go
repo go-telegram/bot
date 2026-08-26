@@ -106,6 +106,10 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 			err = addFormFieldInlineQueryResultSlice(form, fieldName, vv)
 		case []models.InputSticker:
 			err = addFormFieldInputStickerSlice(form, fieldName, vv)
+		case models.InputRichMessage:
+			err = addFormFieldInputRichMessage(form, fieldName, &vv)
+		case *models.InputRichMessage:
+			err = addFormFieldInputRichMessage(form, fieldName, vv)
 		default:
 			err = addFormFieldDefault(form, fieldName, v.Field(i).Interface())
 		}
@@ -145,34 +149,42 @@ func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value
 }
 
 func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byte, error) {
+	if err := addInputMediaAttachment(form, value); err != nil {
+		return nil, err
+	}
+	return value.MarshalInputMedia()
+}
+
+// addInputMediaAttachment adds the attach:// upload parts referenced by a media item, if any.
+func addInputMediaAttachment(form *multipart.Writer, value inputMedia) error {
 	if strings.HasPrefix(value.GetMedia(), "attach://") {
 		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
 		if readerIsNil(value.Attachment()) {
-			return nil, fmt.Errorf("nil attachment for attach://%s", filename)
+			return fmt.Errorf("nil attachment for attach://%s", filename)
 		}
 		mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
 		if errCreateMediaAttachmentField != nil {
-			return nil, errCreateMediaAttachmentField
+			return errCreateMediaAttachmentField
 		}
 		_, errCopy := io.Copy(mediaAttachmentField, value.Attachment())
 		if errCopy != nil {
-			return nil, errCopy
+			return errCopy
 		}
 	}
 	if live, ok := value.(*models.InputMediaLivePhoto); ok && strings.HasPrefix(live.Photo, "attach://") {
 		filename := strings.TrimPrefix(live.Photo, "attach://")
 		if readerIsNil(live.PhotoAttachment) {
-			return nil, fmt.Errorf("nil PhotoAttachment for attach://%s", filename)
+			return fmt.Errorf("nil PhotoAttachment for attach://%s", filename)
 		}
 		photoField, errCreate := form.CreateFormFile(filename, filename)
 		if errCreate != nil {
-			return nil, errCreate
+			return errCreate
 		}
 		if _, err := io.Copy(photoField, live.PhotoAttachment); err != nil {
-			return nil, err
+			return err
 		}
 	}
-	return value.MarshalInputMedia()
+	return nil
 }
 
 func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value customMarshal) error {
@@ -218,6 +230,88 @@ func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value
 	}
 	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
 	return errCopy
+}
+
+// addFormFieldInputRichMessage adds the attach:// uploads referenced by a rich message
+// before encoding it, so that nested media is uploaded like top level InputMedia is.
+func addFormFieldInputRichMessage(form *multipart.Writer, fieldName string, value *models.InputRichMessage) error {
+	if err := addInputRichBlockSliceAttachments(form, value.Blocks); err != nil {
+		return err
+	}
+	for _, media := range value.Media {
+		if media.Media == nil {
+			continue
+		}
+		if err := addInputMediaAttachment(form, media.Media); err != nil {
+			return err
+		}
+	}
+	return addFormFieldDefault(form, fieldName, value)
+}
+
+func addInputRichBlockSliceAttachments(form *multipart.Writer, blocks []models.InputRichBlock) error {
+	for _, block := range blocks {
+		if err := addInputRichBlockAttachments(form, block); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// addInputRichBlockAttachments walks a single block: media blocks upload their attachment,
+// container blocks recurse into their nested blocks.
+func addInputRichBlockAttachments(form *multipart.Writer, block models.InputRichBlock) error {
+	switch block.Type {
+	case models.RichBlockTypeAnimation:
+		if block.InputRichBlockAnimation != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockAnimation.Animation)
+		}
+	case models.RichBlockTypeAudio:
+		if block.InputRichBlockAudio != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockAudio.Audio)
+		}
+	case models.RichBlockTypeDocument:
+		if block.InputRichBlockDocument != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockDocument.Document)
+		}
+	case models.RichBlockTypePhoto:
+		if block.InputRichBlockPhoto != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockPhoto.Photo)
+		}
+	case models.RichBlockTypeVideo:
+		if block.InputRichBlockVideo != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockVideo.Video)
+		}
+	case models.RichBlockTypeVoiceNote:
+		if block.InputRichBlockVoiceNote != nil {
+			return addInputMediaAttachment(form, &block.InputRichBlockVoiceNote.VoiceNote)
+		}
+	case models.RichBlockTypeList:
+		if block.InputRichBlockList != nil {
+			for _, item := range block.InputRichBlockList.Items {
+				if err := addInputRichBlockSliceAttachments(form, item.Blocks); err != nil {
+					return err
+				}
+			}
+		}
+	case models.RichBlockTypeBlockQuotation:
+		if block.InputRichBlockBlockQuotation != nil {
+			return addInputRichBlockSliceAttachments(form, block.InputRichBlockBlockQuotation.Blocks)
+		}
+	case models.RichBlockTypeCollage:
+		if block.InputRichBlockCollage != nil {
+			return addInputRichBlockSliceAttachments(form, block.InputRichBlockCollage.Blocks)
+		}
+	case models.RichBlockTypeSlideshow:
+		if block.InputRichBlockSlideshow != nil {
+			return addInputRichBlockSliceAttachments(form, block.InputRichBlockSlideshow.Blocks)
+		}
+	case models.RichBlockTypeDetails:
+		if block.InputRichBlockDetails != nil {
+			return addInputRichBlockSliceAttachments(form, block.InputRichBlockDetails.Blocks)
+		}
+	}
+	return nil
 }
 
 func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string, value []models.InlineQueryResult) error {

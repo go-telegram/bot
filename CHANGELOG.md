@@ -29,6 +29,11 @@
   reader without checking it, and since the form is built in a goroutine with no
   recover, a missing `MediaAttachment` or `StickerAttachment` took the process
   down instead of failing the call (#296).
+- Fix: attachments nested in a rich message are uploaded. `buildRequestForm` had
+  no case for `InputRichMessage`, so the field fell through to a plain
+  `json.Marshal` and the `attach://` references in `InputRichMessage.Media` and
+  in the media `InputRichBlock*` blocks were serialized without their file parts,
+  leaving Telegram nothing to resolve them against (#298).
 - Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
   longer marked `omitempty` on `ChatAdministratorRights` and
   `ChatMemberAdministrator`. They are required fields in the Bot API, so they

@@ -196,3 +196,162 @@ func Test_addFormFieldInputStickerSlice_nilAttachment(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func Test_buildRequestForm_inputRichMessageMedia(t *testing.T) {
+	params := struct {
+		RichMessage models.InputRichMessage `json:"rich_message"`
+	}{
+		RichMessage: models.InputRichMessage{
+			HTML: "tg://document?id=doc1",
+			Media: []models.InputRichMessageMedia{
+				{
+					ID: "doc1",
+					Media: &models.InputMediaDocument{
+						Media:           "attach://doc1.pdf",
+						MediaAttachment: strings.NewReader("document content"),
+					},
+				},
+				{
+					ID:    "doc2",
+					Media: &models.InputMediaDocument{Media: "file_id"},
+				},
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	fieldsCount, errBuild := buildRequestForm(form, &params)
+	if errBuild != nil {
+		t.Error(errBuild)
+		return
+	}
+	if err := form.Close(); err != nil {
+		t.Errorf("failed to close form: %v", err)
+	}
+
+	expect := `--XXX
+Content-Disposition: form-data; name="doc1.pdf"; filename="doc1.pdf"
+Content-Type: application/octet-stream
+
+document content
+--XXX
+Content-Disposition: form-data; name="rich_message"
+
+{"html":"tg://document?id=doc1","media":[{"id":"doc1","media":{"type":"document","media":"attach://doc1.pdf"}},{"id":"doc2","media":{"type":"document","media":"file_id"}}]}
+--XXX--
+`
+	assertEqualInt(t, fieldsCount, 1)
+	assertFormData(t, buf.String(), expect)
+}
+
+func Test_buildRequestForm_inputRichMessageBlocks(t *testing.T) {
+	params := struct {
+		RichMessage *models.InputRichMessage `json:"rich_message"`
+	}{
+		RichMessage: &models.InputRichMessage{
+			Blocks: []models.InputRichBlock{
+				{
+					Type: models.RichBlockTypePhoto,
+					InputRichBlockPhoto: &models.InputRichBlockPhoto{
+						Photo: models.InputMediaPhoto{
+							Media:           "attach://photo.jpg",
+							MediaAttachment: strings.NewReader("photo content"),
+						},
+					},
+				},
+				{
+					Type: models.RichBlockTypeDetails,
+					InputRichBlockDetails: &models.InputRichBlockDetails{
+						Summary: models.RichText{PlainText: "sum"},
+						Blocks: []models.InputRichBlock{
+							{
+								Type: models.RichBlockTypeVideo,
+								InputRichBlockVideo: &models.InputRichBlockVideo{
+									Video: models.InputMediaVideo{
+										Media:           "attach://video.mp4",
+										MediaAttachment: strings.NewReader("video content"),
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					Type: models.RichBlockTypeList,
+					InputRichBlockList: &models.InputRichBlockList{
+						Items: []models.InputRichBlockListItem{
+							{
+								Blocks: []models.InputRichBlock{
+									{
+										Type: models.RichBlockTypeAudio,
+										InputRichBlockAudio: &models.InputRichBlockAudio{
+											Audio: models.InputMediaAudio{
+												Media:           "attach://audio.mp3",
+												MediaAttachment: strings.NewReader("audio content"),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	fieldsCount, errBuild := buildRequestForm(form, &params)
+	if errBuild != nil {
+		t.Error(errBuild)
+		return
+	}
+	if err := form.Close(); err != nil {
+		t.Errorf("failed to close form: %v", err)
+	}
+
+	expect := `--XXX
+Content-Disposition: form-data; name="photo.jpg"; filename="photo.jpg"
+Content-Type: application/octet-stream
+
+photo content
+--XXX
+Content-Disposition: form-data; name="video.mp4"; filename="video.mp4"
+Content-Type: application/octet-stream
+
+video content
+--XXX
+Content-Disposition: form-data; name="audio.mp3"; filename="audio.mp3"
+Content-Type: application/octet-stream
+
+audio content
+--XXX
+Content-Disposition: form-data; name="rich_message"
+
+{"blocks":[{"type":"photo","photo":{"type":"photo","media":"attach://photo.jpg"}},{"type":"details","summary":"sum","blocks":[{"type":"video","video":{"type":"video","media":"attach://video.mp4"}}]},{"type":"list","items":[{"blocks":[{"type":"audio","audio":{"type":"audio","media":"attach://audio.mp3"}}]}]}]}
+--XXX--
+`
+	assertEqualInt(t, fieldsCount, 1)
+	assertFormData(t, buf.String(), expect)
+}
+
+func Test_addFormFieldInputRichMessage_nilAttachment(t *testing.T) {
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
+		Media: []models.InputRichMessageMedia{
+			{ID: "doc1", Media: &models.InputMediaDocument{Media: "attach://doc1.pdf"}},
+		},
+	})
+	if err == nil {
+		t.Fatal("expected error for attach:// with nil MediaAttachment")
+	}
+	if !strings.Contains(err.Error(), "nil attachment") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
