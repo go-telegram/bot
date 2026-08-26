@@ -35,6 +35,17 @@
   are now always sent, matching the rest of the required rights in those types.
   The parameters of the same name on `promoteChatMember` are optional and are
   unchanged.
+- Fix: the `getUpdates` loop honours `retry_after` on a 429 instead of its own
+  backoff, which starts at 100ms, doubles and caps at 5s. When Telegram asked
+  for a longer wait, the bot retried early and earned further 429s (#289).
+- [BREAKING] Fix: `Message.ReplyToStore` was tagged `reply_to_store`, a typo of
+  the Bot API field `reply_to_story`, so it was never unmarshalled. The field is
+  renamed to `ReplyToStory` (#287).
+- [BREAKING] Fix: `BusinessBotRights.CanDeleteOutgoingMessages` was tagged
+  `can_delete_outgoing_messages`, which does not exist in the Bot API. The right
+  was dropped on unmarshal and emitted under a key Telegram ignores. The field is
+  renamed to `CanDeleteSentMessages` with the correct
+  `can_delete_sent_messages` tag (#286).
 - [BREAKING] `ReceiverUserID` and `CallbackQueryID` are removed from the send
   method params (`SendMessageParams`, `SendPhotoParams`, ...); Bot API 10.3
   replaced them with `EphemeralMessageParameters`.

@@ -57,8 +57,4 @@ type BusinessBotRights struct {
 	CanTransferAndUpgradeGifts bool `json:"can_transfer_and_upgrade_gifts,omitempty"`
 	CanTransferStars           bool `json:"can_transfer_stars,omitempty"`
 	CanManageStories           bool `json:"can_manage_stories,omitempty"`
-
-	// Deprecated: historically mistagged as can_delete_outgoing_messages and so
-	// never populated by Telegram. Use CanDeleteSentMessages.
-	CanDeleteOutgoingMessages bool `json:"-"`
 }
