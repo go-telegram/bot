@@ -5,6 +5,7 @@ type ReplyMarkup any
 // InlineKeyboardMarkup https://core.telegram.org/bots/api#inlinekeyboardmarkup
 type InlineKeyboardMarkup struct {
 	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+	ForceReply     bool                     `json:"force_reply,omitempty"`
 }
 
 // LoginURL https://core.telegram.org/bots/api#loginurl
@@ -29,6 +30,11 @@ type CopyTextButton struct {
 	Text string `json:"text"`
 }
 
+// DisabledButton https://core.telegram.org/bots/api#disabledbutton
+//
+// Represents a disabled button which does nothing. Currently holds no information.
+type DisabledButton struct{}
+
 // InlineKeyboardButton https://core.telegram.org/bots/api#inlinekeyboardbutton
 type InlineKeyboardButton struct {
 	Text                         string                       `json:"text"`
@@ -44,6 +50,7 @@ type InlineKeyboardButton struct {
 	CopyText                     *CopyTextButton              `json:"copy_text,omitempty"`
 	CallbackGame                 *CallbackGame                `json:"callback_game,omitempty"`
 	Pay                          bool                         `json:"pay,omitempty"`
+	Disabled                     *DisabledButton              `json:"disabled,omitempty"`
 }
 
 // ReplyKeyboardMarkup https://core.telegram.org/bots/api#replykeyboardmarkup
@@ -54,6 +61,7 @@ type ReplyKeyboardMarkup struct {
 	OneTimeKeyboard       bool               `json:"one_time_keyboard,omitempty"`
 	InputFieldPlaceholder string             `json:"input_field_placeholder,omitempty"`
 	Selective             bool               `json:"selective,omitempty"`
+	ForceReply            bool               `json:"force_reply,omitempty"`
 }
 
 // KeyboardButton https://core.telegram.org/bots/api#keyboardbutton

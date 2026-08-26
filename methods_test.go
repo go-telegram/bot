@@ -3,9 +3,11 @@ package bot
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/go-telegram/bot/models"
@@ -14,6 +16,7 @@ import (
 type httpClient struct {
 	resp      string
 	reqFields map[string]string
+	reqFiles  map[string]string // multipart file parts by name, with expected content
 	t         *testing.T
 }
 
@@ -24,6 +27,18 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 				c.t.Errorf("invalid field %q value %q, expect %q", k, req.FormValue(k), v)
 				return nil, fmt.Errorf("invalid field %q value %q, expect %q", k, req.FormValue(k), v)
 			}
+		}
+	}
+	for k, v := range c.reqFiles {
+		f, _, err := req.FormFile(k)
+		if err != nil {
+			c.t.Errorf("missing file %q: %v", k, err)
+			return nil, fmt.Errorf("missing file %q: %w", k, err)
+		}
+		data, _ := io.ReadAll(f)
+		if string(data) != v {
+			c.t.Errorf("invalid file %q content %q, expect %q", k, data, v)
+			return nil, fmt.Errorf("invalid file %q content %q, expect %q", k, data, v)
 		}
 	}
 
@@ -410,11 +425,13 @@ func TestBot_Methods(t *testing.T) {
 
 	t.Run("PromoteChatMember", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
-			"chat_id": "123",
+			"chat_id":                   "123",
+			"can_send_welcome_messages": "true",
 		}}
 		b := &Bot{client: c}
 		resp, err := b.PromoteChatMember(context.Background(), &PromoteChatMemberParams{
-			ChatID: 123,
+			ChatID:                 123,
+			CanSendWelcomeMessages: true,
 		})
 		assertNoErr(t, err)
 		assertTrue(t, resp)
@@ -1511,6 +1528,66 @@ func TestBot_EphemeralMessageMethods(t *testing.T) {
 		assertNoErr(t, err)
 		assertTrue(t, resp)
 	})
+
+	t.Run("EditEphemeralMessageTextRichMessage", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+			"rich_message":         `{"html":"hello"}`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageText(context.Background(), &EditEphemeralMessageTextParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+			RichMessage:        &models.InputRichMessage{HTML: "hello"},
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditEphemeralMessageCaptionShowCaptionAboveMedia", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":                  "123",
+			"receiver_user_id":         "9",
+			"ephemeral_message_id":     "5",
+			"caption":                  "cap",
+			"show_caption_above_media": "true",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageCaption(context.Background(), &EditEphemeralMessageCaptionParams{
+			ChatID:                123,
+			ReceiverUserID:        9,
+			EphemeralMessageID:    5,
+			Caption:               "cap",
+			ShowCaptionAboveMedia: true,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	// Bot API 10.3 allows uploading new files in editEphemeralMessageMedia; the
+	// attach:// part must reach the form alongside the media JSON.
+	t.Run("EditEphemeralMessageMediaUpload", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":              "123",
+			"receiver_user_id":     "9",
+			"ephemeral_message_id": "5",
+			"media":                `{"type":"photo","media":"attach://new.png"}`,
+		}, reqFiles: map[string]string{
+			"new.png": "png bytes",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditEphemeralMessageMedia(context.Background(), &EditEphemeralMessageMediaParams{
+			ChatID:             123,
+			ReceiverUserID:     9,
+			EphemeralMessageID: 5,
+			Media:              &models.InputMediaPhoto{Media: "attach://new.png", MediaAttachment: strings.NewReader("png bytes")},
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
 }
 
 func TestBot_EditMessageCaption_ShowCaptionAboveMedia(t *testing.T) {
@@ -1531,4 +1608,103 @@ func TestBot_EditMessageCaption_ShowCaptionAboveMedia(t *testing.T) {
 	})
 	assertNoErr(t, err)
 	assertEqualInt(t, resp.ID, 1)
+}
+
+// TestEditEphemeralMessageTextParams_TextOptional verifies text is omitted when
+// only rich_message is given; text is required only if rich_message isn't specified.
+func TestEditEphemeralMessageTextParams_TextOptional(t *testing.T) {
+	out, err := json.Marshal(&EditEphemeralMessageTextParams{
+		ChatID:             123,
+		ReceiverUserID:     9,
+		EphemeralMessageID: 5,
+		RichMessage:        &models.InputRichMessage{HTML: "hello"},
+	})
+	assertNoErr(t, err)
+	if strings.Contains(string(out), `"text"`) {
+		t.Fatalf("text should be omitted when empty: %s", out)
+	}
+}
+
+func TestBot_EphemeralMessageParameters(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SendMessage", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":                      "123",
+			"text":                         "hi",
+			"ephemeral_message_parameters": `{"receiver_user_id":9,"callback_query_id":"q","replace_callback_query_message":true}`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendMessage(context.Background(), &SendMessageParams{
+			ChatID: 123,
+			Text:   "hi",
+			EphemeralMessageParameters: &models.EphemeralMessageParameters{
+				ReceiverUserID:              9,
+				CallbackQueryID:             "q",
+				ReplaceCallbackQueryMessage: true,
+			},
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+	})
+
+	t.Run("SendRichMessage", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":                      "123",
+			"rich_message":                 `{"html":"hello"}`,
+			"ephemeral_message_parameters": `{"receiver_user_id":9}`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendRichMessage(context.Background(), &SendRichMessageParams{
+			ChatID:                     123,
+			RichMessage:                models.InputRichMessage{HTML: "hello"},
+			EphemeralMessageParameters: &models.EphemeralMessageParameters{ReceiverUserID: 9},
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+	})
+}
+
+func TestBot_MessageDraftMethods(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SendMessageDraftCanStop", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":      "123",
+			"draft_id":     "1",
+			"text":         "partial",
+			"can_stop":     "true",
+			"keep_on_stop": "true",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendMessageDraft(context.Background(), &SendMessageDraftParams{
+			ChatID:     123,
+			DraftID:    "1",
+			Text:       "partial",
+			CanStop:    true,
+			KeepOnStop: true,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SendRichMessageDraftCanStop", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":      "123",
+			"draft_id":     "1",
+			"rich_message": `{"html":"hello"}`,
+			"can_stop":     "true",
+			"keep_on_stop": "true",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendRichMessageDraft(context.Background(), &SendRichMessageDraftParams{
+			ChatID:      123,
+			DraftID:     1,
+			RichMessage: models.InputRichMessage{HTML: "hello"},
+			CanStop:     true,
+			KeepOnStop:  true,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -19,6 +20,9 @@ func TestInputRichBlock_Marshal(t *testing.T) {
 		{"divider", InputRichBlock{Type: RichBlockTypeDivider, InputRichBlockDivider: &InputRichBlockDivider{}}, "divider"},
 		{"math", InputRichBlock{Type: RichBlockTypeMathematicalExpression, InputRichBlockMathematicalExpression: &InputRichBlockMathematicalExpression{Expression: "x^2"}}, "mathematical_expression"},
 		{"thinking", InputRichBlock{Type: RichBlockTypeThinking, InputRichBlockThinking: &InputRichBlockThinking{Text: RichText{PlainText: "reasoning"}}}, "thinking"},
+		{"expandable_blockquote", InputRichBlock{Type: RichBlockTypeExpandableBlockQuotation, InputRichBlockExpandableBlockQuotation: &InputRichBlockExpandableBlockQuotation{Text: RichText{PlainText: "q"}}}, "expandable_blockquote"},
+		{"buttons", InputRichBlock{Type: RichBlockTypeButtons, InputRichBlockButtons: &InputRichBlockButtons{Buttons: []RichMessageButton{{Text: RichText{PlainText: "Go"}, CallbackData: "go"}}, Align: "right"}}, "buttons"},
+		{"document", InputRichBlock{Type: RichBlockTypeDocument, InputRichBlockDocument: &InputRichBlockDocument{Document: InputMediaDocument{Media: "d"}}}, "document"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -181,5 +185,97 @@ func TestInputRichBlock_MarshalDoesNotMutate(t *testing.T) {
 	}
 	if variant.Type != "" {
 		t.Fatalf("marshal mutated the caller's variant: Type = %q", variant.Type)
+	}
+}
+
+// TestInputRichBlockDocument_NestedMediaType verifies the InputMediaDocument
+// nested in a document block carries its type discriminator.
+func TestInputRichBlockDocument_NestedMediaType(t *testing.T) {
+	block := InputRichBlock{Type: RichBlockTypeDocument, InputRichBlockDocument: &InputRichBlockDocument{Document: InputMediaDocument{Media: "d"}}}
+	out, err := json.Marshal(block)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"document":{"type":"document"`) {
+		t.Fatalf("expected nested document type in %s", out)
+	}
+}
+
+// TestInputRichBlockTable_IsCompact verifies the 10.3 is_compact flag on tables.
+func TestInputRichBlockTable_IsCompact(t *testing.T) {
+	block := InputRichBlock{Type: RichBlockTypeTable, InputRichBlockTable: &InputRichBlockTable{
+		Cells:     [][]RichBlockTableCell{{{Align: "left", Valign: "top"}}},
+		IsCompact: true,
+	}}
+	out, err := json.Marshal(block)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if !strings.Contains(string(out), `"is_compact":true`) {
+		t.Fatalf("expected is_compact in %s", out)
+	}
+}
+
+// TestInputRichBlock_Unmarshal verifies every union tag decodes into its
+// matching variant pointer.
+func TestInputRichBlock_Unmarshal(t *testing.T) {
+	cases := []struct {
+		typ     RichBlockType
+		variant func(rb *InputRichBlock) any
+	}{
+		{RichBlockTypeParagraph, func(rb *InputRichBlock) any { return rb.InputRichBlockParagraph }},
+		{RichBlockTypeSectionHeading, func(rb *InputRichBlock) any { return rb.InputRichBlockSectionHeading }},
+		{RichBlockTypePreformatted, func(rb *InputRichBlock) any { return rb.InputRichBlockPreformatted }},
+		{RichBlockTypeFooter, func(rb *InputRichBlock) any { return rb.InputRichBlockFooter }},
+		{RichBlockTypeDivider, func(rb *InputRichBlock) any { return rb.InputRichBlockDivider }},
+		{RichBlockTypeMathematicalExpression, func(rb *InputRichBlock) any { return rb.InputRichBlockMathematicalExpression }},
+		{RichBlockTypeAnchor, func(rb *InputRichBlock) any { return rb.InputRichBlockAnchor }},
+		{RichBlockTypeList, func(rb *InputRichBlock) any { return rb.InputRichBlockList }},
+		{RichBlockTypeBlockQuotation, func(rb *InputRichBlock) any { return rb.InputRichBlockBlockQuotation }},
+		{RichBlockTypeExpandableBlockQuotation, func(rb *InputRichBlock) any { return rb.InputRichBlockExpandableBlockQuotation }},
+		{RichBlockTypePullQuotation, func(rb *InputRichBlock) any { return rb.InputRichBlockPullQuotation }},
+		{RichBlockTypeCollage, func(rb *InputRichBlock) any { return rb.InputRichBlockCollage }},
+		{RichBlockTypeSlideshow, func(rb *InputRichBlock) any { return rb.InputRichBlockSlideshow }},
+		{RichBlockTypeTable, func(rb *InputRichBlock) any { return rb.InputRichBlockTable }},
+		{RichBlockTypeDetails, func(rb *InputRichBlock) any { return rb.InputRichBlockDetails }},
+		{RichBlockTypeMap, func(rb *InputRichBlock) any { return rb.InputRichBlockMap }},
+		{RichBlockTypeButtons, func(rb *InputRichBlock) any { return rb.InputRichBlockButtons }},
+		{RichBlockTypeAnimation, func(rb *InputRichBlock) any { return rb.InputRichBlockAnimation }},
+		{RichBlockTypeAudio, func(rb *InputRichBlock) any { return rb.InputRichBlockAudio }},
+		{RichBlockTypeDocument, func(rb *InputRichBlock) any { return rb.InputRichBlockDocument }},
+		{RichBlockTypePhoto, func(rb *InputRichBlock) any { return rb.InputRichBlockPhoto }},
+		{RichBlockTypeVideo, func(rb *InputRichBlock) any { return rb.InputRichBlockVideo }},
+		{RichBlockTypeVoiceNote, func(rb *InputRichBlock) any { return rb.InputRichBlockVoiceNote }},
+		{RichBlockTypeThinking, func(rb *InputRichBlock) any { return rb.InputRichBlockThinking }},
+	}
+	for _, c := range cases {
+		t.Run(string(c.typ), func(t *testing.T) {
+			var rb InputRichBlock
+			if err := json.Unmarshal([]byte(`{"type":"`+string(c.typ)+`"}`), &rb); err != nil {
+				t.Fatalf("unmarshal: %v", err)
+			}
+			if rb.Type != c.typ {
+				t.Fatalf("got type %q, want %q", rb.Type, c.typ)
+			}
+			if v := c.variant(&rb); v == nil || reflect.ValueOf(v).IsNil() {
+				t.Fatalf("variant pointer not set for %q", c.typ)
+			}
+		})
+	}
+}
+
+// TestInputRichBlock_UnmarshalErrors verifies malformed input and unknown
+// discriminators are reported instead of silently producing an empty block.
+func TestInputRichBlock_UnmarshalErrors(t *testing.T) {
+	var rb InputRichBlock
+	if err := rb.UnmarshalJSON([]byte(`{"type":123}`)); err == nil {
+		t.Fatal("expected error for non-string type")
+	}
+	err := rb.UnmarshalJSON([]byte(`{"type":"definitely_not_a_real_type"}`))
+	if err == nil {
+		t.Fatal("expected error for unknown block type")
+	}
+	if !strings.Contains(err.Error(), `unsupported InputRichBlock type "definitely_not_a_real_type"`) {
+		t.Fatalf("unexpected error: %v", err)
 	}
 }

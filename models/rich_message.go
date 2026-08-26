@@ -24,7 +24,7 @@ type InputRichMessage struct {
 // InputRichMessageMedia https://core.telegram.org/bots/api#inputrichmessagemedia
 //
 // Media referenced from the markdown or html fields of an InputRichMessage via
-// tg://photo?id=, tg://video?id=, and tg://audio?id= links.
+// tg://photo?id=, tg://video?id=, tg://audio?id= and tg://document?id= links.
 type InputRichMessageMedia struct {
 	ID    string     `json:"id"`
 	Media InputMedia `json:"media"`
@@ -68,4 +68,22 @@ type RichBlockTableCell struct {
 	Rowspan  int       `json:"rowspan,omitempty"`
 	Align    string    `json:"align"`
 	Valign   string    `json:"valign"`
+}
+
+// RichMessageButton https://core.telegram.org/bots/api#richmessagebutton
+//
+// A button in a RichMessage. Exactly one of the fields other than Text and Style
+// must be set to specify the type of the button.
+type RichMessageButton struct {
+	Text                         RichText                     `json:"text"`
+	Style                        string                       `json:"style,omitempty"`
+	URL                          string                       `json:"url,omitempty"`
+	CallbackData                 string                       `json:"callback_data,omitempty"`
+	WebApp                       *WebAppInfo                  `json:"web_app,omitempty"`
+	LoginURL                     *LoginURL                    `json:"login_url,omitempty"`
+	SwitchInlineQuery            *string                      `json:"switch_inline_query,omitempty"`
+	SwitchInlineQueryCurrentChat *string                      `json:"switch_inline_query_current_chat,omitempty"`
+	SwitchInlineQueryChosenChat  *SwitchInlineQueryChosenChat `json:"switch_inline_query_chosen_chat,omitempty"`
+	CopyText                     *CopyTextButton              `json:"copy_text,omitempty"`
+	Disabled                     *DisabledButton              `json:"disabled,omitempty"`
 }

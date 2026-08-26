@@ -197,11 +197,14 @@ type GiftInfo struct {
 
 // UniqueGiftInfo https://core.telegram.org/bots/api#uniquegiftinfo
 type UniqueGiftInfo struct {
-	Gift               UniqueGift `json:"gift"`
-	Origin             string     `json:"origin"`
-	LastResaleCurrency string     `json:"last_resale_currency,omitempty"`
-	LastResaleAmount   int        `json:"last_resale_amount,omitempty"`
-	OwnedGiftID        string     `json:"owned_gift_id,omitempty"`
-	TransferStarCount  int        `json:"transfer_star_count,omitempty"`
-	NextTransferDate   int        `json:"next_transfer_date,omitempty"`
+	Gift               UniqueGift      `json:"gift"`
+	Origin             string          `json:"origin"`
+	Text               string          `json:"text,omitempty"`
+	Entities           []MessageEntity `json:"entities,omitempty"`
+	IsPrivate          bool            `json:"is_private,omitempty"`
+	LastResaleCurrency string          `json:"last_resale_currency,omitempty"`
+	LastResaleAmount   int             `json:"last_resale_amount,omitempty"`
+	OwnedGiftID        string          `json:"owned_gift_id,omitempty"`
+	TransferStarCount  int             `json:"transfer_star_count,omitempty"`
+	NextTransferDate   int             `json:"next_transfer_date,omitempty"`
 }

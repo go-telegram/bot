@@ -9,27 +9,30 @@ import (
 type RichBlockType string
 
 const (
-	RichBlockTypeParagraph              RichBlockType = "paragraph"
-	RichBlockTypeSectionHeading         RichBlockType = "heading"
-	RichBlockTypePreformatted           RichBlockType = "pre"
-	RichBlockTypeFooter                 RichBlockType = "footer"
-	RichBlockTypeDivider                RichBlockType = "divider"
-	RichBlockTypeMathematicalExpression RichBlockType = "mathematical_expression"
-	RichBlockTypeAnchor                 RichBlockType = "anchor"
-	RichBlockTypeList                   RichBlockType = "list"
-	RichBlockTypeBlockQuotation         RichBlockType = "blockquote"
-	RichBlockTypePullQuotation          RichBlockType = "pullquote"
-	RichBlockTypeCollage                RichBlockType = "collage"
-	RichBlockTypeSlideshow              RichBlockType = "slideshow"
-	RichBlockTypeTable                  RichBlockType = "table"
-	RichBlockTypeDetails                RichBlockType = "details"
-	RichBlockTypeMap                    RichBlockType = "map"
-	RichBlockTypeAnimation              RichBlockType = "animation"
-	RichBlockTypeAudio                  RichBlockType = "audio"
-	RichBlockTypePhoto                  RichBlockType = "photo"
-	RichBlockTypeVideo                  RichBlockType = "video"
-	RichBlockTypeVoiceNote              RichBlockType = "voice_note"
-	RichBlockTypeThinking               RichBlockType = "thinking"
+	RichBlockTypeParagraph                RichBlockType = "paragraph"
+	RichBlockTypeSectionHeading           RichBlockType = "heading"
+	RichBlockTypePreformatted             RichBlockType = "pre"
+	RichBlockTypeFooter                   RichBlockType = "footer"
+	RichBlockTypeDivider                  RichBlockType = "divider"
+	RichBlockTypeMathematicalExpression   RichBlockType = "mathematical_expression"
+	RichBlockTypeAnchor                   RichBlockType = "anchor"
+	RichBlockTypeList                     RichBlockType = "list"
+	RichBlockTypeBlockQuotation           RichBlockType = "blockquote"
+	RichBlockTypeExpandableBlockQuotation RichBlockType = "expandable_blockquote"
+	RichBlockTypePullQuotation            RichBlockType = "pullquote"
+	RichBlockTypeCollage                  RichBlockType = "collage"
+	RichBlockTypeSlideshow                RichBlockType = "slideshow"
+	RichBlockTypeTable                    RichBlockType = "table"
+	RichBlockTypeDetails                  RichBlockType = "details"
+	RichBlockTypeMap                      RichBlockType = "map"
+	RichBlockTypeButtons                  RichBlockType = "buttons"
+	RichBlockTypeAnimation                RichBlockType = "animation"
+	RichBlockTypeAudio                    RichBlockType = "audio"
+	RichBlockTypeDocument                 RichBlockType = "document"
+	RichBlockTypePhoto                    RichBlockType = "photo"
+	RichBlockTypeVideo                    RichBlockType = "video"
+	RichBlockTypeVoiceNote                RichBlockType = "voice_note"
+	RichBlockTypeThinking                 RichBlockType = "thinking"
 )
 
 // RichBlock https://core.telegram.org/bots/api#richblock
@@ -39,27 +42,30 @@ const (
 type RichBlock struct {
 	Type RichBlockType
 
-	RichBlockParagraph              *RichBlockParagraph
-	RichBlockSectionHeading         *RichBlockSectionHeading
-	RichBlockPreformatted           *RichBlockPreformatted
-	RichBlockFooter                 *RichBlockFooter
-	RichBlockDivider                *RichBlockDivider
-	RichBlockMathematicalExpression *RichBlockMathematicalExpression
-	RichBlockAnchor                 *RichBlockAnchor
-	RichBlockList                   *RichBlockList
-	RichBlockBlockQuotation         *RichBlockBlockQuotation
-	RichBlockPullQuotation          *RichBlockPullQuotation
-	RichBlockCollage                *RichBlockCollage
-	RichBlockSlideshow              *RichBlockSlideshow
-	RichBlockTable                  *RichBlockTable
-	RichBlockDetails                *RichBlockDetails
-	RichBlockMap                    *RichBlockMap
-	RichBlockAnimation              *RichBlockAnimation
-	RichBlockAudio                  *RichBlockAudio
-	RichBlockPhoto                  *RichBlockPhoto
-	RichBlockVideo                  *RichBlockVideo
-	RichBlockVoiceNote              *RichBlockVoiceNote
-	RichBlockThinking               *RichBlockThinking
+	RichBlockParagraph                *RichBlockParagraph
+	RichBlockSectionHeading           *RichBlockSectionHeading
+	RichBlockPreformatted             *RichBlockPreformatted
+	RichBlockFooter                   *RichBlockFooter
+	RichBlockDivider                  *RichBlockDivider
+	RichBlockMathematicalExpression   *RichBlockMathematicalExpression
+	RichBlockAnchor                   *RichBlockAnchor
+	RichBlockList                     *RichBlockList
+	RichBlockBlockQuotation           *RichBlockBlockQuotation
+	RichBlockExpandableBlockQuotation *RichBlockExpandableBlockQuotation
+	RichBlockPullQuotation            *RichBlockPullQuotation
+	RichBlockCollage                  *RichBlockCollage
+	RichBlockSlideshow                *RichBlockSlideshow
+	RichBlockTable                    *RichBlockTable
+	RichBlockDetails                  *RichBlockDetails
+	RichBlockMap                      *RichBlockMap
+	RichBlockButtons                  *RichBlockButtons
+	RichBlockAnimation                *RichBlockAnimation
+	RichBlockAudio                    *RichBlockAudio
+	RichBlockDocument                 *RichBlockDocument
+	RichBlockPhoto                    *RichBlockPhoto
+	RichBlockVideo                    *RichBlockVideo
+	RichBlockVoiceNote                *RichBlockVoiceNote
+	RichBlockThinking                 *RichBlockThinking
 }
 
 // MarshalJSON implements json.Marshaler. The value receiver ensures the encoding
@@ -84,6 +90,8 @@ func (rb RichBlock) MarshalJSON() ([]byte, error) {
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockList, func(v *RichBlockList) { v.Type = rb.Type })
 	case RichBlockTypeBlockQuotation:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockBlockQuotation, func(v *RichBlockBlockQuotation) { v.Type = rb.Type })
+	case RichBlockTypeExpandableBlockQuotation:
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockExpandableBlockQuotation, func(v *RichBlockExpandableBlockQuotation) { v.Type = rb.Type })
 	case RichBlockTypePullQuotation:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockPullQuotation, func(v *RichBlockPullQuotation) { v.Type = rb.Type })
 	case RichBlockTypeCollage:
@@ -96,10 +104,14 @@ func (rb RichBlock) MarshalJSON() ([]byte, error) {
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockDetails, func(v *RichBlockDetails) { v.Type = rb.Type })
 	case RichBlockTypeMap:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockMap, func(v *RichBlockMap) { v.Type = rb.Type })
+	case RichBlockTypeButtons:
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockButtons, func(v *RichBlockButtons) { v.Type = rb.Type })
 	case RichBlockTypeAnimation:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockAnimation, func(v *RichBlockAnimation) { v.Type = rb.Type })
 	case RichBlockTypeAudio:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockAudio, func(v *RichBlockAudio) { v.Type = rb.Type })
+	case RichBlockTypeDocument:
+		return marshalVariant("RichBlock", rb.Type, rb.RichBlockDocument, func(v *RichBlockDocument) { v.Type = rb.Type })
 	case RichBlockTypePhoto:
 		return marshalVariant("RichBlock", rb.Type, rb.RichBlockPhoto, func(v *RichBlockPhoto) { v.Type = rb.Type })
 	case RichBlockTypeVideo:
@@ -158,6 +170,10 @@ func (rb *RichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeBlockQuotation
 		rb.RichBlockBlockQuotation = &RichBlockBlockQuotation{}
 		return json.Unmarshal(data, rb.RichBlockBlockQuotation)
+	case RichBlockTypeExpandableBlockQuotation:
+		rb.Type = RichBlockTypeExpandableBlockQuotation
+		rb.RichBlockExpandableBlockQuotation = &RichBlockExpandableBlockQuotation{}
+		return json.Unmarshal(data, rb.RichBlockExpandableBlockQuotation)
 	case RichBlockTypePullQuotation:
 		rb.Type = RichBlockTypePullQuotation
 		rb.RichBlockPullQuotation = &RichBlockPullQuotation{}
@@ -182,6 +198,10 @@ func (rb *RichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeMap
 		rb.RichBlockMap = &RichBlockMap{}
 		return json.Unmarshal(data, rb.RichBlockMap)
+	case RichBlockTypeButtons:
+		rb.Type = RichBlockTypeButtons
+		rb.RichBlockButtons = &RichBlockButtons{}
+		return json.Unmarshal(data, rb.RichBlockButtons)
 	case RichBlockTypeAnimation:
 		rb.Type = RichBlockTypeAnimation
 		rb.RichBlockAnimation = &RichBlockAnimation{}
@@ -190,6 +210,10 @@ func (rb *RichBlock) UnmarshalJSON(data []byte) error {
 		rb.Type = RichBlockTypeAudio
 		rb.RichBlockAudio = &RichBlockAudio{}
 		return json.Unmarshal(data, rb.RichBlockAudio)
+	case RichBlockTypeDocument:
+		rb.Type = RichBlockTypeDocument
+		rb.RichBlockDocument = &RichBlockDocument{}
+		return json.Unmarshal(data, rb.RichBlockDocument)
 	case RichBlockTypePhoto:
 		rb.Type = RichBlockTypePhoto
 		rb.RichBlockPhoto = &RichBlockPhoto{}
@@ -267,6 +291,13 @@ type RichBlockBlockQuotation struct {
 	Credit *RichText     `json:"credit,omitempty"`
 }
 
+// RichBlockExpandableBlockQuotation https://core.telegram.org/bots/api#richblockexpandableblockquotation
+type RichBlockExpandableBlockQuotation struct {
+	Type   RichBlockType `json:"type"`
+	Text   RichText      `json:"text"`
+	Credit *RichText     `json:"credit,omitempty"`
+}
+
 // RichBlockPullQuotation https://core.telegram.org/bots/api#richblockpullquotation
 type RichBlockPullQuotation struct {
 	Type   RichBlockType `json:"type"`
@@ -294,6 +325,7 @@ type RichBlockTable struct {
 	Cells      [][]RichBlockTableCell `json:"cells"`
 	IsBordered bool                   `json:"is_bordered,omitempty"`
 	IsStriped  bool                   `json:"is_striped,omitempty"`
+	IsCompact  bool                   `json:"is_compact,omitempty"`
 	Caption    *RichText              `json:"caption,omitempty"`
 }
 
@@ -315,6 +347,13 @@ type RichBlockMap struct {
 	Caption  *RichBlockCaption `json:"caption,omitempty"`
 }
 
+// RichBlockButtons https://core.telegram.org/bots/api#richblockbuttons
+type RichBlockButtons struct {
+	Type    RichBlockType       `json:"type"`
+	Buttons []RichMessageButton `json:"buttons"`
+	Align   string              `json:"align,omitempty"`
+}
+
 // RichBlockAnimation https://core.telegram.org/bots/api#richblockanimation
 type RichBlockAnimation struct {
 	Type       RichBlockType     `json:"type"`
@@ -328,6 +367,13 @@ type RichBlockAudio struct {
 	Type    RichBlockType     `json:"type"`
 	Audio   Audio             `json:"audio"`
 	Caption *RichBlockCaption `json:"caption,omitempty"`
+}
+
+// RichBlockDocument https://core.telegram.org/bots/api#richblockdocument
+type RichBlockDocument struct {
+	Type     RichBlockType     `json:"type"`
+	Document Document          `json:"document"`
+	Caption  *RichBlockCaption `json:"caption,omitempty"`
 }
 
 // RichBlockPhoto https://core.telegram.org/bots/api#richblockphoto
