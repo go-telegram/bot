@@ -798,3 +798,106 @@ func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
 		}
 	})
 }
+
+// A thumbnail left as a typed nil pointer is not an upload: it carries no data and
+// must not panic, the encoder writes it as null.
+func Test_buildRequestForm_typedNilThumbnail(t *testing.T) {
+	var thumb *models.InputFileUpload
+
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaVideo{
+				Media:           "attach://video.mp4",
+				MediaAttachment: strings.NewReader("video content"),
+				Thumbnail:       thumb,
+			},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if _, err := buildRequestForm(form, &params); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if !strings.Contains(buf.String(), `[{"type":"video","media":"attach://video.mp4","thumbnail":null}]`) {
+		t.Fatalf("unexpected form data:\n%s", buf.String())
+	}
+}
+
+// An InputRichMessageMedia holding a typed nil pointer has nothing to upload; the
+// encoder is left to report it.
+func Test_addFormFieldInputRichMessage_typedNilMedia(t *testing.T) {
+	var doc *models.InputMediaDocument
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
+		Media: []models.InputRichMessageMedia{{ID: "doc1", Media: doc}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "")
+}
+
+// Two attachments sharing a part name would silently resolve to one file.
+func Test_buildRequestForm_duplicateThumbnailName(t *testing.T) {
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaVideo{
+				Media:           "attach://a.mp4",
+				MediaAttachment: strings.NewReader("a content"),
+				Thumbnail:       &models.InputFileUpload{Filename: "thumb.jpg", Data: strings.NewReader("thumb a")},
+			},
+			&models.InputMediaVideo{
+				Media:           "attach://b.mp4",
+				MediaAttachment: strings.NewReader("b content"),
+				Thumbnail:       &models.InputFileUpload{Filename: "thumb.jpg", Data: strings.NewReader("thumb b")},
+			},
+		},
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for two parts named thumb.jpg")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "thumb.jpg"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func Test_buildRequestForm_duplicateMediaAttachName(t *testing.T) {
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaPhoto{Media: "attach://photo.jpg", MediaAttachment: strings.NewReader("a")},
+			&models.InputMediaPhoto{Media: "attach://photo.jpg", MediaAttachment: strings.NewReader("b")},
+		},
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for two parts named photo.jpg")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "photo.jpg"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}

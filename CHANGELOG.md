@@ -42,6 +42,13 @@
   `attach://<filename>` and uploaded under that name. `InputFileUpload.MarshalJSON`
   emits the same reference everywhere; at the top level of a request the field is
   still sent as its own form part, so that path is unchanged.
+- Fix: two file parts sharing a name are rejected with an error instead of both
+  being written. The name of a part is what an `attach://` reference resolves
+  against, so a duplicate — most easily two thumbnails with the same `Filename` —
+  silently made Telegram resolve both references to the first file.
+- Fix: a typed nil `InputFile` thumbnail or a typed nil `InputMedia` in
+  `InputRichMessage.Media` no longer panics while the form is built. Both are
+  skipped, and the encoder writes them as `null`.
 - Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
   longer marked `omitempty` on `ChatAdministratorRights` and
   `ChatMemberAdministrator`. They are required fields in the Bot API, so they

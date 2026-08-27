@@ -31,9 +31,37 @@ type mediaThumbnail interface {
 var customMarshalInterface = reflect.TypeOf(new(customMarshal)).Elem()
 var inputMediaInterface = reflect.TypeOf(new(inputMedia)).Elem()
 
+// formWriter is the part of multipart.Writer used to build a request, narrowed so the
+// created part names can be tracked, see requestForm.
+type formWriter interface {
+	CreateFormField(fieldName string) (io.Writer, error)
+	CreateFormFile(fieldName, filename string) (io.Writer, error)
+}
+
+// requestForm rejects two file parts sharing a name. The name of a part is what an
+// attach:// reference resolves against, so a duplicate silently makes Telegram resolve
+// both references to the first file.
+type requestForm struct {
+	formWriter
+	fileNames map[string]struct{}
+}
+
+func newRequestForm(w formWriter) *requestForm {
+	return &requestForm{formWriter: w, fileNames: map[string]struct{}{}}
+}
+
+func (f *requestForm) CreateFormFile(fieldName, filename string) (io.Writer, error) {
+	if _, ok := f.fileNames[fieldName]; ok {
+		return nil, fmt.Errorf("duplicate form part name %q", fieldName)
+	}
+	f.fileNames[fieldName] = struct{}{}
+	return f.formWriter.CreateFormFile(fieldName, filename)
+}
+
 // buildRequestForm builds form-data for request
 // if params contains InputFile of type InputFileUpload, it will be added to form-data ad upload file. Also, for InputMedia attachments
-func buildRequestForm(form *multipart.Writer, params any) (int, error) {
+func buildRequestForm(w *multipart.Writer, params any) (int, error) {
+	form := newRequestForm(w)
 	v := reflect.ValueOf(params).Elem()
 
 	var fieldsCount int
@@ -130,10 +158,16 @@ func buildRequestForm(form *multipart.Writer, params any) (int, error) {
 }
 
 func readerIsNil(r io.Reader) bool {
-	if r == nil {
+	return isNilValue(r)
+}
+
+// isNilValue reports whether a value is nil, including a typed nil pointer carried by
+// a non-nil interface, which an == nil check does not catch.
+func isNilValue(value any) bool {
+	if value == nil {
 		return true
 	}
-	v := reflect.ValueOf(r)
+	v := reflect.ValueOf(value)
 	switch v.Kind() {
 	case reflect.Pointer, reflect.Interface, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func:
 		return v.IsNil()
@@ -142,7 +176,7 @@ func readerIsNil(r io.Reader) bool {
 	}
 }
 
-func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value *models.InputFileUpload) error {
+func addFormFieldInputFileUpload(form formWriter, fieldName string, value *models.InputFileUpload) error {
 	if readerIsNil(value.Data) {
 		return fmt.Errorf("nil data for field %s", fieldName)
 	}
@@ -154,7 +188,7 @@ func addFormFieldInputFileUpload(form *multipart.Writer, fieldName string, value
 	return errCopy
 }
 
-func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byte, error) {
+func addFormFieldInputMediaItem(form formWriter, value inputMedia) ([]byte, error) {
 	if err := addInputMediaAttachment(form, value); err != nil {
 		return nil, err
 	}
@@ -162,7 +196,7 @@ func addFormFieldInputMediaItem(form *multipart.Writer, value inputMedia) ([]byt
 }
 
 // addInputMediaAttachment adds the attach:// upload parts referenced by a media item, if any.
-func addInputMediaAttachment(form *multipart.Writer, value inputMedia) error {
+func addInputMediaAttachment(form formWriter, value inputMedia) error {
 	if strings.HasPrefix(value.GetMedia(), "attach://") {
 		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
 		if readerIsNil(value.Attachment()) {
@@ -201,9 +235,9 @@ func addInputMediaAttachment(form *multipart.Writer, value inputMedia) error {
 // addInputFileAttachment uploads a nested InputFile, which is marshalled as an
 // attach:// reference instead of becoming a form field of its own. Anything but an
 // upload (a file_id or an URL) carries no content and is left to the encoder.
-func addInputFileAttachment(form *multipart.Writer, value models.InputFile) error {
+func addInputFileAttachment(form formWriter, value models.InputFile) error {
 	upload, ok := value.(*models.InputFileUpload)
-	if !ok {
+	if !ok || upload == nil {
 		return nil
 	}
 	if readerIsNil(upload.Data) {
@@ -217,7 +251,7 @@ func addInputFileAttachment(form *multipart.Writer, value models.InputFile) erro
 	return errCopy
 }
 
-func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value customMarshal) error {
+func addFormFieldCustomMarshal(form formWriter, fieldName string, value customMarshal) error {
 	line, errEncode := value.MarshalCustom()
 	if errEncode != nil {
 		return errEncode
@@ -230,7 +264,7 @@ func addFormFieldCustomMarshal(form *multipart.Writer, fieldName string, value c
 	return errCopy
 }
 
-func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value inputMedia) error {
+func addFormFieldInputMedia(form formWriter, fieldName string, value inputMedia) error {
 	line, err := addFormFieldInputMediaItem(form, value)
 	if err != nil {
 		return err
@@ -244,7 +278,7 @@ func addFormFieldInputMedia(form *multipart.Writer, fieldName string, value inpu
 	return errCopy
 }
 
-func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value []inputMedia) error {
+func addFormFieldInputMediaSlice(form formWriter, fieldName string, value []inputMedia) error {
 	var lines []string
 	for _, media := range value {
 		line, err := addFormFieldInputMediaItem(form, media)
@@ -264,12 +298,12 @@ func addFormFieldInputMediaSlice(form *multipart.Writer, fieldName string, value
 
 // addFormFieldInputRichMessage adds the attach:// uploads referenced by a rich message
 // before encoding it, so that nested media is uploaded like top level InputMedia is.
-func addFormFieldInputRichMessage(form *multipart.Writer, fieldName string, value *models.InputRichMessage) error {
+func addFormFieldInputRichMessage(form formWriter, fieldName string, value *models.InputRichMessage) error {
 	if err := addInputRichBlockSliceAttachments(form, value.Blocks); err != nil {
 		return err
 	}
 	for _, media := range value.Media {
-		if media.Media == nil {
+		if isNilValue(media.Media) {
 			continue
 		}
 		if err := addInputMediaAttachment(form, media.Media); err != nil {
@@ -279,7 +313,7 @@ func addFormFieldInputRichMessage(form *multipart.Writer, fieldName string, valu
 	return addFormFieldDefault(form, fieldName, value)
 }
 
-func addInputRichBlockSliceAttachments(form *multipart.Writer, blocks []models.InputRichBlock) error {
+func addInputRichBlockSliceAttachments(form formWriter, blocks []models.InputRichBlock) error {
 	for _, block := range blocks {
 		if err := addInputRichBlockAttachments(form, block); err != nil {
 			return err
@@ -290,7 +324,7 @@ func addInputRichBlockSliceAttachments(form *multipart.Writer, blocks []models.I
 
 // addInputRichBlockAttachments walks a single block: media blocks upload their attachment,
 // container blocks recurse into their nested blocks.
-func addInputRichBlockAttachments(form *multipart.Writer, block models.InputRichBlock) error {
+func addInputRichBlockAttachments(form formWriter, block models.InputRichBlock) error {
 	switch block.Type {
 	case models.RichBlockTypeAnimation:
 		if block.InputRichBlockAnimation != nil {
@@ -344,7 +378,7 @@ func addInputRichBlockAttachments(form *multipart.Writer, block models.InputRich
 	return nil
 }
 
-func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string, value []models.InlineQueryResult) error {
+func addFormFieldInlineQueryResultSlice(form formWriter, fieldName string, value []models.InlineQueryResult) error {
 	var lines []string
 	for _, media := range value {
 		line, errEncode := media.MarshalCustom()
@@ -362,7 +396,7 @@ func addFormFieldInlineQueryResultSlice(form *multipart.Writer, fieldName string
 	return errCopy
 }
 
-func addFormFieldInputStickerSlice(form *multipart.Writer, fieldName string, value []models.InputSticker) error {
+func addFormFieldInputStickerSlice(form formWriter, fieldName string, value []models.InputSticker) error {
 	var lines []string
 	for _, sticker := range value {
 		if strings.HasPrefix(sticker.Sticker, "attach://") {
@@ -394,7 +428,7 @@ func addFormFieldInputStickerSlice(form *multipart.Writer, fieldName string, val
 	return errCopy
 }
 
-func addFormFieldDefault(form *multipart.Writer, fieldName string, value any) error {
+func addFormFieldDefault(form formWriter, fieldName string, value any) error {
 	d, errMarshal := json.Marshal(value)
 	if errMarshal != nil {
 		return errMarshal
@@ -408,7 +442,7 @@ func addFormFieldDefault(form *multipart.Writer, fieldName string, value any) er
 	return errCopy
 }
 
-func addFormFieldString(form *multipart.Writer, fieldName string, value string) error {
+func addFormFieldString(form formWriter, fieldName string, value string) error {
 	w, errCreateField := form.CreateFormField(fieldName)
 	if errCreateField != nil {
 		return errCreateField

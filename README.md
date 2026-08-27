@@ -321,9 +321,13 @@ bot.SendMediaGroup(ctx, params)
 
 [Demo in examples](examples/send_media_group/main.go)
 
-A thumbnail is always a new upload, never a `file_id` or an URL. Pass an
-`InputFileUpload`; it is sent as a separate part and referenced by `attach://` with
-the `Filename` as the part name.
+Telegram does not accept a reused file as a thumbnail, so a thumbnail is normally an
+`InputFileUpload`: it is sent as a separate part and referenced by `attach://`, with
+`Filename` as the part name. An `InputFileString` is passed through unchanged, so a
+`file_id` or an URL reaches the API as written.
+
+Part names must be unique within one request: two attachments sharing a name are
+rejected with an error, since Telegram would resolve both references to the first file.
 
 ```go
 thumbContent, _ := os.ReadFile("/path/to/thumb.jpg")
