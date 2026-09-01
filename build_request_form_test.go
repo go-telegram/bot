@@ -19,7 +19,8 @@ func (structReader) Read(p []byte) (int, error) {
 
 func Test_addFormFieldInputFileUpload_structReaderDoesNotPanic(t *testing.T) {
 	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
+	writer := multipart.NewWriter(buf)
+	form := newRequestForm(writer)
 	err := addFormFieldInputFileUpload(form, "file", &models.InputFileUpload{
 		Filename: "x.bin",
 		Data:     structReader{},
@@ -27,7 +28,7 @@ func Test_addFormFieldInputFileUpload_structReaderDoesNotPanic(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := form.Close(); err != nil {
+	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -172,7 +173,8 @@ Content-Disposition: form-data; name="input_sticker_slice"
 }
 
 func Test_addFormFieldInputMedia_nilAttachment(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputMedia(form, "media", &models.InputMediaPhoto{
 		Media: "attach://photo.png",
 	})
@@ -185,7 +187,8 @@ func Test_addFormFieldInputMedia_nilAttachment(t *testing.T) {
 }
 
 func Test_addFormFieldInputStickerSlice_nilAttachment(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputStickerSlice(form, "stickers", []models.InputSticker{{
 		Sticker: "attach://sticker.png",
 		Format:  "static",
@@ -343,7 +346,8 @@ Content-Disposition: form-data; name="rich_message"
 }
 
 func Test_addFormFieldInputRichMessage_nilAttachment(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
 		Media: []models.InputRichMessageMedia{
 			{ID: "doc1", Media: &models.InputMediaDocument{Media: "attach://doc1.pdf"}},
@@ -424,7 +428,8 @@ Content-Disposition: form-data; name="paid_media"
 }
 
 func Test_addFormFieldInputMedia_nilThumbnailData(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputMedia(form, "media", &models.InputMediaVideo{
 		Media:     "file_id",
 		Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg"},
@@ -517,13 +522,14 @@ func Test_addInputRichBlockAttachments_mediaBlocks(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	writer := multipart.NewWriter(buf)
+	form := newRequestForm(writer)
+	writer.SetBoundary("XXX") //nolint
 
 	if err := addInputRichBlockSliceAttachments(form, blocks); err != nil {
 		t.Fatal(err)
 	}
-	if err := form.Close(); err != nil {
+	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -568,13 +574,14 @@ func Test_addInputRichBlockAttachments_containerBlocks(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	writer := multipart.NewWriter(buf)
+	form := newRequestForm(writer)
+	writer.SetBoundary("XXX") //nolint
 
 	if err := addInputRichBlockSliceAttachments(form, blocks); err != nil {
 		t.Fatal(err)
 	}
-	if err := form.Close(); err != nil {
+	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -603,15 +610,16 @@ func Test_addInputRichBlockAttachments_missingVariant(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	writer := multipart.NewWriter(buf)
+	form := newRequestForm(writer)
+	writer.SetBoundary("XXX") //nolint
 
 	for _, blockType := range types {
 		if err := addInputRichBlockAttachments(form, models.InputRichBlock{Type: blockType}); err != nil {
 			t.Fatalf("%s: %v", blockType, err)
 		}
 	}
-	if err := form.Close(); err != nil {
+	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -619,7 +627,8 @@ func Test_addInputRichBlockAttachments_missingVariant(t *testing.T) {
 }
 
 func Test_addFormFieldInputRichMessage_nilAttachmentInNestedBlock(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
 		Blocks: []models.InputRichBlock{
 			{
@@ -646,7 +655,8 @@ func Test_addFormFieldInputRichMessage_nilAttachmentInNestedBlock(t *testing.T) 
 }
 
 func Test_addInputRichBlockAttachments_nilAttachmentInListItem(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addInputRichBlockAttachments(form, models.InputRichBlock{
 		Type: models.RichBlockTypeList,
 		InputRichBlockList: &models.InputRichBlockList{
@@ -672,30 +682,27 @@ func Test_addInputRichBlockAttachments_nilAttachmentInListItem(t *testing.T) {
 	}
 }
 
-// An InputRichMessageMedia with no media has nothing to upload; the encoder is
-// left to report it.
+// The media of an InputRichMessageMedia is required, so a missing one cannot be
+// encoded as a null and left to the server to reject.
 func Test_addFormFieldInputRichMessage_nilMedia(t *testing.T) {
-	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
 
 	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
 		Media: []models.InputRichMessageMedia{{ID: "doc1"}},
 	})
-	if err != nil {
-		t.Fatal(err)
+	if err == nil {
+		t.Fatal("expected error for an entry with no media")
 	}
-	if err := form.Close(); err != nil {
-		t.Fatal(err)
+	if !strings.Contains(err.Error(), "nil media for field rich_message at index 0") {
+		t.Fatalf("unexpected error: %v", err)
 	}
-
-	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "")
 }
 
 func Test_addFormFieldInputMedia_livePhoto(t *testing.T) {
 	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	writer := multipart.NewWriter(buf)
+	form := newRequestForm(writer)
+	writer.SetBoundary("XXX") //nolint
 
 	err := addFormFieldInputMedia(form, "media", &models.InputMediaLivePhoto{
 		Media:           "attach://live.jpg",
@@ -706,7 +713,7 @@ func Test_addFormFieldInputMedia_livePhoto(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err := form.Close(); err != nil {
+	if err := writer.Close(); err != nil {
 		t.Fatal(err)
 	}
 
@@ -714,7 +721,8 @@ func Test_addFormFieldInputMedia_livePhoto(t *testing.T) {
 }
 
 func Test_addFormFieldInputMedia_livePhotoNilPhotoAttachment(t *testing.T) {
-	form := multipart.NewWriter(bytes.NewBuffer(nil))
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	form := newRequestForm(writer)
 	err := addFormFieldInputMedia(form, "media", &models.InputMediaLivePhoto{
 		Media: "file_id",
 		Photo: "attach://live.mov",
@@ -729,7 +737,8 @@ func Test_addFormFieldInputMedia_livePhotoNilPhotoAttachment(t *testing.T) {
 
 func Test_addInputMediaAttachment_readErrors(t *testing.T) {
 	t.Run("media", func(t *testing.T) {
-		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		writer := multipart.NewWriter(bytes.NewBuffer(nil))
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaPhoto{
 			Media:           "attach://photo.jpg",
 			MediaAttachment: errReader(errors.New("read failed")),
@@ -740,7 +749,8 @@ func Test_addInputMediaAttachment_readErrors(t *testing.T) {
 	})
 
 	t.Run("live photo", func(t *testing.T) {
-		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		writer := multipart.NewWriter(bytes.NewBuffer(nil))
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaLivePhoto{
 			Media:           "file_id",
 			Photo:           "attach://live.mov",
@@ -752,7 +762,8 @@ func Test_addInputMediaAttachment_readErrors(t *testing.T) {
 	})
 
 	t.Run("thumbnail", func(t *testing.T) {
-		form := multipart.NewWriter(bytes.NewBuffer(nil))
+		writer := multipart.NewWriter(bytes.NewBuffer(nil))
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaVideo{
 			Media:     "file_id",
 			Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg", Data: errReader(errors.New("read failed"))},
@@ -765,7 +776,8 @@ func Test_addInputMediaAttachment_readErrors(t *testing.T) {
 
 func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
 	t.Run("media", func(t *testing.T) {
-		form := multipart.NewWriter(errWriter{})
+		writer := multipart.NewWriter(errWriter{})
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaPhoto{
 			Media:           "attach://photo.jpg",
 			MediaAttachment: strings.NewReader("photo"),
@@ -776,7 +788,8 @@ func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
 	})
 
 	t.Run("live photo", func(t *testing.T) {
-		form := multipart.NewWriter(errWriter{})
+		writer := multipart.NewWriter(errWriter{})
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaLivePhoto{
 			Media:           "file_id",
 			Photo:           "attach://live.mov",
@@ -788,7 +801,8 @@ func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
 	})
 
 	t.Run("thumbnail", func(t *testing.T) {
-		form := multipart.NewWriter(errWriter{})
+		writer := multipart.NewWriter(errWriter{})
+		form := newRequestForm(writer)
 		err := addInputMediaAttachment(form, &models.InputMediaVideo{
 			Media:     "file_id",
 			Thumbnail: &models.InputFileUpload{Filename: "thumb.jpg", Data: strings.NewReader("thumb")},
@@ -799,8 +813,8 @@ func Test_addInputMediaAttachment_writeErrors(t *testing.T) {
 	})
 }
 
-// A thumbnail left as a typed nil pointer is not an upload: it carries no data and
-// must not panic, the encoder writes it as null.
+// A thumbnail left as a typed nil pointer is not a thumbnail: it carries no data and
+// must not panic, and the key is omitted rather than sent as a null.
 func Test_buildRequestForm_typedNilThumbnail(t *testing.T) {
 	var thumb *models.InputFileUpload
 
@@ -826,31 +840,26 @@ func Test_buildRequestForm_typedNilThumbnail(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if !strings.Contains(buf.String(), `[{"type":"video","media":"attach://video.mp4","thumbnail":null}]`) {
+	if !strings.Contains(buf.String(), `[{"type":"video","media":"attach://video.mp4"}]`) {
 		t.Fatalf("unexpected form data:\n%s", buf.String())
 	}
 }
 
-// An InputRichMessageMedia holding a typed nil pointer has nothing to upload; the
-// encoder is left to report it.
+// An InputRichMessageMedia holding a typed nil pointer carries no media either.
 func Test_addFormFieldInputRichMessage_typedNilMedia(t *testing.T) {
 	var doc *models.InputMediaDocument
 
-	buf := bytes.NewBuffer(nil)
-	form := multipart.NewWriter(buf)
-	form.SetBoundary("XXX") //nolint
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
 
 	err := addFormFieldInputRichMessage(form, "rich_message", &models.InputRichMessage{
 		Media: []models.InputRichMessageMedia{{ID: "doc1", Media: doc}},
 	})
-	if err != nil {
-		t.Fatal(err)
+	if err == nil {
+		t.Fatal("expected error for a typed nil media")
 	}
-	if err := form.Close(); err != nil {
-		t.Fatal(err)
+	if !strings.Contains(err.Error(), "nil media for field rich_message at index 0") {
+		t.Fatalf("unexpected error: %v", err)
 	}
-
-	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "")
 }
 
 // Two attachments sharing a part name would silently resolve to one file.
@@ -898,6 +907,253 @@ func Test_buildRequestForm_duplicateMediaAttachName(t *testing.T) {
 		t.Fatal("expected error for two parts named photo.jpg")
 	}
 	if !strings.Contains(err.Error(), `duplicate form part name "photo.jpg"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// A typed nil pointer in a top level InputFile field carries no data. It must be
+// reported, not dereferenced: the form is built in a goroutine with no recover.
+func Test_buildRequestForm_topLevelTypedNilInputFile(t *testing.T) {
+	var thumb *models.InputFileUpload
+
+	params := SendVideoParams{
+		ChatID:    1,
+		Video:     &models.InputFileString{Data: "file_id"},
+		Thumbnail: thumb,
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for typed nil thumbnail")
+	}
+	if !strings.Contains(err.Error(), "nil value for field thumbnail") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// Same for a typed nil element of a media slice.
+func Test_buildRequestForm_typedNilMediaSliceItem(t *testing.T) {
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaPhoto{Media: "file_id"},
+			(*models.InputMediaPhoto)(nil),
+		},
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for typed nil media item")
+	}
+	if !strings.Contains(err.Error(), "nil value for field media at index 1") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// A typed nil in a single InputMedia field is the same class of value.
+func Test_buildRequestForm_typedNilMediaField(t *testing.T) {
+	params := EditMessageMediaParams{
+		Media: (*models.InputMediaPhoto)(nil),
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for typed nil media field")
+	}
+	if !strings.Contains(err.Error(), "nil value for field media") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// One file referenced from two entries under a single attach:// name is a single
+// part, not an ambiguity: the part already written is reused.
+func Test_buildRequestForm_repeatedAttachNameSameReader(t *testing.T) {
+	photo := strings.NewReader("photo content")
+
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaPhoto{Media: "attach://p.jpg", MediaAttachment: photo},
+			&models.InputMediaPhoto{Media: "attach://p.jpg", MediaAttachment: photo},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if _, err := buildRequestForm(form, &params); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "p.jpg")
+}
+
+// The second entry may leave the attachment out entirely and just carry the reference.
+func Test_buildRequestForm_repeatedAttachNameWithoutReader(t *testing.T) {
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaPhoto{Media: "attach://p.jpg", MediaAttachment: strings.NewReader("photo content")},
+			&models.InputMediaPhoto{Media: "attach://p.jpg"},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if _, err := buildRequestForm(form, &params); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "p.jpg")
+}
+
+// One sticker image reused across two entries of a set.
+func Test_buildRequestForm_repeatedStickerAttachName(t *testing.T) {
+	sticker := strings.NewReader("sticker content")
+
+	params := CreateNewStickerSetParams{
+		Name:  "set",
+		Title: "set",
+		Stickers: []models.InputSticker{
+			{Sticker: "attach://s.png", StickerAttachment: sticker, EmojiList: []string{"a"}},
+			{Sticker: "attach://s.png", StickerAttachment: sticker, EmojiList: []string{"b"}},
+		},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	form := multipart.NewWriter(buf)
+	form.SetBoundary("XXX") //nolint
+
+	if _, err := buildRequestForm(form, &params); err != nil {
+		t.Fatal(err)
+	}
+	if err := form.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	assertEqualString(t, formFileNames(t, buf.String(), "XXX"), "s.png")
+}
+
+// Two different files still cannot share one name.
+func Test_buildRequestForm_repeatedAttachNameDifferentReader(t *testing.T) {
+	params := SendMediaGroupParams{
+		ChatID: 1,
+		Media: []models.InputMedia{
+			&models.InputMediaPhoto{Media: "attach://p.jpg", MediaAttachment: strings.NewReader("a")},
+			&models.InputMediaPhoto{Media: "attach://p.jpg", MediaAttachment: strings.NewReader("b")},
+		},
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for two files named p.jpg")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "p.jpg"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// A file part and a form field sharing a name is the ambiguity the check exists for.
+func Test_buildRequestForm_filePartCollidesWithField(t *testing.T) {
+	params := EditMessageMediaParams{
+		Media: &models.InputMediaVideo{Media: "attach://media", MediaAttachment: strings.NewReader("video")},
+	}
+
+	form := multipart.NewWriter(bytes.NewBuffer(nil))
+
+	_, err := buildRequestForm(form, &params)
+	if err == nil {
+		t.Fatal("expected error for a file part named like a form field")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "media"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// A nested upload with no Filename would be written as a part named "" and referenced
+// as "attach://", which Telegram can only answer with an opaque Bad Request.
+func Test_addInputFileAttachment_emptyFilename(t *testing.T) {
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
+
+	err := addInputFileAttachment(form, &models.InputFileUpload{Data: strings.NewReader("thumb")})
+	if err == nil {
+		t.Fatal("expected error for an upload with no filename")
+	}
+	if !strings.Contains(err.Error(), "empty filename") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// sliceReader is a reader that cannot be compared, so it can never be recognised as
+// one file referenced twice.
+type sliceReader []byte
+
+func (sliceReader) Read([]byte) (int, error) {
+	return 0, io.EOF
+}
+
+func Test_requestForm_addFilePart_incomparableReader(t *testing.T) {
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
+
+	if err := form.addFilePart("p.jpg", "p.jpg", sliceReader("a")); err != nil {
+		t.Fatal(err)
+	}
+
+	err := form.addFilePart("p.jpg", "p.jpg", sliceReader("a"))
+	if err == nil {
+		t.Fatal("expected error for a second reader under one part name")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "p.jpg"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func Test_requestForm_addFieldPart_duplicate(t *testing.T) {
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
+
+	if err := form.addFieldPart("media", strings.NewReader("a")); err != nil {
+		t.Fatal(err)
+	}
+
+	err := form.addFieldPart("media", strings.NewReader("b"))
+	if err == nil {
+		t.Fatal("expected error for two fields named media")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "media"`) {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+// A form field cannot take the name of a file part written before it either.
+func Test_requestForm_addFilePart_collidesWithField(t *testing.T) {
+	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
+
+	if err := form.addFieldPart("media", strings.NewReader("a")); err != nil {
+		t.Fatal(err)
+	}
+
+	err := form.addFilePart("media", "media", strings.NewReader("b"))
+	if err == nil {
+		t.Fatal("expected error for a file part named like a form field")
+	}
+	if !strings.Contains(err.Error(), `duplicate form part name "media"`) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }

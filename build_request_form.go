@@ -38,24 +38,67 @@ type formWriter interface {
 	CreateFormFile(fieldName, filename string) (io.Writer, error)
 }
 
-// requestForm rejects two file parts sharing a name. The name of a part is what an
-// attach:// reference resolves against, so a duplicate silently makes Telegram resolve
-// both references to the first file.
+// requestForm tracks the names of the parts written to one request. A part name is
+// what an attach:// reference resolves against, so two different files under one name
+// are ambiguous and rejected, while one file referenced twice reuses the part already
+// written. A file part and a form field sharing a name are the same ambiguity.
 type requestForm struct {
-	formWriter
-	fileNames map[string]struct{}
+	w          formWriter
+	fileParts  map[string]io.Reader
+	fieldNames map[string]struct{}
 }
 
 func newRequestForm(w formWriter) *requestForm {
-	return &requestForm{formWriter: w, fileNames: map[string]struct{}{}}
+	return &requestForm{
+		w:          w,
+		fileParts:  map[string]io.Reader{},
+		fieldNames: map[string]struct{}{},
+	}
 }
 
-func (f *requestForm) CreateFormFile(fieldName, filename string) (io.Writer, error) {
-	if _, ok := f.fileNames[fieldName]; ok {
-		return nil, fmt.Errorf("duplicate form part name %q", fieldName)
+// hasFilePart reports whether a file part of that name is written, i.e. an attach://
+// reference to it already resolves and needs no attachment of its own.
+func (f *requestForm) hasFilePart(partName string) bool {
+	_, ok := f.fileParts[partName]
+	return ok
+}
+
+// addFilePart writes data as the file part partName. Repeating a name with the same
+// reader, or with none, references the file already uploaded under it.
+func (f *requestForm) addFilePart(partName, filename string, data io.Reader) error {
+	if written, ok := f.fileParts[partName]; ok {
+		if readerIsNil(data) || sameReader(written, data) {
+			return nil
+		}
+		return fmt.Errorf("duplicate form part name %q", partName)
 	}
-	f.fileNames[fieldName] = struct{}{}
-	return f.formWriter.CreateFormFile(fieldName, filename)
+	if _, ok := f.fieldNames[partName]; ok {
+		return fmt.Errorf("duplicate form part name %q", partName)
+	}
+	w, errCreatePart := f.w.CreateFormFile(partName, filename)
+	if errCreatePart != nil {
+		return errCreatePart
+	}
+	f.fileParts[partName] = data
+	_, errCopy := io.Copy(w, data)
+	return errCopy
+}
+
+// addFieldPart writes value as the form field fieldName.
+func (f *requestForm) addFieldPart(fieldName string, value io.Reader) error {
+	if _, ok := f.fieldNames[fieldName]; ok {
+		return fmt.Errorf("duplicate form part name %q", fieldName)
+	}
+	if _, ok := f.fileParts[fieldName]; ok {
+		return fmt.Errorf("duplicate form part name %q", fieldName)
+	}
+	w, errCreateField := f.w.CreateFormField(fieldName)
+	if errCreateField != nil {
+		return errCreateField
+	}
+	f.fieldNames[fieldName] = struct{}{}
+	_, errCopy := io.Copy(w, value)
+	return errCopy
 }
 
 // buildRequestForm builds form-data for request
@@ -176,19 +219,27 @@ func isNilValue(value any) bool {
 	}
 }
 
-func addFormFieldInputFileUpload(form formWriter, fieldName string, value *models.InputFileUpload) error {
+// sameReader reports whether two attachments are one reader, i.e. one file referenced
+// twice rather than two files claiming a single part name.
+func sameReader(a, b io.Reader) bool {
+	ta := reflect.TypeOf(a)
+	if ta == nil || ta != reflect.TypeOf(b) || !ta.Comparable() {
+		return false
+	}
+	return a == b
+}
+
+func addFormFieldInputFileUpload(form *requestForm, fieldName string, value *models.InputFileUpload) error {
+	if isNilValue(value) {
+		return fmt.Errorf("nil value for field %s", fieldName)
+	}
 	if readerIsNil(value.Data) {
 		return fmt.Errorf("nil data for field %s", fieldName)
 	}
-	w, errCreateField := form.CreateFormFile(fieldName, value.Filename)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, value.Data)
-	return errCopy
+	return form.addFilePart(fieldName, value.Filename, value.Data)
 }
 
-func addFormFieldInputMediaItem(form formWriter, value inputMedia) ([]byte, error) {
+func addFormFieldInputMediaItem(form *requestForm, value inputMedia) ([]byte, error) {
 	if err := addInputMediaAttachment(form, value); err != nil {
 		return nil, err
 	}
@@ -196,19 +247,14 @@ func addFormFieldInputMediaItem(form formWriter, value inputMedia) ([]byte, erro
 }
 
 // addInputMediaAttachment adds the attach:// upload parts referenced by a media item, if any.
-func addInputMediaAttachment(form formWriter, value inputMedia) error {
+func addInputMediaAttachment(form *requestForm, value inputMedia) error {
 	if strings.HasPrefix(value.GetMedia(), "attach://") {
 		filename := strings.TrimPrefix(value.GetMedia(), "attach://")
-		if readerIsNil(value.Attachment()) {
+		if !form.hasFilePart(filename) && readerIsNil(value.Attachment()) {
 			return fmt.Errorf("nil attachment for attach://%s", filename)
 		}
-		mediaAttachmentField, errCreateMediaAttachmentField := form.CreateFormFile(filename, filename)
-		if errCreateMediaAttachmentField != nil {
-			return errCreateMediaAttachmentField
-		}
-		_, errCopy := io.Copy(mediaAttachmentField, value.Attachment())
-		if errCopy != nil {
-			return errCopy
+		if err := form.addFilePart(filename, filename, value.Attachment()); err != nil {
+			return err
 		}
 	}
 	if thumbnailed, ok := value.(mediaThumbnail); ok {
@@ -218,14 +264,10 @@ func addInputMediaAttachment(form formWriter, value inputMedia) error {
 	}
 	if live, ok := value.(*models.InputMediaLivePhoto); ok && strings.HasPrefix(live.Photo, "attach://") {
 		filename := strings.TrimPrefix(live.Photo, "attach://")
-		if readerIsNil(live.PhotoAttachment) {
+		if !form.hasFilePart(filename) && readerIsNil(live.PhotoAttachment) {
 			return fmt.Errorf("nil PhotoAttachment for attach://%s", filename)
 		}
-		photoField, errCreate := form.CreateFormFile(filename, filename)
-		if errCreate != nil {
-			return errCreate
-		}
-		if _, err := io.Copy(photoField, live.PhotoAttachment); err != nil {
+		if err := form.addFilePart(filename, filename, live.PhotoAttachment); err != nil {
 			return err
 		}
 	}
@@ -234,53 +276,49 @@ func addInputMediaAttachment(form formWriter, value inputMedia) error {
 
 // addInputFileAttachment uploads a nested InputFile, which is marshalled as an
 // attach:// reference instead of becoming a form field of its own. Anything but an
-// upload (a file_id or an URL) carries no content and is left to the encoder.
-func addInputFileAttachment(form formWriter, value models.InputFile) error {
+// upload (a file_id or an URL) carries no content and is left to the encoder, and so
+// is a typed nil, which the encoder omits.
+func addInputFileAttachment(form *requestForm, value models.InputFile) error {
 	upload, ok := value.(*models.InputFileUpload)
 	if !ok || upload == nil {
 		return nil
 	}
-	if readerIsNil(upload.Data) {
+	if upload.Filename == "" {
+		return fmt.Errorf("empty filename for nested upload, it is the attach:// reference")
+	}
+	if !form.hasFilePart(upload.Filename) && readerIsNil(upload.Data) {
 		return fmt.Errorf("nil data for attach://%s", upload.Filename)
 	}
-	w, errCreateField := form.CreateFormFile(upload.Filename, upload.Filename)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, upload.Data)
-	return errCopy
+	return form.addFilePart(upload.Filename, upload.Filename, upload.Data)
 }
 
-func addFormFieldCustomMarshal(form formWriter, fieldName string, value customMarshal) error {
+func addFormFieldCustomMarshal(form *requestForm, fieldName string, value customMarshal) error {
 	line, errEncode := value.MarshalCustom()
 	if errEncode != nil {
 		return errEncode
 	}
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, bytes.NewReader(line))
-	return errCopy
+	return form.addFieldPart(fieldName, bytes.NewReader(line))
 }
 
-func addFormFieldInputMedia(form formWriter, fieldName string, value inputMedia) error {
+func addFormFieldInputMedia(form *requestForm, fieldName string, value inputMedia) error {
+	if isNilValue(value) {
+		return fmt.Errorf("nil value for field %s", fieldName)
+	}
+
 	line, err := addFormFieldInputMediaItem(form, value)
 	if err != nil {
 		return err
 	}
 
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, bytes.NewReader(line))
-	return errCopy
+	return form.addFieldPart(fieldName, bytes.NewReader(line))
 }
 
-func addFormFieldInputMediaSlice(form formWriter, fieldName string, value []inputMedia) error {
+func addFormFieldInputMediaSlice(form *requestForm, fieldName string, value []inputMedia) error {
 	var lines []string
-	for _, media := range value {
+	for i, media := range value {
+		if isNilValue(media) {
+			return fmt.Errorf("nil value for field %s at index %d", fieldName, i)
+		}
 		line, err := addFormFieldInputMediaItem(form, media)
 		if err != nil {
 			return err
@@ -288,23 +326,18 @@ func addFormFieldInputMediaSlice(form formWriter, fieldName string, value []inpu
 		lines = append(lines, string(line))
 	}
 
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
-	return errCopy
+	return form.addFieldPart(fieldName, strings.NewReader("["+strings.Join(lines, ",")+"]"))
 }
 
 // addFormFieldInputRichMessage adds the attach:// uploads referenced by a rich message
 // before encoding it, so that nested media is uploaded like top level InputMedia is.
-func addFormFieldInputRichMessage(form formWriter, fieldName string, value *models.InputRichMessage) error {
+func addFormFieldInputRichMessage(form *requestForm, fieldName string, value *models.InputRichMessage) error {
 	if err := addInputRichBlockSliceAttachments(form, value.Blocks); err != nil {
 		return err
 	}
-	for _, media := range value.Media {
+	for i, media := range value.Media {
 		if isNilValue(media.Media) {
-			continue
+			return fmt.Errorf("nil media for field %s at index %d", fieldName, i)
 		}
 		if err := addInputMediaAttachment(form, media.Media); err != nil {
 			return err
@@ -313,7 +346,7 @@ func addFormFieldInputRichMessage(form formWriter, fieldName string, value *mode
 	return addFormFieldDefault(form, fieldName, value)
 }
 
-func addInputRichBlockSliceAttachments(form formWriter, blocks []models.InputRichBlock) error {
+func addInputRichBlockSliceAttachments(form *requestForm, blocks []models.InputRichBlock) error {
 	for _, block := range blocks {
 		if err := addInputRichBlockAttachments(form, block); err != nil {
 			return err
@@ -324,7 +357,7 @@ func addInputRichBlockSliceAttachments(form formWriter, blocks []models.InputRic
 
 // addInputRichBlockAttachments walks a single block: media blocks upload their attachment,
 // container blocks recurse into their nested blocks.
-func addInputRichBlockAttachments(form formWriter, block models.InputRichBlock) error {
+func addInputRichBlockAttachments(form *requestForm, block models.InputRichBlock) error {
 	switch block.Type {
 	case models.RichBlockTypeAnimation:
 		if block.InputRichBlockAnimation != nil {
@@ -378,7 +411,7 @@ func addInputRichBlockAttachments(form formWriter, block models.InputRichBlock) 
 	return nil
 }
 
-func addFormFieldInlineQueryResultSlice(form formWriter, fieldName string, value []models.InlineQueryResult) error {
+func addFormFieldInlineQueryResultSlice(form *requestForm, fieldName string, value []models.InlineQueryResult) error {
 	var lines []string
 	for _, media := range value {
 		line, errEncode := media.MarshalCustom()
@@ -388,29 +421,19 @@ func addFormFieldInlineQueryResultSlice(form formWriter, fieldName string, value
 		lines = append(lines, string(line))
 	}
 
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
-	return errCopy
+	return form.addFieldPart(fieldName, strings.NewReader("["+strings.Join(lines, ",")+"]"))
 }
 
-func addFormFieldInputStickerSlice(form formWriter, fieldName string, value []models.InputSticker) error {
+func addFormFieldInputStickerSlice(form *requestForm, fieldName string, value []models.InputSticker) error {
 	var lines []string
 	for _, sticker := range value {
 		if strings.HasPrefix(sticker.Sticker, "attach://") {
 			filename := strings.TrimPrefix(sticker.Sticker, "attach://")
-			if readerIsNil(sticker.StickerAttachment) {
+			if !form.hasFilePart(filename) && readerIsNil(sticker.StickerAttachment) {
 				return fmt.Errorf("nil StickerAttachment for attach://%s", filename)
 			}
-			attachmentField, errCreateAttachmentField := form.CreateFormFile(filename, filename)
-			if errCreateAttachmentField != nil {
-				return errCreateAttachmentField
-			}
-			_, errCopy := io.Copy(attachmentField, sticker.StickerAttachment)
-			if errCopy != nil {
-				return errCopy
+			if err := form.addFilePart(filename, filename, sticker.StickerAttachment); err != nil {
+				return err
 			}
 		}
 		line, errEncode := json.Marshal(sticker)
@@ -420,33 +443,18 @@ func addFormFieldInputStickerSlice(form formWriter, fieldName string, value []mo
 		lines = append(lines, string(line))
 	}
 
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, strings.NewReader("["+strings.Join(lines, ",")+"]"))
-	return errCopy
+	return form.addFieldPart(fieldName, strings.NewReader("["+strings.Join(lines, ",")+"]"))
 }
 
-func addFormFieldDefault(form formWriter, fieldName string, value any) error {
+func addFormFieldDefault(form *requestForm, fieldName string, value any) error {
 	d, errMarshal := json.Marshal(value)
 	if errMarshal != nil {
 		return errMarshal
 	}
 	d = bytes.Trim(d, "\"") // for strings values
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, bytes.NewReader(d))
-	return errCopy
+	return form.addFieldPart(fieldName, bytes.NewReader(d))
 }
 
-func addFormFieldString(form formWriter, fieldName string, value string) error {
-	w, errCreateField := form.CreateFormField(fieldName)
-	if errCreateField != nil {
-		return errCreateField
-	}
-	_, errCopy := io.Copy(w, strings.NewReader(value))
-	return errCopy
+func addFormFieldString(form *requestForm, fieldName string, value string) error {
+	return form.addFieldPart(fieldName, strings.NewReader(value))
 }

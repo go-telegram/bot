@@ -42,13 +42,25 @@
   `attach://<filename>` and uploaded under that name. `InputFileUpload.MarshalJSON`
   emits the same reference everywhere; at the top level of a request the field is
   still sent as its own form part, so that path is unchanged.
-- Fix: two file parts sharing a name are rejected with an error instead of both
-  being written. The name of a part is what an `attach://` reference resolves
-  against, so a duplicate — most easily two thumbnails with the same `Filename` —
-  silently made Telegram resolve both references to the first file.
-- Fix: a typed nil `InputFile` thumbnail or a typed nil `InputMedia` in
-  `InputRichMessage.Media` no longer panics while the form is built. Both are
-  skipped, and the encoder writes them as `null`.
+- Fix: two different files sharing a part name are rejected with an error instead
+  of both being written. The name of a part is what an `attach://` reference
+  resolves against, so a duplicate — most easily two thumbnails with the same
+  `Filename` — silently made Telegram resolve both references to the first file.
+  One file referenced from several entries under a single name still works: the
+  part is written once and reused. A file part and a form field of the same name
+  are the same ambiguity and are rejected too.
+- Fix: a typed nil `InputFile` or `InputMedia` no longer panics while the form is
+  built. A typed nil in a top level `InputFile` field, in `InputMedia` /
+  `InputPaidMedia` (single or slice) or in `InputRichMessage.Media` is reported as
+  an error, and a typed nil thumbnail nested in an `InputMedia` is omitted from
+  the encoded media instead of being sent as a `null` the Bot API rejects.
+- Fix: a nested `InputFileUpload` with an empty `Filename` is rejected. `Filename`
+  is the `attach://` reference and the part name, so an empty one produced
+  `"thumbnail":"attach://"` and an opaque `Bad Request` from Telegram.
+- Fix: `InputFileUpload.MarshalJSON` and `InputFileString.MarshalJSON` escape
+  their value instead of concatenating it into a JSON string. A `Filename` or a
+  `file_id` containing a quote or a backslash produced invalid JSON, failing the
+  request after the file parts had already been streamed.
 - Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
   longer marked `omitempty` on `ChatAdministratorRights` and
   `ChatMemberAdministrator`. They are required fields in the Bot API, so they

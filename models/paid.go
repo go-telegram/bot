@@ -72,12 +72,15 @@ func (m *InputPaidMediaVideo) GetThumbnail() InputFile {
 }
 
 func (m *InputPaidMediaVideo) MarshalInputMedia() ([]byte, error) {
+	normalized := *m
+	normalized.Thumbnail = normalizeInputFile(normalized.Thumbnail)
+
 	ret := struct {
 		Type string `json:"type"`
 		*InputPaidMediaVideo
 	}{
 		Type:                "video",
-		InputPaidMediaVideo: m,
+		InputPaidMediaVideo: &normalized,
 	}
 
 	return json.Marshal(&ret)

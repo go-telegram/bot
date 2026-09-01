@@ -326,8 +326,11 @@ Telegram does not accept a reused file as a thumbnail, so a thumbnail is normall
 `Filename` as the part name. An `InputFileString` is passed through unchanged, so a
 `file_id` or an URL reaches the API as written.
 
-Part names must be unique within one request: two attachments sharing a name are
-rejected with an error, since Telegram would resolve both references to the first file.
+A part name identifies one file within a request. Referencing the same file from
+several entries under one name is fine — the part is written once and every reference
+resolves to it — but two different files sharing a name are rejected with an error,
+since Telegram would resolve both references to the first of them. A file part and a
+form field cannot share a name either.
 
 ```go
 thumbContent, _ := os.ReadFile("/path/to/thumb.jpg")

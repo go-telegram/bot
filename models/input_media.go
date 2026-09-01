@@ -92,6 +92,7 @@ func (m *InputMediaVideo) GetThumbnail() InputFile {
 type inputMediaVideoAlias InputMediaVideo
 
 func (m InputMediaVideo) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaVideoAlias
@@ -142,6 +143,7 @@ func (m *InputMediaAnimation) GetThumbnail() InputFile {
 type inputMediaAnimationAlias InputMediaAnimation
 
 func (m InputMediaAnimation) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaAnimationAlias
@@ -190,6 +192,7 @@ func (m *InputMediaAudio) GetThumbnail() InputFile {
 type inputMediaAudioAlias InputMediaAudio
 
 func (m InputMediaAudio) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaAudioAlias
@@ -277,6 +280,7 @@ func (m *InputMediaDocument) GetThumbnail() InputFile {
 type inputMediaDocumentAlias InputMediaDocument
 
 func (m InputMediaDocument) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaDocumentAlias

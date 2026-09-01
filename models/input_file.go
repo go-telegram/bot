@@ -23,7 +23,7 @@ func (*InputFileUpload) inputFileTag() {}
 // value is marshalled instead of becoming a form field of its own, e.g. the
 // thumbnail of an InputMedia. Filename doubles as the name of the form part.
 func (i *InputFileUpload) MarshalJSON() ([]byte, error) {
-	return []byte(`"attach://` + i.Filename + `"`), nil
+	return json.Marshal("attach://" + i.Filename)
 }
 
 type InputFileString struct {
@@ -33,9 +33,25 @@ type InputFileString struct {
 func (*InputFileString) inputFileTag() {}
 
 func (i *InputFileString) MarshalJSON() ([]byte, error) {
-	return []byte(`"` + i.Data + `"`), nil
+	return json.Marshal(i.Data)
 }
 
 func (i *InputFileString) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &i.Data)
+}
+
+// normalizeInputFile turns a typed nil pointer into an untyped nil, so an omitempty
+// field carrying one is omitted instead of encoded as a null the Bot API rejects.
+func normalizeInputFile(f InputFile) InputFile {
+	switch v := f.(type) {
+	case *InputFileUpload:
+		if v == nil {
+			return nil
+		}
+	case *InputFileString:
+		if v == nil {
+			return nil
+		}
+	}
+	return f
 }
