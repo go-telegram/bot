@@ -1439,6 +1439,36 @@ func TestBot_RichMessageMethods(t *testing.T) {
 		assertNoErr(t, err)
 		assertTrue(t, resp)
 	})
+
+	t.Run("SendRichMessageWithAttachment", func(t *testing.T) {
+		c := &httpClient{
+			t:    t,
+			resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`,
+			reqFields: map[string]string{
+				"chat_id":      "123",
+				"rich_message": `{"html":"tg://document?id=doc1","media":[{"id":"doc1","media":{"type":"document","media":"attach://doc1.pdf"}}]}`,
+			},
+			reqFiles: map[string]string{"doc1.pdf": "PDF-BYTES-HERE"},
+		}
+		b := &Bot{client: c}
+		resp, err := b.SendRichMessage(context.Background(), &SendRichMessageParams{
+			ChatID: 123,
+			RichMessage: models.InputRichMessage{
+				HTML: "tg://document?id=doc1",
+				Media: []models.InputRichMessageMedia{
+					{
+						ID: "doc1",
+						Media: &models.InputMediaDocument{
+							Media:           "attach://doc1.pdf",
+							MediaAttachment: strings.NewReader("PDF-BYTES-HERE"),
+						},
+					},
+				},
+			},
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+	})
 }
 
 func TestBot_EphemeralMessageMethods(t *testing.T) {

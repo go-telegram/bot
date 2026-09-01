@@ -83,11 +83,16 @@ func (m *InputMediaVideo) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaVideo) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaVideoAlias strips the methods of InputMediaVideo so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaVideoAlias InputMediaVideo
 
 func (m InputMediaVideo) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaVideoAlias
@@ -129,11 +134,16 @@ func (m *InputMediaAnimation) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaAnimation) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaAnimationAlias strips the methods of InputMediaAnimation so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaAnimationAlias InputMediaAnimation
 
 func (m InputMediaAnimation) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaAnimationAlias
@@ -173,11 +183,16 @@ func (m *InputMediaAudio) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaAudio) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaAudioAlias strips the methods of InputMediaAudio so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaAudioAlias InputMediaAudio
 
 func (m InputMediaAudio) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaAudioAlias
@@ -256,11 +271,16 @@ func (m *InputMediaDocument) GetMedia() string {
 	return m.Media
 }
 
+func (m *InputMediaDocument) GetThumbnail() InputFile {
+	return m.Thumbnail
+}
+
 // inputMediaDocumentAlias strips the methods of InputMediaDocument so the embedded value below is
 // encoded as plain fields instead of recursing back into MarshalJSON.
 type inputMediaDocumentAlias InputMediaDocument
 
 func (m InputMediaDocument) MarshalInputMedia() ([]byte, error) {
+	m.Thumbnail = normalizeInputFile(m.Thumbnail)
 	return json.Marshal(struct {
 		Type string `json:"type"`
 		inputMediaDocumentAlias
