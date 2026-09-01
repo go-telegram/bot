@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.25.0 (2026-09-01)
+
+- Fix: attachments nested in a rich message are uploaded. `buildRequestForm` had
+  no case for `InputRichMessage`, so the field fell through to a plain
+  `json.Marshal` and the `attach://` references in `InputRichMessage.Media` and
+  in the media `InputRichBlock*` blocks were serialized without their file parts,
+  leaving Telegram nothing to resolve them against (#298).
+- Fix: the thumbnail of an `InputMedia` is uploaded. `InputFileUpload` nested in
+  an `InputMediaVideo`, `InputMediaAnimation`, `InputMediaAudio`,
+  `InputMediaDocument` or `InputPaidMediaVideo` was encoded as `"@<filename>"`,
+  which is not a Bot API reference, and no file part was written, so the
+  thumbnail was silently dropped by Telegram. It is now marshalled as
+  `attach://<filename>` and uploaded under that name. `InputFileUpload.MarshalJSON`
+  emits the same reference everywhere; at the top level of a request the field is
+  still sent as its own form part, so that path is unchanged.
+- Fix: a typed nil `InputFile` or `InputMedia` no longer panics while the form is
+  built. A typed nil in a top level `InputFile` field, in `InputMedia` /
+  `InputPaidMedia` (single or slice) or in `InputRichMessage.Media` is reported as
+  an error, and a typed nil thumbnail nested in an `InputMedia` is omitted from
+  the encoded media instead of being sent as a `null` the Bot API rejects.
+- Fix: a nested `InputFileUpload` with an empty `Filename` is rejected. `Filename`
+  is the `attach://` reference and the part name, so an empty one produced
+  `"thumbnail":"attach://"` and an opaque `Bad Request` from Telegram.
+- Fix: `InputFileUpload.MarshalJSON` and `InputFileString.MarshalJSON` escape
+  their value instead of concatenating it into a JSON string. A `Filename` or a
+  `file_id` containing a quote or a backslash produced invalid JSON, failing the
+  request after the file parts had already been streamed.
+- [BREAKING] Fix: two different files sharing a part name are rejected with an
+  error instead of both being written. The name of a part is what an `attach://`
+  reference resolves against, so a duplicate — most easily two thumbnails with
+  the same `Filename` — silently made Telegram resolve both references to the
+  first file. One file referenced from several entries under a single name still
+  works: the part is written once and reused. A file part and a form field of the
+  same name are the same ambiguity and are rejected too. A request that built
+  before can now fail early, most visibly when an `attach://` name matches the
+  name of a form field, e.g. `attach://media` in `sendMediaGroup`,
+  `editMessageMedia` or `sendPaidMedia`.
+
 ## v1.24.0 (2026-08-26)
 
 - Support Bot API 10.3 (August 24, 2026 update):
@@ -29,38 +67,6 @@
   reader without checking it, and since the form is built in a goroutine with no
   recover, a missing `MediaAttachment` or `StickerAttachment` took the process
   down instead of failing the call (#296).
-- Fix: attachments nested in a rich message are uploaded. `buildRequestForm` had
-  no case for `InputRichMessage`, so the field fell through to a plain
-  `json.Marshal` and the `attach://` references in `InputRichMessage.Media` and
-  in the media `InputRichBlock*` blocks were serialized without their file parts,
-  leaving Telegram nothing to resolve them against (#298).
-- Fix: the thumbnail of an `InputMedia` is uploaded. `InputFileUpload` nested in
-  an `InputMediaVideo`, `InputMediaAnimation`, `InputMediaAudio`,
-  `InputMediaDocument` or `InputPaidMediaVideo` was encoded as `"@<filename>"`,
-  which is not a Bot API reference, and no file part was written, so the
-  thumbnail was silently dropped by Telegram. It is now marshalled as
-  `attach://<filename>` and uploaded under that name. `InputFileUpload.MarshalJSON`
-  emits the same reference everywhere; at the top level of a request the field is
-  still sent as its own form part, so that path is unchanged.
-- Fix: two different files sharing a part name are rejected with an error instead
-  of both being written. The name of a part is what an `attach://` reference
-  resolves against, so a duplicate — most easily two thumbnails with the same
-  `Filename` — silently made Telegram resolve both references to the first file.
-  One file referenced from several entries under a single name still works: the
-  part is written once and reused. A file part and a form field of the same name
-  are the same ambiguity and are rejected too.
-- Fix: a typed nil `InputFile` or `InputMedia` no longer panics while the form is
-  built. A typed nil in a top level `InputFile` field, in `InputMedia` /
-  `InputPaidMedia` (single or slice) or in `InputRichMessage.Media` is reported as
-  an error, and a typed nil thumbnail nested in an `InputMedia` is omitted from
-  the encoded media instead of being sent as a `null` the Bot API rejects.
-- Fix: a nested `InputFileUpload` with an empty `Filename` is rejected. `Filename`
-  is the `attach://` reference and the part name, so an empty one produced
-  `"thumbnail":"attach://"` and an opaque `Bad Request` from Telegram.
-- Fix: `InputFileUpload.MarshalJSON` and `InputFileString.MarshalJSON` escape
-  their value instead of concatenating it into a JSON string. A `Filename` or a
-  `file_id` containing a quote or a backslash produced invalid JSON, failing the
-  request after the file parts had already been streamed.
 - Fix: `can_post_stories`, `can_edit_stories` and `can_delete_stories` are no
   longer marked `omitempty` on `ChatAdministratorRights` and
   `ChatMemberAdministrator`. They are required fields in the Bot API, so they
