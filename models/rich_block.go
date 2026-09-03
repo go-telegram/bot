@@ -232,7 +232,8 @@ func (rb *RichBlock) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, rb.RichBlockThinking)
 	}
 
-	return fmt.Errorf("unsupported RichBlock type %q", v.Type)
+	rb.Type = v.Type
+	return nil
 }
 
 // RichBlockParagraph https://core.telegram.org/bots/api#richblockparagraph

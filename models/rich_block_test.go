@@ -62,13 +62,6 @@ func TestRichBlock_BlockQuotationWithBlocks(t *testing.T) {
 	richBlockRoundTrip(t, `{"type":"blockquote","blocks":[{"type":"paragraph","text":"quoted"}]}`)
 }
 
-func TestRichBlock_UnknownType(t *testing.T) {
-	var rb RichBlock
-	if err := json.Unmarshal([]byte(`{"type":"not_a_block"}`), &rb); err == nil {
-		t.Fatal("expected error for unknown RichBlock type")
-	}
-}
-
 func TestRichMessage_RoundTrip(t *testing.T) {
 	src := `{"blocks":[{"type":"thinking","text":"hmm"},{"type":"paragraph","text":"answer"}]}`
 

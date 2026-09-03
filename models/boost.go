@@ -70,7 +70,8 @@ func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, cbs.ChatBoostSourceGiveaway)
 	}
 
-	return fmt.Errorf("unsupported ChatBoostSource type")
+	cbs.Source = v.Source
+	return nil
 }
 
 func (cbs *ChatBoostSource) MarshalJSON() ([]byte, error) {

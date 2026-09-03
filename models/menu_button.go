@@ -49,7 +49,8 @@ func (c *MenuButton) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, c.Default)
 	}
 
-	return fmt.Errorf("unsupported MenuButton type")
+	c.Type = v.Type
+	return nil
 }
 
 func (c *MenuButton) MarshalJSON() ([]byte, error) {

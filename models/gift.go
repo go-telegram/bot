@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Gifts https://core.telegram.org/bots/api#gifts
@@ -73,7 +72,8 @@ func (g *OwnedGift) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, g.OwnedGiftUnique)
 	}
 
-	return fmt.Errorf("unsupported OwnedGift type")
+	g.Type = v.Type
+	return nil
 }
 
 // OwnedGiftType https://core.telegram.org/bots/api#ownedgift

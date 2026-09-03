@@ -278,7 +278,8 @@ func (rt *RichText) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(trimmed, rt.RichTextReferenceLink)
 	}
 
-	return fmt.Errorf("unsupported RichText type %q", v.Type)
+	rt.Type = v.Type
+	return nil
 }
 
 // RichTextBold https://core.telegram.org/bots/api#richtextbold

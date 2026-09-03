@@ -75,7 +75,8 @@ func (c *ChatMember) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, c.Banned)
 	}
 
-	return fmt.Errorf("unsupported ChatMember type")
+	c.Type = v.Status
+	return nil
 }
 
 func (c *ChatMember) MarshalJSON() ([]byte, error) {
