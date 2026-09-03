@@ -14,6 +14,7 @@ const (
 	HandlerTypeCallbackQueryData
 	HandlerTypeCallbackQueryGameShortName
 	HandlerTypePhotoCaption
+	HandlerTypeInlineQuery
 )
 
 type MatchType int
@@ -71,6 +72,12 @@ func (h handler) match(update *models.Update) bool {
 		}
 		data = update.Message.Caption
 		entities = update.Message.CaptionEntities
+	case HandlerTypeInlineQuery:
+		if update.InlineQuery == nil {
+			return false
+		}
+		return true
+
 	}
 
 	if h.matchType == MatchTypeExact {
@@ -135,6 +142,23 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 		handlerType: handlerType,
 		matchType:   matchTypeRegexp,
 		re:          re,
+		handler:     applyMiddlewares(f, m...),
+	}
+
+	b.handlers = append(b.handlers, h)
+
+	return id
+}
+
+func (b *Bot) RegisterInlineQueryHandler(f HandlerFunc, m ...Middleware) string {
+	b.handlersMx.Lock()
+	defer b.handlersMx.Unlock()
+
+	id := RandomString(16)
+
+	h := handler{
+		id:          id,
+		handlerType: HandlerTypeInlineQuery,
 		handler:     applyMiddlewares(f, m...),
 	}
 

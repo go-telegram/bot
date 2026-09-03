@@ -15,9 +15,7 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	opts := []bot.Option{
-		bot.WithDefaultHandler(handler),
-	}
+	opts := []bot.Option{}
 
 	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
 	if nil != err {
@@ -25,15 +23,12 @@ func main() {
 		// you should handle this error properly in your code.
 		panic(err)
 	}
-
+	// register inline query handler
+	b.RegisterInlineQueryHandler(handler)
 	b.Start(ctx)
 }
 
 func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	if update.InlineQuery == nil {
-		return
-	}
-
 	results := []models.InlineQueryResult{
 		&models.InlineQueryResultArticle{ID: "1", Title: "Foo 1", InputMessageContent: &models.InputTextMessageContent{MessageText: "foo 1"}},
 		&models.InlineQueryResultArticle{ID: "2", Title: "Foo 2", InputMessageContent: &models.InputTextMessageContent{MessageText: "foo 2"}},
