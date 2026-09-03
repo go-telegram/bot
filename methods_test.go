@@ -449,6 +449,22 @@ func TestBot_Methods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 
+	t.Run("SetChatMemberTag", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id": "123",
+			"user_id": "456",
+			"tag":     "moderator",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetChatMemberTag(context.Background(), &SetChatMemberTagParams{
+			ChatID: 123,
+			UserID: 456,
+			Tag:    "moderator",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
 	t.Run("BanChatSenderChat", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
 			"chat_id": "123",
