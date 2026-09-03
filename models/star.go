@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type TransactionPartnerType string
@@ -70,7 +69,8 @@ func (m *TransactionPartner) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, m.Other)
 	}
 
-	return fmt.Errorf("unsupported TransactionPartner type")
+	m.Type = v.Type
+	return nil
 }
 
 // AffiliateInfo https://core.telegram.org/bots/api#affiliateinfo
@@ -173,7 +173,8 @@ func (m *RevenueWithdrawalState) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, m.Failed)
 	}
 
-	return fmt.Errorf("unsupported RevenueWithdrawalState type")
+	m.Type = v.Type
+	return nil
 }
 
 // RevenueWithdrawalStatePending https://core.telegram.org/bots/api#revenuewithdrawalstatepending

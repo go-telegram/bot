@@ -104,7 +104,8 @@ func (mo *MessageOrigin) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, mo.MessageOriginChannel)
 	}
 
-	return fmt.Errorf("unsupported MessageOrigin type")
+	mo.Type = v.Type
+	return nil
 }
 
 func (mo *MessageOrigin) MarshalJSON() ([]byte, error) {

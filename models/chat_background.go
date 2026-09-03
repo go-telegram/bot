@@ -52,7 +52,8 @@ func (cb *BackgroundType) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, &cb.Theme)
 	}
 
-	return fmt.Errorf("unsupported ChatBackground type")
+	cb.Type = v.Type
+	return nil
 }
 
 func (cb *BackgroundType) MarshalJSON() ([]byte, error) {
@@ -144,7 +145,8 @@ func (bf *BackgroundFill) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, bf.FreeformGradient)
 	}
 
-	return fmt.Errorf("unsupported BackgroundFill type")
+	bf.Type = v.Type
+	return nil
 }
 
 func (bf *BackgroundFill) MarshalJSON() ([]byte, error) {

@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 )
 
@@ -145,7 +144,8 @@ func (s *StoryAreaType) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, s.StoryAreaTypeUniqueGift)
 	}
 
-	return fmt.Errorf("unsupported StoryAreaType type")
+	s.Type = v.Type
+	return nil
 }
 
 // StoryAreaTypeLocation https://core.telegram.org/bots/api#storyareatypelocation

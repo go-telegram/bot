@@ -60,7 +60,8 @@ func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 		return json.Unmarshal(data, rt.ReactionTypePaid)
 	}
 
-	return fmt.Errorf("unsupported ReactionType type")
+	rt.Type = ReactionTypeType(v.Type)
+	return nil
 }
 
 // ReactionTypeEmoji https://core.telegram.org/bots/api#reactiontypeemoji
