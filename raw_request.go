@@ -26,32 +26,6 @@ type apiResponse struct {
 }
 
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
-	pr, pw := io.Pipe()
-	form := multipart.NewWriter(pw)
-
-	go func() {
-		if params != nil && !reflect.ValueOf(params).IsNil() {
-			_, errFormData := buildRequestForm(form, params)
-			if errFormData != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error build request form for method %s, %w", method, errFormData)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
-
-			errFormClose := form.Close()
-			if errFormClose != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, errFormClose)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
-		}
-		if errClose := pw.Close(); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-		}
-	}()
-
 	u := b.url + "/bot" + b.token + "/"
 	if b.testEnvironment {
 		u += "test/"
@@ -63,23 +37,53 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		b.debugHandler("request url: %s, payload: %s", strings.Replace(u, b.token, "***", 1), requestDebugData)
 	}
 
-	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, pr)
-	if errRequest != nil {
-		return fmt.Errorf("error create request for method %s, %w", method, errRequest)
-	}
+	var req *http.Request
+	var errRequest error
 
-	req.Header.Add("Content-Type", form.FormDataContentType())
+	if isNil(params) {
+		req, errRequest = http.NewRequestWithContext(ctx, http.MethodPost, u, nil)
+		if errRequest != nil {
+			return fmt.Errorf("error create request for method %s, %w", method, errRequest)
+		}
+	} else {
+		pr, pw := io.Pipe()
+		form := multipart.NewWriter(pw)
+
+		go func() {
+			_, errFormData := buildRequestForm(form, params)
+			if errFormData != nil {
+				if errClose := pw.CloseWithError(fmt.Errorf("error build request form for method %s, %w", method, errFormData)); errClose != nil {
+					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
+				}
+				return
+			}
+
+			if err := form.Close(); err != nil {
+				if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, err)); errClose != nil {
+					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
+				}
+				return
+			}
+
+			if errClose := pw.Close(); errClose != nil {
+				b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
+			}
+		}()
+
+		req, errRequest = http.NewRequestWithContext(ctx, http.MethodPost, u, pr)
+		if errRequest != nil {
+			return fmt.Errorf("error create request for method %s, %w", method, errRequest)
+		}
+
+		req.Header.Add("Content-Type", form.FormDataContentType())
+	}
 
 	resp, errDo := b.client.Do(req)
 	if errDo != nil {
-		if errClose := pr.CloseWithError(errDo); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe reader for method %s, %w", method, errClose))
-		}
 		var netErr *url.Error
 		if errors.As(errDo, &netErr) {
 			netErr.URL = strings.Replace(netErr.URL, b.token, "***", -1)
 		}
-
 		return fmt.Errorf("error do request for method %s, %w", method, errDo)
 	}
 	defer func() {
@@ -110,7 +114,6 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 					Message:         fmt.Sprintf("%s: %s", ErrorBadRequest, r.Description),
 					MigrateToChatID: r.Parameters.MigrateToChatID,
 				}
-
 				return err
 			}
 			return fmt.Errorf("%w, %s", ErrorBadRequest, r.Description)
@@ -145,4 +148,18 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 	}
 
 	return nil
+}
+
+func isNil(v any) bool {
+	if v == nil {
+		return true
+	}
+
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
+		return rv.IsNil()
+	default:
+		return false
+	}
 }
