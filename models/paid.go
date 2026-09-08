@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 )
 
@@ -112,6 +111,10 @@ func (p *PaidMedia) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("PaidMedia")
+	}
+
 	p.Type = v.Type
 
 	switch v.Type {
@@ -124,9 +127,9 @@ func (p *PaidMedia) UnmarshalJSON(data []byte) error {
 	case PaidMediaTypeVideo:
 		p.Video = &PaidMediaVideo{}
 		return json.Unmarshal(data, p.Video)
-	default:
-		return fmt.Errorf("unsupported PaidMedia type, %v", v.Type)
 	}
+
+	return nil
 }
 
 // PaidMediaPreview https://core.telegram.org/bots/api#paidmediapreview

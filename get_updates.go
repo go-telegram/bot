@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"sync"
 	"sync/atomic"
@@ -56,7 +57,7 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			params.AllowedUpdates = b.allowedUpdates
 		}
 
-		var updates []*models.Update
+		var updates []json.RawMessage
 
 		errRequest := b.rawRequest(ctx, "getUpdates", params, &updates)
 		if errRequest != nil {
@@ -75,10 +76,29 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			continue
 		}
 
-		timeoutAfterError = 0
+		// offsetStuck is set when the last update of the batch left the offset where it
+		// was, so the very same batch comes back on the next request.
+		offsetStuck := false
 
-		for _, upd := range updates {
+		for _, raw := range updates {
+			upd, errDecode := decodeUpdate(raw)
+			if upd.ID == 0 {
+				if errDecode == nil {
+					errDecode = errMissingUpdateID
+				}
+				b.error("error decode update, %s, %w", raw, errDecode)
+				offsetStuck = true
+				continue
+			}
+
+			offsetStuck = false
 			atomic.StoreInt64(&b.lastUpdateID, upd.ID)
+
+			if errDecode != nil {
+				b.error("error decode update %d, skipped, %s, %w", upd.ID, raw, errDecode)
+				continue
+			}
+
 			select {
 			case <-ctx.Done():
 				b.error("some updates lost, ctx done")
@@ -86,7 +106,35 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			case b.updates <- upd:
 			}
 		}
+
+		if offsetStuck {
+			// Back off as on a failed request instead of re-requesting the same
+			// batch at full speed.
+			timeoutAfterError = incErrTimeout(timeoutAfterError)
+		} else {
+			timeoutAfterError = 0
+		}
 	}
+}
+
+var errMissingUpdateID = errors.New("missing update_id")
+
+// decodeUpdate decodes one update on its own, so a single undecodable update does not
+// reject the whole batch. On failure the id is still read when possible, so the offset
+// can move past it. A zero id means it could not be read.
+func decodeUpdate(raw json.RawMessage) (*models.Update, error) {
+	upd := &models.Update{}
+	errDecode := json.Unmarshal(raw, upd)
+	if errDecode == nil {
+		return upd, nil
+	}
+
+	head := struct {
+		ID int64 `json:"update_id"`
+	}{}
+	_ = json.Unmarshal(raw, &head)
+
+	return &models.Update{ID: head.ID}, errDecode
 }
 
 func incErrTimeout(timeout time.Duration) time.Duration {

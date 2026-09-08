@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ReactionTypeType https://core.telegram.org/bots/api#reactiontype
@@ -26,41 +25,44 @@ type ReactionType struct {
 func (rt *ReactionType) MarshalJSON() ([]byte, error) {
 	switch rt.Type {
 	case ReactionTypeTypeEmoji:
-		rt.ReactionTypeEmoji.Type = ReactionTypeTypeEmoji
-		return json.Marshal(rt.ReactionTypeEmoji)
+		return marshalVariant("ReactionType", rt.Type, rt.ReactionTypeEmoji, func(v *ReactionTypeEmoji) { v.Type = rt.Type })
 	case ReactionTypeTypeCustomEmoji:
-		rt.ReactionTypeCustomEmoji.Type = ReactionTypeTypeCustomEmoji
-		return json.Marshal(rt.ReactionTypeCustomEmoji)
+		return marshalVariant("ReactionType", rt.Type, rt.ReactionTypeCustomEmoji, func(v *ReactionTypeCustomEmoji) { v.Type = rt.Type })
+	case ReactionTypeTypePaid:
+		return marshalVariant("ReactionType", rt.Type, rt.ReactionTypePaid, func(v *ReactionTypePaid) { v.Type = string(rt.Type) })
 	}
 
-	return nil, fmt.Errorf("unsupported ReactionType type")
+	return marshalUnknownVariant("ReactionType", "type", rt.Type)
 }
 
 func (rt *ReactionType) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type string `json:"type"`
+		Type ReactionTypeType `json:"type"`
 	}{}
 	err := json.Unmarshal(data, &v)
 	if err != nil {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("ReactionType")
+	}
+
+	rt.Type = v.Type
+
 	switch v.Type {
-	case "emoji":
-		rt.Type = ReactionTypeTypeEmoji
+	case ReactionTypeTypeEmoji:
 		rt.ReactionTypeEmoji = &ReactionTypeEmoji{}
 		return json.Unmarshal(data, rt.ReactionTypeEmoji)
-	case "custom_emoji":
-		rt.Type = ReactionTypeTypeCustomEmoji
+	case ReactionTypeTypeCustomEmoji:
 		rt.ReactionTypeCustomEmoji = &ReactionTypeCustomEmoji{}
 		return json.Unmarshal(data, rt.ReactionTypeCustomEmoji)
-	case "paid":
-		rt.Type = ReactionTypeTypePaid
+	case ReactionTypeTypePaid:
 		rt.ReactionTypePaid = &ReactionTypePaid{}
 		return json.Unmarshal(data, rt.ReactionTypePaid)
 	}
 
-	return fmt.Errorf("unsupported ReactionType type")
+	return nil
 }
 
 // ReactionTypeEmoji https://core.telegram.org/bots/api#reactiontypeemoji

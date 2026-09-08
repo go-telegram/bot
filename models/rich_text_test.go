@@ -111,14 +111,6 @@ func TestRichText_Null(t *testing.T) {
 	}
 }
 
-func TestRichText_UnknownType(t *testing.T) {
-	var rt RichText
-	err := rt.UnmarshalJSON([]byte(`{"type":"definitely_not_a_real_type"}`))
-	if err == nil {
-		t.Fatal("expected error for unknown RichText type")
-	}
-}
-
 // TestRichText_NilVariant verifies a Type set without its matching variant
 // pointer returns an error instead of panicking.
 func TestRichText_NilVariant(t *testing.T) {

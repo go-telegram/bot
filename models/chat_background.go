@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type BackgroundTypeType string
@@ -37,22 +36,24 @@ func (cb *BackgroundType) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("BackgroundType")
+	}
+
+	cb.Type = v.Type
+
 	switch v.Type {
 	case ChatBackgroundTypeFill:
-		cb.Type = ChatBackgroundTypeFill
 		return json.Unmarshal(data, &cb.Fill)
 	case ChatBackgroundTypeWallpaper:
-		cb.Type = ChatBackgroundTypeWallpaper
 		return json.Unmarshal(data, &cb.Wallpaper)
 	case ChatBackgroundTypePattern:
-		cb.Type = ChatBackgroundTypePattern
 		return json.Unmarshal(data, &cb.Pattern)
 	case ChatBackgroundTypeChatTheme:
-		cb.Type = ChatBackgroundTypeChatTheme
 		return json.Unmarshal(data, &cb.Theme)
 	}
 
-	return fmt.Errorf("unsupported ChatBackground type")
+	return nil
 }
 
 func (cb *BackgroundType) MarshalJSON() ([]byte, error) {
@@ -71,7 +72,7 @@ func (cb *BackgroundType) MarshalJSON() ([]byte, error) {
 		return json.Marshal(cb.Theme)
 	}
 
-	return nil, fmt.Errorf("unsupported ChatBackground type")
+	return marshalUnknownVariant("BackgroundType", "type", cb.Type)
 }
 
 // BackgroundTypeFill https://core.telegram.org/bots/api#backgroundtypefill
@@ -129,22 +130,25 @@ func (bf *BackgroundFill) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("BackgroundFill")
+	}
+
+	bf.Type = v.Type
+
 	switch v.Type {
 	case BackgroundFillTypeSolid:
-		bf.Type = BackgroundFillTypeSolid
 		bf.Solid = &BackgroundFillSolid{}
 		return json.Unmarshal(data, bf.Solid)
 	case BackgroundFillTypeGradient:
-		bf.Type = BackgroundFillTypeGradient
 		bf.Gradient = &BackgroundFillGradient{}
 		return json.Unmarshal(data, bf.Gradient)
 	case BackgroundFillTypeFreeformGradient:
-		bf.Type = BackgroundFillTypeFreeformGradient
 		bf.FreeformGradient = &BackgroundFillFreeformGradient{}
 		return json.Unmarshal(data, bf.FreeformGradient)
 	}
 
-	return fmt.Errorf("unsupported BackgroundFill type")
+	return nil
 }
 
 func (bf *BackgroundFill) MarshalJSON() ([]byte, error) {
@@ -160,7 +164,7 @@ func (bf *BackgroundFill) MarshalJSON() ([]byte, error) {
 		return json.Marshal(bf.FreeformGradient)
 	}
 
-	return nil, fmt.Errorf("unsupported BackgroundFill type")
+	return marshalUnknownVariant("BackgroundFill", "type", bf.Type)
 }
 
 // BackgroundFillSolid https://core.telegram.org/bots/api#backgroundfillsolid

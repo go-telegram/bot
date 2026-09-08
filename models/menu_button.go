@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type MenuButtonType string
@@ -34,22 +33,25 @@ func (c *MenuButton) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("MenuButton")
+	}
+
+	c.Type = v.Type
+
 	switch v.Type {
 	case MenuButtonTypeCommands:
-		c.Type = MenuButtonTypeCommands
 		c.Commands = &MenuButtonCommands{}
 		return json.Unmarshal(data, c.Commands)
 	case MenuButtonTypeWebApp:
-		c.Type = MenuButtonTypeWebApp
 		c.WebApp = &MenuButtonWebApp{}
 		return json.Unmarshal(data, c.WebApp)
 	case MenuButtonTypeDefault:
-		c.Type = MenuButtonTypeDefault
 		c.Default = &MenuButtonDefault{}
 		return json.Unmarshal(data, c.Default)
 	}
 
-	return fmt.Errorf("unsupported MenuButton type")
+	return nil
 }
 
 func (c *MenuButton) MarshalJSON() ([]byte, error) {
@@ -65,7 +67,7 @@ func (c *MenuButton) MarshalJSON() ([]byte, error) {
 		return json.Marshal(c.Default)
 	}
 
-	return nil, fmt.Errorf("unsupported MenuButton type")
+	return marshalUnknownVariant("MenuButton", "type", c.Type)
 }
 
 // MenuButtonCommands https://core.telegram.org/bots/api#menubuttoncommands

@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // TextQuote https://core.telegram.org/bots/api#textquote
@@ -85,26 +84,28 @@ func (mo *MessageOrigin) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Type == "" {
+		return missingDiscriminator("MessageOrigin")
+	}
+
+	mo.Type = v.Type
+
 	switch v.Type {
 	case MessageOriginTypeUser:
-		mo.Type = MessageOriginTypeUser
 		mo.MessageOriginUser = &MessageOriginUser{}
 		return json.Unmarshal(data, mo.MessageOriginUser)
 	case MessageOriginTypeHiddenUser:
-		mo.Type = MessageOriginTypeHiddenUser
 		mo.MessageOriginHiddenUser = &MessageOriginHiddenUser{}
 		return json.Unmarshal(data, mo.MessageOriginHiddenUser)
 	case MessageOriginTypeChat:
-		mo.Type = MessageOriginTypeChat
 		mo.MessageOriginChat = &MessageOriginChat{}
 		return json.Unmarshal(data, mo.MessageOriginChat)
 	case MessageOriginTypeChannel:
-		mo.Type = MessageOriginTypeChannel
 		mo.MessageOriginChannel = &MessageOriginChannel{}
 		return json.Unmarshal(data, mo.MessageOriginChannel)
 	}
 
-	return fmt.Errorf("unsupported MessageOrigin type")
+	return nil
 }
 
 func (mo *MessageOrigin) MarshalJSON() ([]byte, error) {
@@ -123,7 +124,7 @@ func (mo *MessageOrigin) MarshalJSON() ([]byte, error) {
 		return json.Marshal(mo.MessageOriginChannel)
 	}
 
-	return nil, fmt.Errorf("unsupported MessageOrigin type")
+	return marshalUnknownVariant("MessageOrigin", "type", mo.Type)
 }
 
 // MessageOriginUser https://core.telegram.org/bots/api#messageoriginuser

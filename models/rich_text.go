@@ -142,7 +142,7 @@ func (rt RichText) MarshalJSON() ([]byte, error) {
 		return marshalVariant("RichText", rt.Type, rt.RichTextReferenceLink, func(v *RichTextReferenceLink) { v.Type = rt.Type })
 	}
 
-	return nil, fmt.Errorf("unsupported RichText type %q", rt.Type)
+	return marshalUnknownVariant("RichText", "type", rt.Type)
 }
 
 func (rt *RichText) UnmarshalJSON(data []byte) error {
@@ -171,114 +171,97 @@ func (rt *RichText) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	// An empty Type is the plain-string form. A tagged object without a "type" would
+	// alias to it and re-encode as "", so it stays an error rather than a tolerated
+	// unknown variant.
+	if v.Type == "" {
+		return missingDiscriminator("RichText")
+	}
+
+	rt.Type = v.Type
+
 	switch v.Type {
 	case RichTextTypeBold:
-		rt.Type = RichTextTypeBold
 		rt.RichTextBold = &RichTextBold{}
 		return json.Unmarshal(trimmed, rt.RichTextBold)
 	case RichTextTypeItalic:
-		rt.Type = RichTextTypeItalic
 		rt.RichTextItalic = &RichTextItalic{}
 		return json.Unmarshal(trimmed, rt.RichTextItalic)
 	case RichTextTypeUnderline:
-		rt.Type = RichTextTypeUnderline
 		rt.RichTextUnderline = &RichTextUnderline{}
 		return json.Unmarshal(trimmed, rt.RichTextUnderline)
 	case RichTextTypeStrikethrough:
-		rt.Type = RichTextTypeStrikethrough
 		rt.RichTextStrikethrough = &RichTextStrikethrough{}
 		return json.Unmarshal(trimmed, rt.RichTextStrikethrough)
 	case RichTextTypeSpoiler:
-		rt.Type = RichTextTypeSpoiler
 		rt.RichTextSpoiler = &RichTextSpoiler{}
 		return json.Unmarshal(trimmed, rt.RichTextSpoiler)
 	case RichTextTypeDateTime:
-		rt.Type = RichTextTypeDateTime
 		rt.RichTextDateTime = &RichTextDateTime{}
 		return json.Unmarshal(trimmed, rt.RichTextDateTime)
 	case RichTextTypeTextMention:
-		rt.Type = RichTextTypeTextMention
 		rt.RichTextTextMention = &RichTextTextMention{}
 		return json.Unmarshal(trimmed, rt.RichTextTextMention)
 	case RichTextTypeSubscript:
-		rt.Type = RichTextTypeSubscript
 		rt.RichTextSubscript = &RichTextSubscript{}
 		return json.Unmarshal(trimmed, rt.RichTextSubscript)
 	case RichTextTypeSuperscript:
-		rt.Type = RichTextTypeSuperscript
 		rt.RichTextSuperscript = &RichTextSuperscript{}
 		return json.Unmarshal(trimmed, rt.RichTextSuperscript)
 	case RichTextTypeMarked:
-		rt.Type = RichTextTypeMarked
 		rt.RichTextMarked = &RichTextMarked{}
 		return json.Unmarshal(trimmed, rt.RichTextMarked)
 	case RichTextTypeCode:
-		rt.Type = RichTextTypeCode
 		rt.RichTextCode = &RichTextCode{}
 		return json.Unmarshal(trimmed, rt.RichTextCode)
 	case RichTextTypeCustomEmoji:
-		rt.Type = RichTextTypeCustomEmoji
 		rt.RichTextCustomEmoji = &RichTextCustomEmoji{}
 		return json.Unmarshal(trimmed, rt.RichTextCustomEmoji)
 	case RichTextTypeMathematicalExpression:
-		rt.Type = RichTextTypeMathematicalExpression
 		rt.RichTextMathematicalExpression = &RichTextMathematicalExpression{}
 		return json.Unmarshal(trimmed, rt.RichTextMathematicalExpression)
 	case RichTextTypeURL:
-		rt.Type = RichTextTypeURL
 		rt.RichTextURL = &RichTextURL{}
 		return json.Unmarshal(trimmed, rt.RichTextURL)
 	case RichTextTypeEmailAddress:
-		rt.Type = RichTextTypeEmailAddress
 		rt.RichTextEmailAddress = &RichTextEmailAddress{}
 		return json.Unmarshal(trimmed, rt.RichTextEmailAddress)
 	case RichTextTypePhoneNumber:
-		rt.Type = RichTextTypePhoneNumber
 		rt.RichTextPhoneNumber = &RichTextPhoneNumber{}
 		return json.Unmarshal(trimmed, rt.RichTextPhoneNumber)
 	case RichTextTypeBankCardNumber:
-		rt.Type = RichTextTypeBankCardNumber
 		rt.RichTextBankCardNumber = &RichTextBankCardNumber{}
 		return json.Unmarshal(trimmed, rt.RichTextBankCardNumber)
 	case RichTextTypeMention:
-		rt.Type = RichTextTypeMention
 		rt.RichTextMention = &RichTextMention{}
 		return json.Unmarshal(trimmed, rt.RichTextMention)
 	case RichTextTypeHashtag:
-		rt.Type = RichTextTypeHashtag
 		rt.RichTextHashtag = &RichTextHashtag{}
 		return json.Unmarshal(trimmed, rt.RichTextHashtag)
 	case RichTextTypeCashtag:
-		rt.Type = RichTextTypeCashtag
 		rt.RichTextCashtag = &RichTextCashtag{}
 		return json.Unmarshal(trimmed, rt.RichTextCashtag)
 	case RichTextTypeBotCommand:
-		rt.Type = RichTextTypeBotCommand
 		rt.RichTextBotCommand = &RichTextBotCommand{}
 		return json.Unmarshal(trimmed, rt.RichTextBotCommand)
 	case RichTextTypeButton:
-		rt.Type = RichTextTypeButton
 		rt.RichTextButton = &RichTextButton{}
 		return json.Unmarshal(trimmed, rt.RichTextButton)
 	case RichTextTypeAnchor:
-		rt.Type = RichTextTypeAnchor
 		rt.RichTextAnchor = &RichTextAnchor{}
 		return json.Unmarshal(trimmed, rt.RichTextAnchor)
 	case RichTextTypeAnchorLink:
-		rt.Type = RichTextTypeAnchorLink
 		rt.RichTextAnchorLink = &RichTextAnchorLink{}
 		return json.Unmarshal(trimmed, rt.RichTextAnchorLink)
 	case RichTextTypeReference:
-		rt.Type = RichTextTypeReference
 		rt.RichTextReference = &RichTextReference{}
 		return json.Unmarshal(trimmed, rt.RichTextReference)
 	case RichTextTypeReferenceLink:
-		rt.Type = RichTextTypeReferenceLink
 		rt.RichTextReferenceLink = &RichTextReferenceLink{}
 		return json.Unmarshal(trimmed, rt.RichTextReferenceLink)
 	}
 
-	return fmt.Errorf("unsupported RichText type %q", v.Type)
+	return nil
 }
 
 // RichTextBold https://core.telegram.org/bots/api#richtextbold

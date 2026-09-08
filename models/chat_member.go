@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ChatMemberUpdated https://core.telegram.org/bots/api#chatmemberupdated
@@ -48,34 +47,34 @@ func (c *ChatMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Status == "" {
+		return missingDiscriminator("ChatMember")
+	}
+
+	c.Type = v.Status
+
 	switch v.Status {
 	case ChatMemberTypeOwner:
-		c.Type = ChatMemberTypeOwner
 		c.Owner = &ChatMemberOwner{}
 		return json.Unmarshal(data, c.Owner)
 	case ChatMemberTypeAdministrator:
-		c.Type = ChatMemberTypeAdministrator
 		c.Administrator = &ChatMemberAdministrator{}
 		return json.Unmarshal(data, c.Administrator)
 	case ChatMemberTypeMember:
-		c.Type = ChatMemberTypeMember
 		c.Member = &ChatMemberMember{}
 		return json.Unmarshal(data, c.Member)
 	case ChatMemberTypeRestricted:
-		c.Type = ChatMemberTypeRestricted
 		c.Restricted = &ChatMemberRestricted{}
 		return json.Unmarshal(data, c.Restricted)
 	case ChatMemberTypeLeft:
-		c.Type = ChatMemberTypeLeft
 		c.Left = &ChatMemberLeft{}
 		return json.Unmarshal(data, c.Left)
 	case ChatMemberTypeBanned:
-		c.Type = ChatMemberTypeBanned
 		c.Banned = &ChatMemberBanned{}
 		return json.Unmarshal(data, c.Banned)
 	}
 
-	return fmt.Errorf("unsupported ChatMember type")
+	return nil
 }
 
 func (c *ChatMember) MarshalJSON() ([]byte, error) {
@@ -100,7 +99,7 @@ func (c *ChatMember) MarshalJSON() ([]byte, error) {
 		return json.Marshal(c.Banned)
 	}
 
-	return nil, fmt.Errorf("unsupported ChatMember type")
+	return marshalUnknownVariant("ChatMember", "status", c.Type)
 }
 
 // ChatMemberOwner https://core.telegram.org/bots/api#chatmemberowner

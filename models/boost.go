@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ChatBoostAdded https://core.telegram.org/bots/api#chatboostadded
@@ -55,22 +54,25 @@ func (cbs *ChatBoostSource) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	if v.Source == "" {
+		return missingDiscriminator("ChatBoostSource")
+	}
+
+	cbs.Source = v.Source
+
 	switch v.Source {
 	case ChatBoostSourceTypePremium:
-		cbs.Source = ChatBoostSourceTypePremium
 		cbs.ChatBoostSourcePremium = &ChatBoostSourcePremium{}
 		return json.Unmarshal(data, cbs.ChatBoostSourcePremium)
 	case ChatBoostSourceTypeGiftCode:
-		cbs.Source = ChatBoostSourceTypeGiftCode
 		cbs.ChatBoostSourceGiftCode = &ChatBoostSourceGiftCode{}
 		return json.Unmarshal(data, cbs.ChatBoostSourceGiftCode)
 	case ChatBoostSourceTypeGiveaway:
-		cbs.Source = ChatBoostSourceTypeGiveaway
 		cbs.ChatBoostSourceGiveaway = &ChatBoostSourceGiveaway{}
 		return json.Unmarshal(data, cbs.ChatBoostSourceGiveaway)
 	}
 
-	return fmt.Errorf("unsupported ChatBoostSource type")
+	return nil
 }
 
 func (cbs *ChatBoostSource) MarshalJSON() ([]byte, error) {
@@ -86,7 +88,7 @@ func (cbs *ChatBoostSource) MarshalJSON() ([]byte, error) {
 		return json.Marshal(cbs.ChatBoostSourceGiveaway)
 	}
 
-	return nil, fmt.Errorf("unsupported ChatBoostSource type")
+	return marshalUnknownVariant("ChatBoostSource", "source", cbs.Source)
 }
 
 // ChatBoostSourceType https://core.telegram.org/bots/api#chatboostsource
