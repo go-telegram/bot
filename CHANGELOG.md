@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.27.0
+## v1.27.0 (2026-09-11)
 
 - Fix: a request can be retried by HTTP/2 after the server sends GOAWAY. `rawRequest`
   streamed the multipart body through an `io.Pipe`, which `net/http` cannot replay,
