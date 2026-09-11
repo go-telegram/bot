@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.26.0
+## v1.26.0 (2026-09-11)
 
 - Fix: an unknown polymorphic discriminator no longer stalls long polling. Fourteen
   models (`ChatMember`, `ReactionType`, `ChatBoostSource`, `OwnedGift`, `MenuButton`,
