@@ -25,32 +25,35 @@ type apiResponse struct {
 	} `json:"parameters,omitempty"`
 }
 
+// rawRequest materialises the multipart body up front so net/http can set
+// Request.ContentLength and Request.GetBody. Without them http2.Transport cannot
+// replay a POST after the server sends GOAWAY, and every call on a draining
+// connection fails. The price is that an upload is held in memory for the
+// duration of the request. A method with no fields is sent without a body and
+// without a Content-Type, as local telegram-bot-api servers reject an empty
+// multipart body.
 func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest any) error {
-	pr, pw := io.Pipe()
-	form := multipart.NewWriter(pw)
+	var bodyBuf bytes.Buffer
+	form := multipart.NewWriter(&bodyBuf)
 
-	go func() {
-		if params != nil && !reflect.ValueOf(params).IsNil() {
-			_, errFormData := buildRequestForm(form, params)
-			if errFormData != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error build request form for method %s, %w", method, errFormData)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
+	var fieldsCount int
+	if params != nil && !reflect.ValueOf(params).IsNil() {
+		var errFormData error
+		fieldsCount, errFormData = buildRequestForm(form, params)
+		if errFormData != nil {
+			return fmt.Errorf("error build request form for method %s, %w", method, errFormData)
+		}
+	}
 
-			errFormClose := form.Close()
-			if errFormClose != nil {
-				if errClose := pw.CloseWithError(fmt.Errorf("error form close for method %s, %w", method, errFormClose)); errClose != nil {
-					b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-				}
-				return
-			}
+	var requestBody io.Reader = http.NoBody
+	var contentType string
+	if fieldsCount > 0 {
+		if errFormClose := form.Close(); errFormClose != nil {
+			return fmt.Errorf("error form close for method %s, %w", method, errFormClose)
 		}
-		if errClose := pw.Close(); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe writer for method %s, %w", method, errClose))
-		}
-	}()
+		requestBody = bytes.NewReader(bodyBuf.Bytes())
+		contentType = form.FormDataContentType()
+	}
 
 	u := b.url + "/bot" + b.token + "/"
 	if b.testEnvironment {
@@ -63,18 +66,17 @@ func (b *Bot) rawRequest(ctx context.Context, method string, params any, dest an
 		b.debugHandler("request url: %s, payload: %s", strings.Replace(u, b.token, "***", 1), requestDebugData)
 	}
 
-	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, pr)
+	req, errRequest := http.NewRequestWithContext(ctx, http.MethodPost, u, requestBody)
 	if errRequest != nil {
 		return fmt.Errorf("error create request for method %s, %w", method, errRequest)
 	}
 
-	req.Header.Add("Content-Type", form.FormDataContentType())
+	if contentType != "" {
+		req.Header.Set("Content-Type", contentType)
+	}
 
 	resp, errDo := b.client.Do(req)
 	if errDo != nil {
-		if errClose := pr.CloseWithError(errDo); errClose != nil {
-			b.errorsHandler(fmt.Errorf("error close pipe reader for method %s, %w", method, errClose))
-		}
 		var netErr *url.Error
 		if errors.As(errDo, &netErr) {
 			netErr.URL = strings.Replace(netErr.URL, b.token, "***", -1)

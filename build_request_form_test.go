@@ -168,7 +168,7 @@ Content-Disposition: form-data; name="input_sticker_slice"
 [{"sticker":"attach://sticker.png","format":"foo","emoji_list":["bar"]},{"sticker":"foo","format":"bar","emoji_list":["baz"]}]
 --XXX--
 `
-	assertEqualInt(t, fieldsCount, 7)
+	assertEqualInt(t, fieldsCount, 9)
 	assertFormData(t, buf.String(), expect)
 }
 

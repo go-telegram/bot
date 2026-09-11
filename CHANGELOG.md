@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.27.0
+
+- Fix: a request can be retried by HTTP/2 after the server sends GOAWAY. `rawRequest`
+  streamed the multipart body through an `io.Pipe`, which `net/http` cannot replay,
+  so `Request.GetBody` was never set and `http2.Transport` failed every POST in
+  flight on a draining connection with `cannot retry err ... after Request.Body was
+  written`. Telegram drains connections routinely, and a bot on such a connection
+  kept receiving updates while every `sendMessage` / `editMessageText` /
+  `answerCallbackQuery` failed until the connection was dropped. The body is now
+  built into a buffer up front and handed over as a `*bytes.Reader`, so `net/http`
+  sets `ContentLength` and `GetBody` and the transport retries transparently. The
+  trade-off is that an upload is held in memory for the duration of the request
+  instead of being streamed (#275).
+- Fix: a method without fields (`getMe`, `logOut`, `close`, or a params struct whose
+  fields are all omitted) is sent without a body and without a multipart
+  `Content-Type`. The pipe-based request always declared a multipart body, empty or
+  not, which local `telegram-bot-api --local` servers reject with a bare `400`, so
+  `bot.New` against a local server failed with `unexpected end of JSON input`
+  (#285, #224).
+- Fix: `buildRequestForm` counts custom-marshaled fields (`BotCommandScope`,
+  `InlineQueryResult`) and `InputMedia` fields. They were written to the form but
+  not counted, so a request consisting only of such a field would have been sent
+  as empty.
+
 ## v1.26.0 (2026-09-11)
 
 - Fix: an unknown polymorphic discriminator no longer stalls long polling. Fourteen

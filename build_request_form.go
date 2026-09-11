@@ -127,6 +127,7 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 			if err != nil {
 				return 0, err
 			}
+			fieldsCount++
 			continue
 		}
 		if v.Field(i).Type().Implements(inputMediaInterface) {
@@ -134,6 +135,7 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 			if err != nil {
 				return 0, err
 			}
+			fieldsCount++
 			continue
 		}
 
@@ -144,6 +146,7 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 				if err != nil {
 					return 0, err
 				}
+				fieldsCount++
 				continue
 			}
 			if v.Field(i).Elem().Type().Implements(inputMediaInterface) {
@@ -151,6 +154,7 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 				if err != nil {
 					return 0, err
 				}
+				fieldsCount++
 				continue
 			}
 		}
