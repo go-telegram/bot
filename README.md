@@ -478,7 +478,7 @@ if errors.Is(err, mybot.ErrorConflict) {
 
 ## Other
 
-- `bot.ID() int64` - returns bot ID. Bot ID is a unique identifier for the bot, obtained from the token as first part before `:`. Example: `110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw` - bot ID is `110201543`. If the bot token is invalid, the bot ID will be 0.
+- `bot.ID() int64` - returns bot ID. Bot ID is a unique identifier for the bot, obtained from the token as first part before `:`. Example: `110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw` - bot ID is `110201543`. Returns 0 if the prefix cannot be parsed as an `int64`, including overflow. This method does not validate or authenticate the token.
 - `bot.Token() string` - returns bot token
 - `bot.SetToken()` - set new bot token
 

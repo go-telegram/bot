@@ -102,8 +102,13 @@ func New(token string, options ...Option) (*Bot, error) {
 }
 
 // ID returns the bot user id from the token prefix ("<id>:<secret>").
+// It returns 0 if the prefix cannot be parsed as an int64.
+// ID does not validate or authenticate the token.
 func (b *Bot) ID() int64 {
-	i, _ := strconv.ParseInt(strings.Split(b.token, ":")[0], 10, 64)
+	i, err := strconv.ParseInt(strings.Split(b.token, ":")[0], 10, 64)
+	if err != nil {
+		return 0
+	}
 	return i
 }
 

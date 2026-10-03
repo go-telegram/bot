@@ -364,6 +364,10 @@ func TestBot_ID(t *testing.T) {
 		{name: "bad value", fields: fields{token: ":xxx"}, want: 0},
 		{name: "ok", fields: fields{token: "123456:xxx"}, want: 123456},
 		{name: "two colon", fields: fields{token: "123456:5678:xxx"}, want: 123456},
+		{name: "max int64", fields: fields{token: "9223372036854775807:xxx"}, want: 9223372036854775807},
+		{name: "min int64", fields: fields{token: "-9223372036854775808:xxx"}, want: -9223372036854775808},
+		{name: "positive overflow", fields: fields{token: "9223372036854775808:xxx"}, want: 0},
+		{name: "negative overflow", fields: fields{token: "-9223372036854775809:xxx"}, want: 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
