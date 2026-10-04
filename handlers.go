@@ -14,6 +14,7 @@ const (
 	HandlerTypeCallbackQueryData
 	HandlerTypeCallbackQueryGameShortName
 	HandlerTypePhotoCaption
+	HandlerTypeInlineQuery
 )
 
 type MatchType int
@@ -92,6 +93,11 @@ func getDataFromUpdate(update *models.Update, handlerType HandlerType) (data str
 		}
 		data = update.Message.Caption
 		entities = update.Message.CaptionEntities
+	case HandlerTypeInlineQuery:
+		if update.InlineQuery == nil {
+			return "", nil, false
+		}
+		data = update.InlineQuery.Query
 	}
 	return data, entities, true
 }
@@ -180,6 +186,13 @@ func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, 
 	b.handlers = append(b.handlers, h)
 
 	return id
+}
+
+// RegisterHandlerInlineQuery registers a handler for all inline queries, including
+// empty queries. For matching query text, use RegisterHandler or RegisterHandlerRegexp
+// with HandlerTypeInlineQuery. Returns an ID that can be passed to UnregisterHandler.
+func (b *Bot) RegisterHandlerInlineQuery(f HandlerFunc, m ...Middleware) string {
+	return b.RegisterHandler(HandlerTypeInlineQuery, "", MatchTypePrefix, f, m...)
 }
 
 func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc, m ...Middleware) string {

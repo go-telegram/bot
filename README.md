@@ -213,6 +213,14 @@ Handler Types:
 - `HandlerTypeCallbackQueryData` - for Update.CallbackQuery.Data field
 - `HandlerTypeCallbackQueryGameShortName` - for Update.CallbackQuery.GameShortName field
 - `HandlerTypePhotoCaption` - for Update.Message.Caption field
+- `HandlerTypeInlineQuery` - for Update.InlineQuery.Query field
+
+Use `RegisterHandlerInlineQuery(handler)` to handle all inline queries, including
+empty queries. It returns a handler ID and accepts optional middlewares, like
+`RegisterHandler`. To filter inline query text, use `RegisterHandler` with
+`HandlerTypeInlineQuery` and `MatchTypeExact`, `MatchTypePrefix`, or
+`MatchTypeContains`, or use `RegisterHandlerRegexp`. Inline queries have no message
+entities, so command match types do not match them.
 
 RegisterHandler returns a handler ID string. You can use it to remove the handler later.
 
