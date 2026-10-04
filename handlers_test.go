@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"reflect"
 	"regexp"
 	"testing"
@@ -1014,7 +1015,7 @@ func Test_match_commandSkipsInvalidEntities(t *testing.T) {
 }
 
 func Test_match_missingUpdateData(t *testing.T) {
-	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption, HandlerTypeCallbackQueryData, HandlerTypeCallbackQueryGameShortName} {
+	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption, HandlerTypeCallbackQueryData, HandlerTypeCallbackQueryGameShortName, HandlerTypeInlineQuery} {
 		for _, matchType := range []MatchType{MatchTypeExact, MatchTypePrefix, MatchTypeContains, matchTypeRegexp} {
 			h := handler{handlerType: handlerType, matchType: matchType, re: regexp.MustCompile("")}
 			if h.match(&models.Update{}) {
@@ -1030,5 +1031,83 @@ func Test_match_unknownHandlerTypePreservesEmptyData(t *testing.T) {
 		if !h.match(&models.Update{}) {
 			t.Errorf("unknown handler type no longer matches an empty pattern: matchType=%d", matchType)
 		}
+	}
+}
+
+func Test_match_inlineQuery(t *testing.T) {
+	tests := []struct {
+		name      string
+		matchType MatchType
+		pattern   string
+		query     string
+		want      bool
+	}{
+		{"exact match", MatchTypeExact, "foo", "foo", true},
+		{"exact mismatch", MatchTypeExact, "foo", "foobar", false},
+		{"empty exact", MatchTypeExact, "", "", true},
+		{"prefix match", MatchTypePrefix, "foo", "foobar", true},
+		{"prefix mismatch", MatchTypePrefix, "foo", "barfoo", false},
+		{"contains match", MatchTypeContains, "foo", "barfoobar", true},
+		{"contains mismatch", MatchTypeContains, "foo", "bar", false},
+		{"regexp match", matchTypeRegexp, "^foo[0-9]+$", "foo42", true},
+		{"regexp mismatch", matchTypeRegexp, "^foo[0-9]+$", "foo", false},
+		{"command has no entities", MatchTypeCommand, "foo", "/foo", false},
+		{"command start has no entities", MatchTypeCommandStartOnly, "foo", "/foo", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &Bot{}
+			var id string
+			if tt.matchType == matchTypeRegexp {
+				id = b.RegisterHandlerRegexp(HandlerTypeInlineQuery, regexp.MustCompile(tt.pattern), nil)
+			} else {
+				id = b.RegisterHandler(HandlerTypeInlineQuery, tt.pattern, tt.matchType, nil)
+			}
+			h := findHandler(b, id)
+			if got := h.match(&models.Update{InlineQuery: &models.InlineQuery{Query: tt.query}}); got != tt.want {
+				t.Errorf("match(%q) = %v, want %v", tt.query, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBot_RegisterHandlerInlineQuery(t *testing.T) {
+	var calls []string
+	b := &Bot{
+		notAsyncHandlers: true,
+		defaultHandlerFunc: func(context.Context, *Bot, *models.Update) {
+			calls = append(calls, "default")
+		},
+	}
+	middleware := func(name string) Middleware {
+		return func(next HandlerFunc) HandlerFunc {
+			return func(ctx context.Context, b *Bot, u *models.Update) {
+				calls = append(calls, name)
+				next(ctx, b, u)
+			}
+		}
+	}
+	id := b.RegisterHandlerInlineQuery(func(_ context.Context, _ *Bot, u *models.Update) {
+		if u.InlineQuery == nil {
+			t.Fatal("inline handler received a non-inline update")
+		}
+		calls = append(calls, "inline:"+u.InlineQuery.Query)
+	}, middleware("first"), middleware("second"))
+	if id == "" {
+		t.Fatal("empty handler ID")
+	}
+	ctx := context.Background()
+	b.ProcessUpdate(ctx, &models.Update{InlineQuery: &models.InlineQuery{Query: "foo"}})
+	b.ProcessUpdate(ctx, &models.Update{InlineQuery: &models.InlineQuery{}})
+	b.ProcessUpdate(ctx, &models.Update{Message: &models.Message{Text: "foo"}})
+	b.ProcessUpdate(ctx, &models.Update{})
+	b.UnregisterHandler(id)
+	if findHandler(b, id) != nil {
+		t.Fatal("inline handler was not unregistered")
+	}
+	b.ProcessUpdate(ctx, &models.Update{InlineQuery: &models.InlineQuery{Query: "foo"}})
+	want := []string{"first", "second", "inline:foo", "first", "second", "inline:", "default", "default", "default"}
+	if !reflect.DeepEqual(calls, want) {
+		t.Errorf("calls = %v, want %v", calls, want)
 	}
 }
