@@ -121,6 +121,39 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 [Demo in examples](examples/echo_with_webhook/main.go)
 
+### Webhook replies
+
+A handler can also answer an update in the response to the webhook request that
+delivered it. However, Telegram does not report whether the call succeeded.
+See [Making requests when getting updates](https://core.telegram.org/bots/api#making-requests-when-getting-updates).
+
+Use `bot.WebhookReplyHandler()` as the HTTP handler instead of
+`bot.WebhookHandler()`. It runs the handler for each update in the goroutine
+serving the request and responds once the handler returns, so `bot.StartWebhook`
+is not needed. In the handler, call `bot.WebhookReply` with the method name and
+its parameters:
+
+```go
+func main() {
+	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), bot.WithDefaultHandler(handler))
+
+	http.ListenAndServe(":2000", b.WebhookReplyHandler())
+}
+
+func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.WebhookReply(ctx, "sendMessage", &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   update.Message.Text,
+	})
+}
+```
+
+A handler can reply only once per update, and only before it returns.
+Otherwise, `bot.WebhookReply` returns an error wrapping
+`bot.ErrorWebhookReplyUnavailable`.
+
+[Demo in examples](examples/inline_mode_webhook_reply/main.go)
+
 Also, you can manually process updates with `bot.ProcessUpdate` method.
 
 ```go
