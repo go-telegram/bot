@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"testing"
@@ -1820,6 +1821,31 @@ func TestBot_API104(t *testing.T) {
 		})
 		assertNoErr(t, err)
 		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetDataPreservesEscapedCharacters", func(t *testing.T) {
+		public := "{\"count\":1,\"path\":\"a\\\\b\"}"
+		chat := "line1\nline2 <b>&amp;</b> \"quoted\""
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &EditMessageWidgetDataParams{
+			ChatID:     123,
+			MessageID:  7,
+			PublicData: &public,
+			ChatData:   &chat,
+		})
+		assertNoErr(t, err)
+		if err := w.Close(); err != nil {
+			t.Fatal(err)
+		}
+		form, err := multipart.NewReader(buf, w.Boundary()).ReadForm(1 << 20)
+		assertNoErr(t, err)
+		for name, want := range map[string]string{"public_data": public, "chat_data": chat} {
+			got, ok := form.Value[name]
+			if !ok || len(got) != 1 || got[0] != want {
+				t.Fatalf("field %q: got %v, want %q", name, got, want)
+			}
+		}
 	})
 
 	t.Run("EditMessageWidgetDataEmptyAndQuoted", func(t *testing.T) {

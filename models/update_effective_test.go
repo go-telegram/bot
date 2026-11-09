@@ -109,4 +109,16 @@ func TestUpdateEffectiveReturnsOriginalPointers(t *testing.T) {
 	if u.EffectiveUser() != &u.CallbackQuery.From || u.EffectiveChat() != &u.CallbackQuery.Message.Message.Chat {
 		t.Fatal("callback effective objects must point into the original update")
 	}
+	u = &Update{WidgetQuery: &WidgetQuery{From: User{ID: 1}, Chat: &Chat{ID: 2}}}
+	if u.EffectiveUser() != &u.WidgetQuery.From || u.EffectiveChat() != u.WidgetQuery.Chat {
+		t.Fatal("widget query effective objects must point into the original update")
+	}
+	u = &Update{WidgetQuery: &WidgetQuery{From: User{ID: 1}}}
+	if u.EffectiveUser() != &u.WidgetQuery.From || u.EffectiveChat() != nil {
+		t.Fatal("inline widget query has a user and no chat")
+	}
+	u = &Update{SharedWidgetQuery: &SharedWidgetQuery{From: User{ID: 1}}}
+	if u.EffectiveUser() != &u.SharedWidgetQuery.From || u.EffectiveChat() != nil {
+		t.Fatal("shared widget query has a user and no chat")
+	}
 }
