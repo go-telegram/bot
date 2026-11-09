@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: `ValidateWebappRequest` no longer decodes values a second time, so `+` and `%` in Mini App init data do not break the signature. The passed `url.Values` are left unchanged (#311).
+
 ## v1.28.0 (2026-11-09)
 
 - Add `Update.EffectiveUser()` and `Update.EffectiveChat()` helpers for resolving
