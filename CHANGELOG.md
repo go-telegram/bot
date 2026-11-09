@@ -1,5 +1,44 @@
 # Changelog
 
+## v1.28.0 (2026-11-09)
+
+- Support Bot API 10.4 (November 9, 2026 update):
+  - Widgets: new `Widget` with the `widget` field on `Message` and
+    `ExternalReplyInfo`; new methods `sendWidget`, `sendSharedWidget`,
+    `answerWidgetQuery`, `editMessageWidgetData` and `editSharedWidgetData`; new
+    `WidgetQuery` and `SharedWidgetQuery` with the `widget_query` and
+    `shared_widget_query` fields on `Update` (and the matching allowed-update
+    constants); new `WidgetQueryType` tagged union (`WidgetQueryTypeData`,
+    `WidgetQueryTypeSignData`, `WidgetQueryTypeSentTransaction`) and
+    `WidgetQueryWallet`; new `InputWidgetMessageContent` and
+    `InputSharedWidgetMessageContent` as `InputMessageContent`. On
+    `EditMessageWidgetDataParams`, `PublicData` and `ChatData` are `*string` so an
+    omitted value (keep) is distinct from an empty string (remove).
+  - Ephemeral messages: `receiver_user_id` on `EphemeralMessageParameters` and
+    `chat_id` on the 14 send methods (`sendMessage`, `sendRichMessage`,
+    `sendAnimation`, `sendAudio`, `sendContact`, `sendDocument`, `sendLivePhoto`,
+    `sendLocation`, `sendPhoto`, `sendSticker`, `sendVenue`, `sendVideo`,
+    `sendVideoNote`, `sendVoice`) are optional, so an ephemeral reply to a callback
+    query is sent with `callback_query_id` alone.
+  - Quotes from rich messages: `rich_texts` on `TextQuote` and `quote_rich_texts` on
+    `ReplyParameters`.
+  - TON wallet: new `TonWalletCard`, `TonWalletCardSticker`, `TonNft`,
+    `TonNftAttribute` with `ton_wallet_card` on `ChatFullInfo`; new
+    `TonWalletTransfer` with `ton_wallet_transfer` on `Message`; new
+    `RichTextTonAddress` (via the `RichText` union) and the `ton_address` and
+    `bank_card_number` entity types on `MessageEntity`.
+  - Chat share themes: new `ChatShareTheme` tagged union (`ChatShareThemeEmoji`,
+    `ChatShareThemeUniqueGift`) with `share_theme` on `ChatFullInfo`; new
+    `EmojiType` tagged union (`EmojiTypeEmoji`, `EmojiTypeCustomEmoji`); new
+    `ChatShareThemeBackdrop`, `ChatShareThemeBackdrops` and the method
+    `getChatShareThemeBackdrops`.
+  - Gifts: new methods `getUniqueGift` and `deleteBusinessAccountGift`.
+  - General: `custom_description_parse_mode` and `custom_description_entities` on
+    `verifyUser` and `verifyChat`; new `PaidMessagesWaived` with
+    `paid_messages_waived` on `Message`.
+- `StoryAreaPosition` is renamed `AreaPosition`, as in the Bot API; the old name
+  stays as a deprecated type alias, so existing code keeps compiling.
+
 ## v1.27.0 (2026-09-11)
 
 - Fix: a request can be retried by HTTP/2 after the server sends GOAWAY. `rawRequest`

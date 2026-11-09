@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 	"testing"
@@ -1733,6 +1734,204 @@ func TestBot_MessageDraftMethods(t *testing.T) {
 			RichMessage: models.InputRichMessage{HTML: "hello"},
 			CanStop:     true,
 			KeepOnStop:  true,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+}
+
+func TestBot_WidgetMethods(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SendWidget", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"},"widget":{"id":"w1","html":"<b>hi</b>"}}`, reqFields: map[string]string{
+			"chat_id":       "123",
+			"html":          "<b>hi</b>",
+			"width":         "300",
+			"height":        "120",
+			"public_data":   "p",
+			"chat_data":     "c",
+			"caption":       "cap",
+			"allow_queries": "true",
+			"is_shared":     "true",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendWidget(context.Background(), &SendWidgetParams{
+			ChatID:       123,
+			HTML:         "<b>hi</b>",
+			Width:        300,
+			Height:       120,
+			PublicData:   "p",
+			ChatData:     "c",
+			Caption:      "cap",
+			AllowQueries: true,
+			IsShared:     true,
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+		if resp.Widget == nil || resp.Widget.ID != "w1" {
+			t.Fatalf("widget not decoded: %+v", resp.Widget)
+		}
+	})
+
+	t.Run("SendSharedWidget", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":8,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":   "123",
+			"widget_id": "w1",
+			"chat_data": "c",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendSharedWidget(context.Background(), &SendSharedWidgetParams{ChatID: 123, WidgetID: "w1", ChatData: "c"})
+		assertNoErr(t, err)
+		assertEqualInt(t, 8, resp.ID)
+	})
+
+	t.Run("AnswerWidgetQuery", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"widget_query_id": "q1",
+			"data":            "ok",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.AnswerWidgetQuery(context.Background(), &AnswerWidgetQueryParams{WidgetQueryID: "q1", Data: "ok"})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetData", func(t *testing.T) {
+		empty := ""
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":     "123",
+			"message_id":  "7",
+			"public_data": "new",
+			"chat_data":   "", // an explicit empty string removes the data
+		}}
+		b := &Bot{client: c}
+		public := "new"
+		resp, err := b.EditMessageWidgetData(context.Background(), &EditMessageWidgetDataParams{ChatID: 123, MessageID: 7, PublicData: &public, ChatData: &empty})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetData omits unset data", func(t *testing.T) {
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &EditMessageWidgetDataParams{InlineMessageID: "im"})
+		assertNoErr(t, err)
+		_ = w.Close()
+		body := buf.String()
+		if strings.Contains(body, `name="public_data"`) || strings.Contains(body, `name="chat_data"`) {
+			t.Fatalf("nil data must not be sent: %s", body)
+		}
+		if !strings.Contains(body, `name="inline_message_id"`) {
+			t.Fatalf("inline_message_id missing: %s", body)
+		}
+	})
+
+	t.Run("EditSharedWidgetData", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"widget_id":   "w1",
+			"public_data": "",
+			"cache_time":  "60",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.EditSharedWidgetData(context.Background(), &EditSharedWidgetDataParams{WidgetID: "w1", PublicData: "", CacheTime: 60})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+}
+
+func TestBot_EphemeralReplyToCallbackQuery(t *testing.T) {
+	t.Parallel()
+
+	// Bot API 10.4: an ephemeral reply to a callback query names no receiver and
+	// may omit chat_id. Both must then be absent from the request.
+	c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+		"chat_id":                      "",
+		"text":                         "only you see this",
+		"ephemeral_message_parameters": `{"callback_query_id":"q","replace_callback_query_message":true}`,
+	}}
+	b := &Bot{client: c}
+	resp, err := b.SendMessage(context.Background(), &SendMessageParams{
+		Text:                       "only you see this",
+		EphemeralMessageParameters: &models.EphemeralMessageParameters{CallbackQueryID: "q", ReplaceCallbackQueryMessage: true},
+	})
+	assertNoErr(t, err)
+	assertEqualInt(t, 7, resp.ID)
+
+	buf := &bytes.Buffer{}
+	w := multipart.NewWriter(buf)
+	_, err = buildRequestForm(w, &SendRichMessageParams{
+		RichMessage:                models.InputRichMessage{HTML: "hello"},
+		EphemeralMessageParameters: &models.EphemeralMessageParameters{CallbackQueryID: "q"},
+	})
+	assertNoErr(t, err)
+	_ = w.Close()
+	if strings.Contains(buf.String(), `name="chat_id"`) {
+		t.Fatalf("chat_id must be omitted when unset: %s", buf.String())
+	}
+}
+
+func TestBot_GiftAndThemeMethods(t *testing.T) {
+	t.Parallel()
+
+	t.Run("GetUniqueGift", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"gift_id":"g","base_name":"Cap","name":"Cap-1","number":1,"model":{"name":"m","sticker":{"file_id":"f","file_unique_id":"u","type":"regular","width":1,"height":1,"is_animated":false,"is_video":false},"rarity_per_mille":1},"symbol":{"name":"s","sticker":{"file_id":"f","file_unique_id":"u","type":"regular","width":1,"height":1,"is_animated":false,"is_video":false},"rarity_per_mille":1},"backdrop":{"name":"b","colors":{"center_color":1,"edge_color":2,"symbol_color":3,"text_color":4},"rarity_per_mille":1}}`, reqFields: map[string]string{
+			"name": "Cap-1",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.GetUniqueGift(context.Background(), &GetUniqueGiftParams{Name: "Cap-1"})
+		assertNoErr(t, err)
+		assertEqualString(t, resp.Name, "Cap-1")
+	})
+
+	t.Run("DeleteBusinessAccountGift", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"business_connection_id": "bc",
+			"owned_gift_id":          "og",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.DeleteBusinessAccountGift(context.Background(), &DeleteBusinessAccountGiftParams{BusinessConnectionID: "bc", OwnedGiftID: "og"})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("GetChatShareThemeBackdrops", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"backdrops":[{"id":1,"name":"Sunset","colors":{"center_color":1,"edge_color":2,"symbol_color":3,"text_color":4}}]}`}
+		b := &Bot{client: c}
+		resp, err := b.GetChatShareThemeBackdrops(context.Background())
+		assertNoErr(t, err)
+		if len(resp.Backdrops) != 1 || resp.Backdrops[0].Name != "Sunset" {
+			t.Fatalf("backdrops not decoded: %+v", resp)
+		}
+	})
+}
+
+func TestBot_VerifyCustomDescriptionFormatting(t *testing.T) {
+	t.Parallel()
+
+	t.Run("VerifyUser", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"user_id":                       "5",
+			"custom_description":            "see site",
+			"custom_description_parse_mode": "HTML",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.VerifyUser(context.Background(), &VerifyUserParams{UserID: 5, CustomDescription: "see site", CustomDescriptionParseMode: models.ParseModeHTML})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("VerifyChat", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"chat_id":                     "7",
+			"custom_description":          "see site",
+			"custom_description_entities": `[{"type":"text_link","offset":4,"length":4,"url":"https://example.com"}]`,
+		}}
+		b := &Bot{client: c}
+		resp, err := b.VerifyChat(context.Background(), &VerifyChatParams{
+			ChatID:                    7,
+			CustomDescription:         "see site",
+			CustomDescriptionEntities: []models.MessageEntity{{Type: models.MessageEntityTypeTextLink, Offset: 4, Length: 4, URL: "https://example.com"}},
 		})
 		assertNoErr(t, err)
 		assertTrue(t, resp)

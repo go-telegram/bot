@@ -1275,3 +1275,59 @@ func (b *Bot) GetUserPersonalChatMessages(ctx context.Context, params *GetUserPe
 	err := b.rawRequest(ctx, "getUserPersonalChatMessages", params, &result)
 	return result, err
 }
+
+// GetUniqueGift https://core.telegram.org/bots/api#getuniquegift
+func (b *Bot) GetUniqueGift(ctx context.Context, params *GetUniqueGiftParams) (*models.UniqueGift, error) {
+	result := &models.UniqueGift{}
+	err := b.rawRequest(ctx, "getUniqueGift", params, result)
+	return result, err
+}
+
+// DeleteBusinessAccountGift https://core.telegram.org/bots/api#deletebusinessaccountgift
+func (b *Bot) DeleteBusinessAccountGift(ctx context.Context, params *DeleteBusinessAccountGiftParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteBusinessAccountGift", params, &result)
+	return result, err
+}
+
+// GetChatShareThemeBackdrops https://core.telegram.org/bots/api#getchatsharethemebackdrops
+func (b *Bot) GetChatShareThemeBackdrops(ctx context.Context) (*models.ChatShareThemeBackdrops, error) {
+	result := &models.ChatShareThemeBackdrops{}
+	err := b.rawRequest(ctx, "getChatShareThemeBackdrops", nil, result)
+	return result, err
+}
+
+// SendWidget https://core.telegram.org/bots/api#sendwidget
+func (b *Bot) SendWidget(ctx context.Context, params *SendWidgetParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendWidget", params, result)
+	return result, err
+}
+
+// SendSharedWidget https://core.telegram.org/bots/api#sendsharedwidget
+func (b *Bot) SendSharedWidget(ctx context.Context, params *SendSharedWidgetParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendSharedWidget", params, result)
+	return result, err
+}
+
+// AnswerWidgetQuery https://core.telegram.org/bots/api#answerwidgetquery
+func (b *Bot) AnswerWidgetQuery(ctx context.Context, params *AnswerWidgetQueryParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "answerWidgetQuery", params, &result)
+	return result, err
+}
+
+// EditMessageWidgetData https://core.telegram.org/bots/api#editmessagewidgetdata
+func (b *Bot) EditMessageWidgetData(ctx context.Context, params *EditMessageWidgetDataParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editMessageWidgetData", params, &result)
+	return result, err
+}
+
+// EditSharedWidgetData https://core.telegram.org/bots/api#editsharedwidgetdata
+func (b *Bot) EditSharedWidgetData(ctx context.Context, params *EditSharedWidgetDataParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editSharedWidgetData", params, &result)
+	return result, err
+}

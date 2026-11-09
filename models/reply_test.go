@@ -108,3 +108,36 @@ func TestUnmarshalMessageOrigin_channel(t *testing.T) {
 		t.Fatal("wrong chat id")
 	}
 }
+
+// TestTextQuote_RichTexts verifies a quote chosen from a rich message decodes with
+// its rich_texts and may carry an empty text.
+func TestTextQuote_RichTexts(t *testing.T) {
+	src := `{"text":"","rich_texts":[{"type":"bold","text":"hi"}," there"],"position":3}`
+	var q TextQuote
+	if err := json.Unmarshal([]byte(src), &q); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if len(q.RichTexts) != 2 || q.RichTexts[0].RichTextBold == nil || q.RichTexts[1].PlainText != " there" || q.Position != 3 {
+		t.Fatalf("rich_texts not decoded: %+v", q)
+	}
+}
+
+// TestReplyParameters_QuoteRichTexts verifies quote_rich_texts marshals as a RichText
+// list and is omitted when empty.
+func TestReplyParameters_QuoteRichTexts(t *testing.T) {
+	out, err := json.Marshal(ReplyParameters{MessageID: 1, QuoteRichTexts: []RichText{{Type: RichTextTypeBold, RichTextBold: &RichTextBold{Text: RichText{PlainText: "hi"}}}, {PlainText: " there"}}})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if want := `{"message_id":1,"quote_rich_texts":[{"type":"bold","text":"hi"}," there"]}`; string(out) != want {
+		t.Fatalf("got %s, want %s", out, want)
+	}
+
+	out, err = json.Marshal(ReplyParameters{MessageID: 1})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if want := `{"message_id":1}`; string(out) != want {
+		t.Fatalf("got %s, want %s", out, want)
+	}
+}

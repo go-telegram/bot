@@ -160,4 +160,6 @@ type ChatFullInfo struct {
 	PaidMessageStarCount               int                   `json:"paid_message_star_count,omitempty"`
 	Rating                             *UserRating           `json:"rating,omitempty"`
 	FirstProfileAudio                  *Audio                `json:"first_profile_audio,omitempty"`
+	TonWalletCard                      *TonWalletCard        `json:"ton_wallet_card,omitempty"`
+	ShareTheme                         *ChatShareTheme       `json:"share_theme,omitempty"`
 }

@@ -61,12 +61,14 @@ func (i InputStoryContentVideo) MarshalInputMedia() ([]byte, error) {
 
 // StoryArea https://core.telegram.org/bots/api#storyarea
 type StoryArea struct {
-	Position StoryAreaPosition `json:"position"`
-	Type     StoryAreaType     `json:"type"`
+	Position AreaPosition  `json:"position"`
+	Type     StoryAreaType `json:"type"`
 }
 
-// StoryAreaPosition https://core.telegram.org/bots/api#storyareaposition
-type StoryAreaPosition struct {
+// AreaPosition https://core.telegram.org/bots/api#areaposition
+//
+// Describes the position of a rectangle area on a story media or a TON wallet card.
+type AreaPosition struct {
 	XPercentage            float64 `json:"x_percentage"`
 	YPercentage            float64 `json:"y_percentage"`
 	WidthPercentage        float64 `json:"width_percentage"`
@@ -74,6 +76,12 @@ type StoryAreaPosition struct {
 	RotationAngle          float64 `json:"rotation_angle"`
 	CornerRadiusPercentage float64 `json:"corner_radius_percentage"`
 }
+
+// StoryAreaPosition is the former name of AreaPosition, renamed in Bot API 10.4
+// because it also describes the position of a sticker on a TON wallet card.
+//
+// Deprecated: use AreaPosition.
+type StoryAreaPosition = AreaPosition
 
 // LocationAddress https://core.telegram.org/bots/api#locationaddress
 type LocationAddress struct {

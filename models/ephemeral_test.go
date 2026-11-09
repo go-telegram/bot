@@ -24,3 +24,15 @@ func TestEphemeralMessageParameters(t *testing.T) {
 		t.Fatalf("got %s, want %s", out, want)
 	}
 }
+
+// TestEphemeralMessageParameters_CallbackReply verifies the 10.4 ephemeral reply to
+// a callback query: receiver_user_id is omitted when zero.
+func TestEphemeralMessageParameters_CallbackReply(t *testing.T) {
+	out, err := json.Marshal(EphemeralMessageParameters{CallbackQueryID: "q", ReplaceCallbackQueryMessage: true})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if want := `{"callback_query_id":"q","replace_callback_query_message":true}`; string(out) != want {
+		t.Fatalf("got %s, want %s", out, want)
+	}
+}

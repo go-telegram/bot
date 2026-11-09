@@ -6,10 +6,11 @@ import (
 
 // TextQuote https://core.telegram.org/bots/api#textquote
 type TextQuote struct {
-	Text     string          `json:"text"`
-	Entities []MessageEntity `json:"entities,omitempty"`
-	Position int             `json:"position"`
-	IsManual bool            `json:"is_manual,omitempty"`
+	Text      string          `json:"text"`
+	Entities  []MessageEntity `json:"entities,omitempty"`
+	RichTexts []RichText      `json:"rich_texts,omitempty"`
+	Position  int             `json:"position"`
+	IsManual  bool            `json:"is_manual,omitempty"`
 }
 
 // ExternalReplyInfo https://core.telegram.org/bots/api#externalreplyinfo
@@ -40,6 +41,7 @@ type ExternalReplyInfo struct {
 	Poll               *Poll               `json:"poll,omitempty"`
 	Venue              *Venue              `json:"venue,omitempty"`
 	LivePhoto          *LivePhoto          `json:"live_photo,omitempty"`
+	Widget             *Widget             `json:"widget,omitempty"`
 }
 
 // ReplyParameters https://core.telegram.org/bots/api#replyparameters
@@ -52,6 +54,7 @@ type ReplyParameters struct {
 	QuoteParseMode           ParseMode       `json:"quote_parse_mode,omitempty"`
 	QuoteEntities            []MessageEntity `json:"quote_entities,omitempty"`
 	QuotePosition            int             `json:"quote_position,omitempty"`
+	QuoteRichTexts           []RichText      `json:"quote_rich_texts,omitempty"`
 	ChecklistTaskID          int             `json:"checklist_task_id,omitempty"`
 	PollOptionID             string          `json:"poll_option_id,omitempty"`
 }

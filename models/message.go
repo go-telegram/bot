@@ -112,6 +112,7 @@ type Message struct {
 	Text                          string                         `json:"text,omitempty"`
 	Entities                      []MessageEntity                `json:"entities,omitempty"`
 	RichMessage                   *RichMessage                   `json:"rich_message,omitempty"`
+	Widget                        *Widget                        `json:"widget,omitempty"`
 	LinkPreviewOptions            *LinkPreviewOptions            `json:"link_preview_options,omitempty"`
 	SuggestedPostInfo             *SuggestedPostInfo             `json:"suggested_post_info,omitempty"`
 	EffectID                      string                         `json:"effect_id,omitempty"`
@@ -176,6 +177,8 @@ type Message struct {
 	GiveawayWinners               *GiveawayWinners               `json:"giveaway_winners,omitempty"`
 	GiveawayCompleted             *GiveawayCompleted             `json:"giveaway_completed,omitempty"`
 	PaidMessagePriceChanged       *PaidMessagePriceChanged       `json:"paid_message_price_changed,omitempty"`
+	PaidMessagesWaived            *PaidMessagesWaived            `json:"paid_messages_waived,omitempty"`
+	TonWalletTransfer             *TonWalletTransfer             `json:"ton_wallet_transfer,omitempty"`
 	ChatOwnerLeft                 *ChatOwnerLeft                 `json:"chat_owner_left,omitempty"`
 	ChatOwnerChanged              *ChatOwnerChanged              `json:"chat_owner_changed,omitempty"`
 	CommunityChatAdded            *CommunityChatAdded            `json:"community_chat_added,omitempty"`

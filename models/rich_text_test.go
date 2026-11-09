@@ -145,3 +145,13 @@ func TestRichText_Button(t *testing.T) {
 		t.Fatal("button not decoded")
 	}
 }
+
+func TestRichText_TonAddress(t *testing.T) {
+	rt := richTextRoundTrip(t, `{"type":"ton_address","text":"EQabc","address":"EQabc"}`)
+	if rt.Type != RichTextTypeTonAddress {
+		t.Fatalf("wrong type %q", rt.Type)
+	}
+	if rt.RichTextTonAddress == nil || rt.RichTextTonAddress.Address != "EQabc" || rt.RichTextTonAddress.Text.PlainText != "EQabc" {
+		t.Fatal("ton_address not decoded")
+	}
+}

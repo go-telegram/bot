@@ -177,3 +177,10 @@ type DirectMessagePriceChanged struct {
 	AreDirectMessagesEnabled bool `json:"are_direct_messages_enabled"`
 	DirectMessageStarCount   int  `json:"direct_message_star_count,omitempty"`
 }
+
+// PaidMessagesWaived https://core.telegram.org/bots/api#paidmessageswaived
+//
+// Describes a service message about the sender of the message using a link of the
+// other user, which allows sending messages to the user without paying Telegram Stars.
+// Currently holds no information.
+type PaidMessagesWaived struct{}
