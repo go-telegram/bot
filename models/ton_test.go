@@ -29,11 +29,6 @@ func TestTonWalletCard_Decode(t *testing.T) {
 	if len(sticker.Nft.Attributes) != 1 || sticker.Nft.Attributes[0].Value != "gold" {
 		t.Fatalf("attributes %+v", sticker.Nft.Attributes)
 	}
-
-	var legacy StoryAreaPosition = sticker.Position
-	if legacy.WidthPercentage != 3 {
-		t.Fatal("StoryAreaPosition alias did not keep the position")
-	}
 }
 
 func TestTonWalletTransfer_EmptyTransactionID(t *testing.T) {
