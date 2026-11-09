@@ -101,17 +101,24 @@ type WebAppUser struct {
 	PhotoURL              string `json:"photo_url"`
 }
 
-// ValidateWebappRequest validates request from webapp
+// ValidateWebappRequest validates Mini App init data.
+// values must already be decoded, as returned by url.ParseQuery or http.Request.URL.Query.
+// The function does not modify values.
 func ValidateWebappRequest(values url.Values, token string) (user *WebAppUser, ok bool) {
 	h := values.Get("hash")
-	values.Del("hash")
 
 	var vals []string
 
 	var u WebAppUser
 
 	for k, v := range values {
-		vv, _ := url.QueryUnescape(v[0])
+		if k == "hash" {
+			continue
+		}
+		if len(v) == 0 {
+			return nil, false
+		}
+		vv := v[0]
 		vals = append(vals, k+"="+vv)
 		if k == "user" {
 			errDecodeUser := json.Unmarshal([]byte(vv), &u)
