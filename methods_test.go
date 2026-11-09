@@ -1838,6 +1838,31 @@ func TestBot_WidgetMethods(t *testing.T) {
 		}
 	})
 
+	t.Run("EditMessageWidgetData preserves escaped characters in both fields", func(t *testing.T) {
+		// Parse the multipart form back and compare the exact values: JSON with
+		// quotes and backslashes, a newline, and HTML-sensitive characters that
+		// json.Marshal would have turned into \u003c-style escapes.
+		public := `{"count":1,"path":"a\\b"}`
+		chat := "line1\nline2 <b>&amp;</b> \"quoted\""
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &EditMessageWidgetDataParams{ChatID: 123, MessageID: 7, PublicData: &public, ChatData: &chat})
+		assertNoErr(t, err)
+		_ = w.Close()
+
+		form, err := multipart.NewReader(buf, w.Boundary()).ReadForm(1 << 20)
+		assertNoErr(t, err)
+		for name, want := range map[string]string{"public_data": public, "chat_data": chat} {
+			got, ok := form.Value[name]
+			if !ok || len(got) != 1 {
+				t.Fatalf("field %q: want exactly one value, got %v", name, got)
+			}
+			if got[0] != want {
+				t.Fatalf("field %q: got %q, want %q", name, got[0], want)
+			}
+		}
+	})
+
 	t.Run("EditMessageWidgetData omits unset data", func(t *testing.T) {
 		buf := &bytes.Buffer{}
 		w := multipart.NewWriter(buf)
