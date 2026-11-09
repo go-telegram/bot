@@ -15,18 +15,8 @@ var (
 // and asserts the JSON is byte-identical.
 func widgetQueryTypeRoundTrip(t *testing.T, src string) WidgetQueryType {
 	t.Helper()
-
 	var w WidgetQueryType
-	if err := json.Unmarshal([]byte(src), &w); err != nil {
-		t.Fatalf("unmarshal %s: %v", src, err)
-	}
-	out, err := json.Marshal(w)
-	if err != nil {
-		t.Fatalf("marshal %s: %v", src, err)
-	}
-	if string(out) != src {
-		t.Fatalf("round-trip mismatch:\n got %s\nwant %s", out, src)
-	}
+	roundTrip(t, src, &w)
 	return w
 }
 

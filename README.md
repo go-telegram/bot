@@ -214,6 +214,8 @@ Handler Types:
 - `HandlerTypeCallbackQueryGameShortName` - for Update.CallbackQuery.GameShortName field
 - `HandlerTypePhotoCaption` - for Update.Message.Caption field
 - `HandlerTypeInlineQuery` - for Update.InlineQuery.Query field
+- `HandlerTypeWidgetQueryData` - for Update.WidgetQuery.Data field
+- `HandlerTypeSharedWidgetQueryData` - for Update.SharedWidgetQuery.Data field
 
 Use `RegisterHandlerInlineQuery(handler)` to handle all inline queries, including
 empty queries. It returns a handler ID and accepts optional middlewares, like

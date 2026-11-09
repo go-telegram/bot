@@ -168,10 +168,12 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 		case *string:
 			// A pointer distinguishes "omitted" from "empty" (editMessageWidgetData).
 			// The default path would JSON-encode the string and leave its quotes,
-			// backslashes and newlines escaped in the field.
-			if vv != nil {
-				err = addFormFieldString(form, fieldName, *vv)
+			// backslashes and newlines escaped in the field. A nil pointer writes
+			// nothing and is not counted as a field.
+			if vv == nil {
+				continue
 			}
+			err = addFormFieldString(form, fieldName, *vv)
 		case *models.InputFileUpload:
 			err = addFormFieldInputFileUpload(form, fieldName, vv)
 		case *models.InputFileString:

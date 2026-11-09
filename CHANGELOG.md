@@ -14,7 +14,9 @@
     `InputWidgetMessageContent` and `InputSharedWidgetMessageContent` as
     `InputMessageContent`; new handler types `HandlerTypeWidgetQueryData` and
     `HandlerTypeSharedWidgetQueryData` to route widget queries by their data,
-    like `HandlerTypeCallbackQueryData`. On `EditMessageWidgetDataParams`,
+    like `HandlerTypeCallbackQueryData`; `Update.EffectiveUser` returns the sender
+    of both query types and `Update.EffectiveChat` the chat of a `widget_query`
+    (nil for inline and shared widget queries). On `EditMessageWidgetDataParams`,
     `PublicData` and `ChatData` are `*string` so an omitted value (keep) is
     distinct from an empty string (remove); `buildRequestForm` writes a `*string`
     verbatim instead of JSON-escaping it.

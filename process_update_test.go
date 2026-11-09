@@ -164,6 +164,38 @@ func Test_findPhotoCaptionHandler(t *testing.T) {
 	}
 }
 
+func Test_findWidgetQueryHandlers(t *testing.T) {
+	cases := []struct {
+		name        string
+		handlerType HandlerType
+		upd         *models.Update
+	}{
+		{"widget query", HandlerTypeWidgetQueryData, &models.Update{WidgetQuery: &models.WidgetQuery{Data: "test"}}},
+		{"shared widget query", HandlerTypeSharedWidgetQueryData, &models.Update{SharedWidgetQuery: &models.SharedWidgetQuery{Data: "test"}}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			var called, defaultCalled bool
+			bot := &Bot{
+				defaultHandlerFunc: func(ctx context.Context, bot *Bot, update *models.Update) { defaultCalled = true },
+			}
+			bot.handlers = append(bot.handlers, handler{
+				id:          "test",
+				handlerType: c.handlerType,
+				matchType:   MatchTypeExact,
+				pattern:     "test",
+				handler:     func(ctx context.Context, bot *Bot, update *models.Update) { called = true },
+			})
+
+			bot.findHandler(c.upd)(context.Background(), bot, c.upd)
+
+			if !called || defaultCalled {
+				t.Fatalf("expected the registered handler, got called=%v default=%v", called, defaultCalled)
+			}
+		})
+	}
+}
+
 func Test_findHandler_Default(t *testing.T) {
 	var called bool
 	h := func(ctx context.Context, bot *Bot, update *models.Update) {
