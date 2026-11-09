@@ -61,12 +61,12 @@ func (i InputStoryContentVideo) MarshalInputMedia() ([]byte, error) {
 
 // StoryArea https://core.telegram.org/bots/api#storyarea
 type StoryArea struct {
-	Position StoryAreaPosition `json:"position"`
-	Type     StoryAreaType     `json:"type"`
+	Position AreaPosition  `json:"position"`
+	Type     StoryAreaType `json:"type"`
 }
 
-// StoryAreaPosition https://core.telegram.org/bots/api#storyareaposition
-type StoryAreaPosition struct {
+// AreaPosition https://core.telegram.org/bots/api#areaposition
+type AreaPosition struct {
 	XPercentage            float64 `json:"x_percentage"`
 	YPercentage            float64 `json:"y_percentage"`
 	WidthPercentage        float64 `json:"width_percentage"`
@@ -74,6 +74,9 @@ type StoryAreaPosition struct {
 	RotationAngle          float64 `json:"rotation_angle"`
 	CornerRadiusPercentage float64 `json:"corner_radius_percentage"`
 }
+
+// StoryAreaPosition is AreaPosition, the name this type had before Bot API 10.4.
+type StoryAreaPosition = AreaPosition
 
 // LocationAddress https://core.telegram.org/bots/api#locationaddress
 type LocationAddress struct {

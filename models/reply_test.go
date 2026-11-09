@@ -108,3 +108,37 @@ func TestUnmarshalMessageOrigin_channel(t *testing.T) {
 		t.Fatal("wrong chat id")
 	}
 }
+
+func TestTextQuote_RichTexts(t *testing.T) {
+	src := `{"text":"","entities":null,"rich_texts":[{"type":"bold","text":"hi"}],"position":3}`
+	var quote TextQuote
+	if err := json.Unmarshal([]byte(`{"text":"","rich_texts":[{"type":"bold","text":"hi"}],"position":3}`), &quote); err != nil {
+		t.Fatal(err)
+	}
+	if quote.Text != "" || len(quote.RichTexts) != 1 || quote.RichTexts[0].RichTextBold == nil {
+		t.Fatalf("%+v", quote)
+	}
+	out, err := json.Marshal(quote)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(out) != `{"text":"","rich_texts":[{"type":"bold","text":"hi"}],"position":3}` {
+		t.Fatalf("got %s want preserved empty text, got compared to %s", out, src)
+	}
+}
+
+func TestReplyParameters_QuoteRichTexts(t *testing.T) {
+	out, err := json.Marshal(ReplyParameters{
+		MessageID: 4,
+		QuoteRichTexts: []RichText{{
+			Type:         RichTextTypeBold,
+			RichTextBold: &RichTextBold{Text: RichText{PlainText: "hi"}},
+		}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(out) != `{"message_id":4,"quote_rich_texts":[{"type":"bold","text":"hi"}]}` {
+		t.Fatalf("got %s", out)
+	}
+}

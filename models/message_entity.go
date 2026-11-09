@@ -10,6 +10,8 @@ const (
 	MessageEntityTypeURL                  MessageEntityType = "url"
 	MessageEntityTypeEmail                MessageEntityType = "email"
 	MessageEntityTypePhoneNumber          MessageEntityType = "phone_number"
+	MessageEntityTypeBankCardNumber       MessageEntityType = "bank_card_number"
+	MessageEntityTypeTonAddress           MessageEntityType = "ton_address"
 	MessageEntityTypeBold                 MessageEntityType = "bold"
 	MessageEntityTypeItalic               MessageEntityType = "italic"
 	MessageEntityTypeUnderline            MessageEntityType = "underline"

@@ -92,6 +92,7 @@ func TestRichText_ArrayOfMixed(t *testing.T) {
 func TestRichText_VariantsWithExtraFields(t *testing.T) {
 	for _, src := range []string{
 		`{"type":"url","text":"link","url":"https://example.com"}`,
+		`{"type":"ton_address","text":"EQ","address":"EQ"}`,
 		`{"type":"custom_emoji","custom_emoji_id":"123","alternative_text":"🙂"}`,
 		`{"type":"mathematical_expression","expression":"x^2"}`,
 		`{"type":"anchor","name":"top"}`,

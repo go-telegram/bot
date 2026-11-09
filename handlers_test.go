@@ -506,6 +506,62 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantEntities: nil,
 			wantOK:       true, // Func just returns empty values for unknown types
 		},
+		{
+			name: "HandlerTypeWidgetQueryData - valid data, is ok",
+			update: &models.Update{
+				WidgetQuery: &models.WidgetQuery{Data: "pay"},
+			},
+			handlerType:  HandlerTypeWidgetQueryData,
+			wantData:     "pay",
+			wantEntities: nil,
+			wantOK:       true,
+		},
+		{
+			name:         "HandlerTypeWidgetQueryData - nil query, is unavailable",
+			update:       &models.Update{},
+			handlerType:  HandlerTypeWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       false,
+		},
+		{
+			name: "HandlerTypeWidgetQueryData - empty data, is ok",
+			update: &models.Update{
+				WidgetQuery: &models.WidgetQuery{},
+			},
+			handlerType:  HandlerTypeWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       true,
+		},
+		{
+			name: "HandlerTypeSharedWidgetQueryData - valid data, is ok",
+			update: &models.Update{
+				SharedWidgetQuery: &models.SharedWidgetQuery{Data: "pay"},
+			},
+			handlerType:  HandlerTypeSharedWidgetQueryData,
+			wantData:     "pay",
+			wantEntities: nil,
+			wantOK:       true,
+		},
+		{
+			name:         "HandlerTypeSharedWidgetQueryData - nil query, is unavailable",
+			update:       &models.Update{},
+			handlerType:  HandlerTypeSharedWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       false,
+		},
+		{
+			name: "HandlerTypeSharedWidgetQueryData - empty data, is ok",
+			update: &models.Update{
+				SharedWidgetQuery: &models.SharedWidgetQuery{},
+			},
+			handlerType:  HandlerTypeSharedWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -1015,7 +1071,7 @@ func Test_match_commandSkipsInvalidEntities(t *testing.T) {
 }
 
 func Test_match_missingUpdateData(t *testing.T) {
-	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption, HandlerTypeCallbackQueryData, HandlerTypeCallbackQueryGameShortName, HandlerTypeInlineQuery} {
+	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption, HandlerTypeCallbackQueryData, HandlerTypeCallbackQueryGameShortName, HandlerTypeInlineQuery, HandlerTypeWidgetQueryData, HandlerTypeSharedWidgetQueryData} {
 		for _, matchType := range []MatchType{MatchTypeExact, MatchTypePrefix, MatchTypeContains, matchTypeRegexp} {
 			h := handler{handlerType: handlerType, matchType: matchType, re: regexp.MustCompile("")}
 			if h.match(&models.Update{}) {
@@ -1068,6 +1124,72 @@ func Test_match_inlineQuery(t *testing.T) {
 				t.Errorf("match(%q) = %v, want %v", tt.query, got, tt.want)
 			}
 		})
+	}
+}
+
+func Test_match_widgetQuery(t *testing.T) {
+	tests := []struct {
+		name        string
+		handlerType HandlerType
+		matchType   MatchType
+		pattern     string
+		data        string
+		want        bool
+	}{
+		{"widget exact", HandlerTypeWidgetQueryData, MatchTypeExact, "pay", "pay", true},
+		{"widget exact mismatch", HandlerTypeWidgetQueryData, MatchTypeExact, "pay", "pay-1", false},
+		{"widget prefix", HandlerTypeWidgetQueryData, MatchTypePrefix, "pay", "pay-1", true},
+		{"widget prefix mismatch", HandlerTypeWidgetQueryData, MatchTypePrefix, "pay", "invoice", false},
+		{"shared exact", HandlerTypeSharedWidgetQueryData, MatchTypeExact, "pay", "pay", true},
+		{"shared prefix", HandlerTypeSharedWidgetQueryData, MatchTypePrefix, "pay", "pay-1", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &Bot{}
+			id := b.RegisterHandler(tt.handlerType, tt.pattern, tt.matchType, nil)
+			h := findHandler(b, id)
+			upd := &models.Update{}
+			if tt.handlerType == HandlerTypeWidgetQueryData {
+				upd.WidgetQuery = &models.WidgetQuery{Data: tt.data}
+			} else {
+				upd.SharedWidgetQuery = &models.SharedWidgetQuery{Data: tt.data}
+			}
+			if got := h.match(upd); got != tt.want {
+				t.Errorf("match(%q) = %v, want %v", tt.data, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProcessUpdate_WidgetQueryRouting(t *testing.T) {
+	var calls []string
+	b := &Bot{
+		notAsyncHandlers: true,
+		defaultHandlerFunc: func(context.Context, *Bot, *models.Update) {
+			calls = append(calls, "default")
+		},
+	}
+	b.RegisterHandler(HandlerTypeWidgetQueryData, "pay", MatchTypePrefix, func(context.Context, *Bot, *models.Update) {
+		calls = append(calls, "widget")
+	})
+	b.RegisterHandler(HandlerTypeSharedWidgetQueryData, "pay", MatchTypePrefix, func(context.Context, *Bot, *models.Update) {
+		calls = append(calls, "shared")
+	})
+
+	ctx := context.Background()
+	b.ProcessUpdate(ctx, &models.Update{WidgetQuery: &models.WidgetQuery{Data: "pay-1"}})
+	b.ProcessUpdate(ctx, &models.Update{SharedWidgetQuery: &models.SharedWidgetQuery{Data: "pay-1"}})
+	b.ProcessUpdate(ctx, &models.Update{WidgetQuery: &models.WidgetQuery{Data: "other"}})
+	b.ProcessUpdate(ctx, &models.Update{SharedWidgetQuery: &models.SharedWidgetQuery{Data: "other"}})
+
+	want := []string{"widget", "shared", "default", "default"}
+	if len(calls) != len(want) {
+		t.Fatalf("calls %v, want %v", calls, want)
+	}
+	for i := range want {
+		if calls[i] != want[i] {
+			t.Fatalf("calls %v, want %v", calls, want)
+		}
 	}
 }
 

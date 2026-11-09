@@ -27,6 +27,7 @@ const (
 	RichTextTypeEmailAddress           RichTextType = "email_address"
 	RichTextTypePhoneNumber            RichTextType = "phone_number"
 	RichTextTypeBankCardNumber         RichTextType = "bank_card_number"
+	RichTextTypeTonAddress             RichTextType = "ton_address"
 	RichTextTypeMention                RichTextType = "mention"
 	RichTextTypeHashtag                RichTextType = "hashtag"
 	RichTextTypeCashtag                RichTextType = "cashtag"
@@ -67,6 +68,7 @@ type RichText struct {
 	RichTextEmailAddress           *RichTextEmailAddress
 	RichTextPhoneNumber            *RichTextPhoneNumber
 	RichTextBankCardNumber         *RichTextBankCardNumber
+	RichTextTonAddress             *RichTextTonAddress
 	RichTextMention                *RichTextMention
 	RichTextHashtag                *RichTextHashtag
 	RichTextCashtag                *RichTextCashtag
@@ -122,6 +124,8 @@ func (rt RichText) MarshalJSON() ([]byte, error) {
 		return marshalVariant("RichText", rt.Type, rt.RichTextPhoneNumber, func(v *RichTextPhoneNumber) { v.Type = rt.Type })
 	case RichTextTypeBankCardNumber:
 		return marshalVariant("RichText", rt.Type, rt.RichTextBankCardNumber, func(v *RichTextBankCardNumber) { v.Type = rt.Type })
+	case RichTextTypeTonAddress:
+		return marshalVariant("RichText", rt.Type, rt.RichTextTonAddress, func(v *RichTextTonAddress) { v.Type = rt.Type })
 	case RichTextTypeMention:
 		return marshalVariant("RichText", rt.Type, rt.RichTextMention, func(v *RichTextMention) { v.Type = rt.Type })
 	case RichTextTypeHashtag:
@@ -232,6 +236,9 @@ func (rt *RichText) UnmarshalJSON(data []byte) error {
 	case RichTextTypeBankCardNumber:
 		rt.RichTextBankCardNumber = &RichTextBankCardNumber{}
 		return json.Unmarshal(trimmed, rt.RichTextBankCardNumber)
+	case RichTextTypeTonAddress:
+		rt.RichTextTonAddress = &RichTextTonAddress{}
+		return json.Unmarshal(trimmed, rt.RichTextTonAddress)
 	case RichTextTypeMention:
 		rt.RichTextMention = &RichTextMention{}
 		return json.Unmarshal(trimmed, rt.RichTextMention)
@@ -372,6 +379,13 @@ type RichTextBankCardNumber struct {
 	Type           RichTextType `json:"type"`
 	Text           RichText     `json:"text"`
 	BankCardNumber string       `json:"bank_card_number"`
+}
+
+// RichTextTonAddress https://core.telegram.org/bots/api#richtexttonaddress
+type RichTextTonAddress struct {
+	Type    RichTextType `json:"type"`
+	Text    RichText     `json:"text"`
+	Address string       `json:"address"`
 }
 
 // RichTextMention https://core.telegram.org/bots/api#richtextmention

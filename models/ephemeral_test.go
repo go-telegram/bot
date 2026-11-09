@@ -16,6 +16,14 @@ func TestEphemeralMessageParameters(t *testing.T) {
 		t.Fatalf("got %s, want %s", out, want)
 	}
 
+	out, err = json.Marshal(EphemeralMessageParameters{CallbackQueryID: "q"})
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if want := `{"callback_query_id":"q"}`; string(out) != want {
+		t.Fatalf("got %s, want %s", out, want)
+	}
+
 	out, err = json.Marshal(EphemeralMessageParameters{ReceiverUserID: 9, CallbackQueryID: "q", ReplaceCallbackQueryMessage: true})
 	if err != nil {
 		t.Fatalf("marshal: %v", err)

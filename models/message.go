@@ -68,6 +68,9 @@ type MessageAutoDeleteTimerChanged struct {
 	MessageAutoDeleteTime int `json:"message_auto_delete_time"`
 }
 
+// PaidMessagesWaived https://core.telegram.org/bots/api#paidmessageswaived
+type PaidMessagesWaived struct{}
+
 // ChatOwnerLeft https://core.telegram.org/bots/api#chatownerleft
 type ChatOwnerLeft struct {
 	NewOwner *User `json:"new_owner,omitempty"`
@@ -125,6 +128,7 @@ type Message struct {
 	Video                         *Video                         `json:"video,omitempty"`
 	VideoNote                     *VideoNote                     `json:"video_note,omitempty"`
 	Voice                         *Voice                         `json:"voice,omitempty"`
+	Widget                        *Widget                        `json:"widget,omitempty"`
 	Caption                       string                         `json:"caption,omitempty"`
 	CaptionEntities               []MessageEntity                `json:"caption_entities,omitempty"`
 	ShowCaptionAboveMedia         bool                           `json:"show_caption_above_media,omitempty"`
@@ -176,6 +180,7 @@ type Message struct {
 	GiveawayWinners               *GiveawayWinners               `json:"giveaway_winners,omitempty"`
 	GiveawayCompleted             *GiveawayCompleted             `json:"giveaway_completed,omitempty"`
 	PaidMessagePriceChanged       *PaidMessagePriceChanged       `json:"paid_message_price_changed,omitempty"`
+	PaidMessagesWaived            *PaidMessagesWaived            `json:"paid_messages_waived,omitempty"`
 	ChatOwnerLeft                 *ChatOwnerLeft                 `json:"chat_owner_left,omitempty"`
 	ChatOwnerChanged              *ChatOwnerChanged              `json:"chat_owner_changed,omitempty"`
 	CommunityChatAdded            *CommunityChatAdded            `json:"community_chat_added,omitempty"`
@@ -186,6 +191,7 @@ type Message struct {
 	SuggestedPostDeclined         *SuggestedPostDeclined         `json:"suggested_post_declined,omitempty"`
 	SuggestedPostPaid             *SuggestedPostPaid             `json:"suggested_post_paid,omitempty"`
 	SuggestedPostRefunded         *SuggestedPostRefunded         `json:"suggested_post_refunded,omitempty"`
+	TonWalletTransfer             *TonWalletTransfer             `json:"ton_wallet_transfer,omitempty"`
 	VideoChatScheduled            *VideoChatScheduled            `json:"video_chat_scheduled,omitempty"`
 	VideoChatStarted              *VideoChatStarted              `json:"video_chat_started,omitempty"`
 	VideoChatEnded                *VideoChatEnded                `json:"video_chat_ended,omitempty"`

@@ -30,6 +30,9 @@ func TestUpdateEffective(t *testing.T) {
 		{"inline query", `{"inline_query":{"from":{"id":1}}}`, 1, 0},
 		{"chosen inline", `{"chosen_inline_result":{"from":{"id":1}}}`, 1, 0},
 		{"callback", `{"callback_query":{"from":{"id":1},"message":{"date":1,"from":{"id":3},"chat":{"id":2}}}}`, 1, 2},
+		{"widget query", `{"widget_query":{"from":{"id":1},"chat":{"id":2},"type":{"type":"data"},"data":"x"}}`, 1, 2},
+		{"inline widget query", `{"widget_query":{"from":{"id":1},"inline_message_id":"abc","type":{"type":"data"},"data":"x"}}`, 1, 0},
+		{"shared widget query", `{"shared_widget_query":{"from":{"id":1},"type":{"type":"data"},"data":"x","widget_id":"w"}}`, 1, 0},
 		{"inaccessible callback", `{"callback_query":{"from":{"id":1},"message":{"date":0,"chat":{"id":2}}}}`, 1, 2},
 		{"inline callback", `{"callback_query":{"from":{"id":1},"inline_message_id":"abc"}}`, 1, 0},
 		{"shipping", `{"shipping_query":{"from":{"id":1}}}`, 1, 0},
@@ -105,5 +108,17 @@ func TestUpdateEffectiveReturnsOriginalPointers(t *testing.T) {
 	u = &Update{CallbackQuery: &CallbackQuery{From: User{ID: 1}, Message: MaybeInaccessibleMessage{Message: &Message{Chat: Chat{ID: 2}}}}}
 	if u.EffectiveUser() != &u.CallbackQuery.From || u.EffectiveChat() != &u.CallbackQuery.Message.Message.Chat {
 		t.Fatal("callback effective objects must point into the original update")
+	}
+	u = &Update{WidgetQuery: &WidgetQuery{From: User{ID: 1}, Chat: &Chat{ID: 2}}}
+	if u.EffectiveUser() != &u.WidgetQuery.From || u.EffectiveChat() != u.WidgetQuery.Chat {
+		t.Fatal("widget query effective objects must point into the original update")
+	}
+	u = &Update{WidgetQuery: &WidgetQuery{From: User{ID: 1}}}
+	if u.EffectiveUser() != &u.WidgetQuery.From || u.EffectiveChat() != nil {
+		t.Fatal("inline widget query has a user and no chat")
+	}
+	u = &Update{SharedWidgetQuery: &SharedWidgetQuery{From: User{ID: 1}}}
+	if u.EffectiveUser() != &u.SharedWidgetQuery.From || u.EffectiveChat() != nil {
+		t.Fatal("shared widget query has a user and no chat")
 	}
 }

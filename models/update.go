@@ -16,6 +16,8 @@ type Update struct {
 	InlineQuery              *InlineQuery                 `json:"inline_query,omitempty"`
 	ChosenInlineResult       *ChosenInlineResult          `json:"chosen_inline_result,omitempty"`
 	CallbackQuery            *CallbackQuery               `json:"callback_query,omitempty"`
+	WidgetQuery              *WidgetQuery                 `json:"widget_query,omitempty"`
+	SharedWidgetQuery        *SharedWidgetQuery           `json:"shared_widget_query,omitempty"`
 	ShippingQuery            *ShippingQuery               `json:"shipping_query,omitempty"`
 	PreCheckoutQuery         *PreCheckoutQuery            `json:"pre_checkout_query,omitempty"`
 	PurchasedPaidMedia       *PaidMediaPurchased          `json:"purchased_paid_media,omitempty"`
@@ -47,6 +49,8 @@ const (
 	AllowedUpdateInlineQuery              string = "inline_query"
 	AllowedUpdateChosenInlineResult       string = "chosen_inline_result"
 	AllowedUpdateCallbackQuery            string = "callback_query"
+	AllowedUpdateWidgetQuery              string = "widget_query"
+	AllowedUpdateSharedWidgetQuery        string = "shared_widget_query"
 	AllowedUpdateShippingQuery            string = "shipping_query"
 	AllowedUpdatePreCheckoutQuery         string = "pre_checkout_query"
 	AllowedUpdatePurchasedPaidMedia       string = "purchased_paid_media"
