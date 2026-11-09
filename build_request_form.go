@@ -165,6 +165,13 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 		switch vv := v.Field(i).Interface().(type) {
 		case string:
 			err = addFormFieldString(form, fieldName, vv)
+		case *string:
+			// A pointer distinguishes "omitted" from "empty" (editMessageWidgetData).
+			// The default path would JSON-encode the string and leave its quotes,
+			// backslashes and newlines escaped in the field.
+			if vv != nil {
+				err = addFormFieldString(form, fieldName, *vv)
+			}
 		case *models.InputFileUpload:
 			err = addFormFieldInputFileUpload(form, fieldName, vv)
 		case *models.InputFileString:

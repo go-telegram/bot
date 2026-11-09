@@ -495,6 +495,46 @@ func Test_getDataFromUpdate(t *testing.T) {
 			wantOK:       true,
 		},
 		{
+			name: "HandlerTypeWidgetQueryData - valid widget query, is ok",
+			update: &models.Update{
+				WidgetQuery: &models.WidgetQuery{Data: "buy:1"},
+			},
+			handlerType:  HandlerTypeWidgetQueryData,
+			wantData:     "buy:1",
+			wantEntities: nil,
+			wantOK:       true,
+		},
+		{
+			name: "HandlerTypeWidgetQueryData - nil widget query, is unavailable",
+			update: &models.Update{
+				WidgetQuery: nil,
+			},
+			handlerType:  HandlerTypeWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       false,
+		},
+		{
+			name: "HandlerTypeSharedWidgetQueryData - valid shared widget query, is ok",
+			update: &models.Update{
+				SharedWidgetQuery: &models.SharedWidgetQuery{Data: "vote:a"},
+			},
+			handlerType:  HandlerTypeSharedWidgetQueryData,
+			wantData:     "vote:a",
+			wantEntities: nil,
+			wantOK:       true,
+		},
+		{
+			name: "HandlerTypeSharedWidgetQueryData - nil shared widget query, is unavailable",
+			update: &models.Update{
+				SharedWidgetQuery: nil,
+			},
+			handlerType:  HandlerTypeSharedWidgetQueryData,
+			wantData:     "",
+			wantEntities: nil,
+			wantOK:       false,
+		},
+		{
 			name: "Invalid handler type returns empty values, is ok",
 			update: &models.Update{
 				Message: &models.Message{

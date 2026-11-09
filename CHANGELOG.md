@@ -10,10 +10,14 @@
     `shared_widget_query` fields on `Update` (and the matching allowed-update
     constants); new `WidgetQueryType` tagged union (`WidgetQueryTypeData`,
     `WidgetQueryTypeSignData`, `WidgetQueryTypeSentTransaction`) and
-    `WidgetQueryWallet`; new `InputWidgetMessageContent` and
-    `InputSharedWidgetMessageContent` as `InputMessageContent`. On
-    `EditMessageWidgetDataParams`, `PublicData` and `ChatData` are `*string` so an
-    omitted value (keep) is distinct from an empty string (remove).
+    `WidgetQueryWallet` (the discriminator is `WidgetQueryKind`); new
+    `InputWidgetMessageContent` and `InputSharedWidgetMessageContent` as
+    `InputMessageContent`; new handler types `HandlerTypeWidgetQueryData` and
+    `HandlerTypeSharedWidgetQueryData` to route widget queries by their data,
+    like `HandlerTypeCallbackQueryData`. On `EditMessageWidgetDataParams`,
+    `PublicData` and `ChatData` are `*string` so an omitted value (keep) is
+    distinct from an empty string (remove); `buildRequestForm` writes a `*string`
+    verbatim instead of JSON-escaping it.
   - Ephemeral messages: `receiver_user_id` on `EphemeralMessageParameters` and
     `chat_id` on the 14 send methods (`sendMessage`, `sendRichMessage`,
     `sendAnimation`, `sendAudio`, `sendContact`, `sendDocument`, `sendLivePhoto`,
@@ -29,7 +33,8 @@
     `bank_card_number` entity types on `MessageEntity`.
   - Chat share themes: new `ChatShareTheme` tagged union (`ChatShareThemeEmoji`,
     `ChatShareThemeUniqueGift`) with `share_theme` on `ChatFullInfo`; new
-    `EmojiType` tagged union (`EmojiTypeEmoji`, `EmojiTypeCustomEmoji`); new
+    `EmojiType` tagged union (`EmojiTypeEmoji`, `EmojiTypeCustomEmoji`, with the
+    discriminator `EmojiKind`); new
     `ChatShareThemeBackdrop`, `ChatShareThemeBackdrops` and the method
     `getChatShareThemeBackdrops`.
   - Gifts: new methods `getUniqueGift` and `deleteBusinessAccountGift`.

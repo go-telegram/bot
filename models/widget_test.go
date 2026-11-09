@@ -32,7 +32,7 @@ func widgetQueryTypeRoundTrip(t *testing.T, src string) WidgetQueryType {
 
 func TestWidgetQueryType_Data(t *testing.T) {
 	w := widgetQueryTypeRoundTrip(t, `{"type":"data","wallet_card":{"address":"EQabc","amount":"1000","stickers":[]}}`)
-	if w.Type != WidgetQueryTypeTypeData {
+	if w.Type != WidgetQueryKindData {
 		t.Fatalf("wrong type %q", w.Type)
 	}
 	if w.Data == nil || w.Data.WalletCard == nil || w.Data.WalletCard.Address != "EQabc" {
@@ -75,7 +75,7 @@ func TestWidgetQueryType_MissingDiscriminator(t *testing.T) {
 	if err := json.Unmarshal([]byte(`{}`), &w); err == nil {
 		t.Fatal("expected an error for a query type without a discriminator")
 	}
-	if _, err := json.Marshal(WidgetQueryType{Type: WidgetQueryTypeTypeData}); err == nil {
+	if _, err := json.Marshal(WidgetQueryType{Type: WidgetQueryKindData}); err == nil {
 		t.Fatal("expected an error for a set Type without its variant")
 	}
 }
@@ -90,7 +90,7 @@ func TestUpdate_WidgetQuery(t *testing.T) {
 	if q == nil || q.ID != "q1" || q.From.ID != 5 || q.Chat == nil || q.Chat.ID != 7 || q.MessageID != 42 {
 		t.Fatalf("widget_query not decoded: %+v", q)
 	}
-	if q.Type.Type != WidgetQueryTypeTypeData || q.Data != "clicked" || q.WidgetID != "w1" {
+	if q.Type.Type != WidgetQueryKindData || q.Data != "clicked" || q.WidgetID != "w1" {
 		t.Fatalf("widget_query fields: %+v", q)
 	}
 }

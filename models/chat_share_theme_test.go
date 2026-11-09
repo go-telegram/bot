@@ -22,13 +22,13 @@ func roundTrip(t *testing.T, src string, v interface{}) {
 func TestEmojiType_Variants(t *testing.T) {
 	var e EmojiType
 	roundTrip(t, `{"type":"emoji","emoji":"🔥"}`, &e)
-	if e.Type != EmojiTypeTypeEmoji || e.Emoji == nil || e.Emoji.Emoji != "🔥" {
+	if e.Type != EmojiKindEmoji || e.Emoji == nil || e.Emoji.Emoji != "🔥" {
 		t.Fatalf("emoji not decoded: %+v", e)
 	}
 
 	var c EmojiType
 	roundTrip(t, `{"type":"custom_emoji","custom_emoji_id":"5368324170671202286"}`, &c)
-	if c.Type != EmojiTypeTypeCustomEmoji || c.CustomEmoji == nil || c.CustomEmoji.CustomEmojiID != "5368324170671202286" {
+	if c.Type != EmojiKindCustomEmoji || c.CustomEmoji == nil || c.CustomEmoji.CustomEmojiID != "5368324170671202286" {
 		t.Fatalf("custom emoji not decoded: %+v", c)
 	}
 

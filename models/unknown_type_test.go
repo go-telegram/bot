@@ -26,6 +26,9 @@ func TestPolymorphicUnmarshal_UnknownDiscriminator(t *testing.T) {
 		richBlock      RichBlock
 		richText       RichText
 		paidMedia      PaidMedia
+		widgetQuery    WidgetQueryType
+		emoji          EmojiType
+		shareTheme     ChatShareTheme
 	)
 
 	cases := []struct {
@@ -47,6 +50,9 @@ func TestPolymorphicUnmarshal_UnknownDiscriminator(t *testing.T) {
 		{"BackgroundFill", `{"type":"` + unknownType + `"}`, &backgroundFill, func() string { return string(backgroundFill.Type) }},
 		{"RichBlock", `{"type":"` + unknownType + `"}`, &richBlock, func() string { return string(richBlock.Type) }},
 		{"RichText", `{"type":"` + unknownType + `"}`, &richText, func() string { return string(richText.Type) }},
+		{"WidgetQueryType", `{"type":"` + unknownType + `"}`, &widgetQuery, func() string { return string(widgetQuery.Type) }},
+		{"EmojiType", `{"type":"` + unknownType + `"}`, &emoji, func() string { return string(emoji.Type) }},
+		{"ChatShareTheme", `{"type":"` + unknownType + `"}`, &shareTheme, func() string { return string(shareTheme.Type) }},
 		{"PaidMedia", `{"type":"` + unknownType + `"}`, &paidMedia, func() string { return string(paidMedia.Type) }},
 	}
 
@@ -92,6 +98,9 @@ func TestPolymorphicMarshal_UnknownDiscriminator(t *testing.T) {
 		{"BackgroundFill", &BackgroundFill{}},
 		{"RichBlock", &RichBlock{}},
 		{"RichText", &RichText{}},
+		{"WidgetQueryType", &WidgetQueryType{}},
+		{"EmojiType", &EmojiType{}},
+		{"ChatShareTheme", &ChatShareTheme{}},
 	}
 
 	for _, c := range cases {

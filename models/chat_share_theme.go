@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 )
 
-// EmojiTypeType https://core.telegram.org/bots/api#emojitype
-type EmojiTypeType string
+// EmojiKind is the discriminator of EmojiType https://core.telegram.org/bots/api#emojitype
+type EmojiKind string
 
 const (
-	EmojiTypeTypeEmoji       EmojiTypeType = "emoji"
-	EmojiTypeTypeCustomEmoji EmojiTypeType = "custom_emoji"
+	EmojiKindEmoji       EmojiKind = "emoji"
+	EmojiKindCustomEmoji EmojiKind = "custom_emoji"
 )
 
 // EmojiType https://core.telegram.org/bots/api#emojitype
@@ -18,7 +18,7 @@ const (
 // variant pointer is populated. An unknown discriminator from a newer Bot API
 // release keeps its value in Type and leaves every variant nil.
 type EmojiType struct {
-	Type EmojiTypeType
+	Type EmojiKind
 
 	Emoji       *EmojiTypeEmoji
 	CustomEmoji *EmojiTypeCustomEmoji
@@ -26,7 +26,7 @@ type EmojiType struct {
 
 func (e *EmojiType) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type EmojiTypeType `json:"type"`
+		Type EmojiKind `json:"type"`
 	}{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -39,10 +39,10 @@ func (e *EmojiType) UnmarshalJSON(data []byte) error {
 	e.Type = v.Type
 
 	switch v.Type {
-	case EmojiTypeTypeEmoji:
+	case EmojiKindEmoji:
 		e.Emoji = &EmojiTypeEmoji{}
 		return json.Unmarshal(data, e.Emoji)
-	case EmojiTypeTypeCustomEmoji:
+	case EmojiKindCustomEmoji:
 		e.CustomEmoji = &EmojiTypeCustomEmoji{}
 		return json.Unmarshal(data, e.CustomEmoji)
 	}
@@ -52,9 +52,9 @@ func (e *EmojiType) UnmarshalJSON(data []byte) error {
 
 func (e EmojiType) MarshalJSON() ([]byte, error) {
 	switch e.Type {
-	case EmojiTypeTypeEmoji:
+	case EmojiKindEmoji:
 		return marshalVariant("EmojiType", e.Type, e.Emoji, func(v *EmojiTypeEmoji) { v.Type = e.Type })
-	case EmojiTypeTypeCustomEmoji:
+	case EmojiKindCustomEmoji:
 		return marshalVariant("EmojiType", e.Type, e.CustomEmoji, func(v *EmojiTypeCustomEmoji) { v.Type = e.Type })
 	}
 
@@ -65,16 +65,16 @@ func (e EmojiType) MarshalJSON() ([]byte, error) {
 //
 // A regular emoji.
 type EmojiTypeEmoji struct {
-	Type  EmojiTypeType `json:"type"`
-	Emoji string        `json:"emoji"`
+	Type  EmojiKind `json:"type"`
+	Emoji string    `json:"emoji"`
 }
 
 // EmojiTypeCustomEmoji https://core.telegram.org/bots/api#emojitypecustomemoji
 //
 // A custom emoji.
 type EmojiTypeCustomEmoji struct {
-	Type          EmojiTypeType `json:"type"`
-	CustomEmojiID string        `json:"custom_emoji_id"`
+	Type          EmojiKind `json:"type"`
+	CustomEmojiID string    `json:"custom_emoji_id"`
 }
 
 // ChatShareThemeType https://core.telegram.org/bots/api#chatsharetheme

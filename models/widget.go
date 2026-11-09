@@ -16,13 +16,13 @@ type Widget struct {
 	ChatData   string `json:"chat_data,omitempty"`
 }
 
-// WidgetQueryTypeType https://core.telegram.org/bots/api#widgetquerytype
-type WidgetQueryTypeType string
+// WidgetQueryKind is the discriminator of WidgetQueryType https://core.telegram.org/bots/api#widgetquerytype
+type WidgetQueryKind string
 
 const (
-	WidgetQueryTypeTypeData            WidgetQueryTypeType = "data"
-	WidgetQueryTypeTypeSignData        WidgetQueryTypeType = "sign_data"
-	WidgetQueryTypeTypeSentTransaction WidgetQueryTypeType = "sent_transaction"
+	WidgetQueryKindData            WidgetQueryKind = "data"
+	WidgetQueryKindSignData        WidgetQueryKind = "sign_data"
+	WidgetQueryKindSentTransaction WidgetQueryKind = "sent_transaction"
 )
 
 // WidgetQueryType https://core.telegram.org/bots/api#widgetquerytype
@@ -31,7 +31,7 @@ const (
 // variant pointer is populated. An unknown discriminator from a newer Bot API
 // release keeps its value in Type and leaves every variant nil.
 type WidgetQueryType struct {
-	Type WidgetQueryTypeType
+	Type WidgetQueryKind
 
 	Data            *WidgetQueryTypeData
 	SignData        *WidgetQueryTypeSignData
@@ -40,7 +40,7 @@ type WidgetQueryType struct {
 
 func (w *WidgetQueryType) UnmarshalJSON(data []byte) error {
 	v := struct {
-		Type WidgetQueryTypeType `json:"type"`
+		Type WidgetQueryKind `json:"type"`
 	}{}
 	if err := json.Unmarshal(data, &v); err != nil {
 		return err
@@ -53,13 +53,13 @@ func (w *WidgetQueryType) UnmarshalJSON(data []byte) error {
 	w.Type = v.Type
 
 	switch v.Type {
-	case WidgetQueryTypeTypeData:
+	case WidgetQueryKindData:
 		w.Data = &WidgetQueryTypeData{}
 		return json.Unmarshal(data, w.Data)
-	case WidgetQueryTypeTypeSignData:
+	case WidgetQueryKindSignData:
 		w.SignData = &WidgetQueryTypeSignData{}
 		return json.Unmarshal(data, w.SignData)
-	case WidgetQueryTypeTypeSentTransaction:
+	case WidgetQueryKindSentTransaction:
 		w.SentTransaction = &WidgetQueryTypeSentTransaction{}
 		return json.Unmarshal(data, w.SentTransaction)
 	}
@@ -69,11 +69,11 @@ func (w *WidgetQueryType) UnmarshalJSON(data []byte) error {
 
 func (w WidgetQueryType) MarshalJSON() ([]byte, error) {
 	switch w.Type {
-	case WidgetQueryTypeTypeData:
+	case WidgetQueryKindData:
 		return marshalVariant("WidgetQueryType", w.Type, w.Data, func(v *WidgetQueryTypeData) { v.Type = w.Type })
-	case WidgetQueryTypeTypeSignData:
+	case WidgetQueryKindSignData:
 		return marshalVariant("WidgetQueryType", w.Type, w.SignData, func(v *WidgetQueryTypeSignData) { v.Type = w.Type })
-	case WidgetQueryTypeTypeSentTransaction:
+	case WidgetQueryKindSentTransaction:
 		return marshalVariant("WidgetQueryType", w.Type, w.SentTransaction, func(v *WidgetQueryTypeSentTransaction) { v.Type = w.Type })
 	}
 
@@ -84,26 +84,26 @@ func (w WidgetQueryType) MarshalJSON() ([]byte, error) {
 //
 // The query contains data for the bot.
 type WidgetQueryTypeData struct {
-	Type       WidgetQueryTypeType `json:"type"`
-	WalletCard *TonWalletCard      `json:"wallet_card,omitempty"`
+	Type       WidgetQueryKind `json:"type"`
+	WalletCard *TonWalletCard  `json:"wallet_card,omitempty"`
 }
 
 // WidgetQueryTypeSignData https://core.telegram.org/bots/api#widgetquerytypesigndata
 //
 // The query contains data signed by a TON wallet of the user who sent the query.
 type WidgetQueryTypeSignData struct {
-	Type     WidgetQueryTypeType `json:"type"`
-	Wallet   WidgetQueryWallet   `json:"wallet"`
-	SignData string              `json:"sign_data"`
+	Type     WidgetQueryKind   `json:"type"`
+	Wallet   WidgetQueryWallet `json:"wallet"`
+	SignData string            `json:"sign_data"`
 }
 
 // WidgetQueryTypeSentTransaction https://core.telegram.org/bots/api#widgetquerytypesenttransaction
 //
 // The query notifies the bot about a transaction sent from a TON wallet of the user.
 type WidgetQueryTypeSentTransaction struct {
-	Type    WidgetQueryTypeType `json:"type"`
-	Wallet  WidgetQueryWallet   `json:"wallet"`
-	MsgHash string              `json:"msg_hash"`
+	Type    WidgetQueryKind   `json:"type"`
+	Wallet  WidgetQueryWallet `json:"wallet"`
+	MsgHash string            `json:"msg_hash"`
 }
 
 // WidgetQueryWallet https://core.telegram.org/bots/api#widgetquerywallet

@@ -1798,18 +1798,44 @@ func TestBot_WidgetMethods(t *testing.T) {
 	})
 
 	t.Run("EditMessageWidgetData", func(t *testing.T) {
-		empty := ""
-		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
-			"chat_id":     "123",
-			"message_id":  "7",
-			"public_data": "new",
-			"chat_data":   "", // an explicit empty string removes the data
-		}}
+		// FormValue returns "" for an absent field too, so the removal case is
+		// asserted on the multipart body: chat_data must be present and empty.
+		empty, public := "", "new"
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &EditMessageWidgetDataParams{ChatID: 123, MessageID: 7, PublicData: &public, ChatData: &empty})
+		assertNoErr(t, err)
+		_ = w.Close()
+		body := buf.String()
+		for _, want := range []string{
+			"name=\"chat_id\"\r\n\r\n123\r\n",
+			"name=\"message_id\"\r\n\r\n7\r\n",
+			"name=\"public_data\"\r\n\r\nnew\r\n",
+			"name=\"chat_data\"\r\n\r\n\r\n",
+		} {
+			if !strings.Contains(body, want) {
+				t.Fatalf("missing %q in body:\n%s", want, body)
+			}
+		}
+
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{"chat_id": "123", "message_id": "7", "public_data": "new"}}
 		b := &Bot{client: c}
-		public := "new"
 		resp, err := b.EditMessageWidgetData(context.Background(), &EditMessageWidgetDataParams{ChatID: 123, MessageID: 7, PublicData: &public, ChatData: &empty})
 		assertNoErr(t, err)
 		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetData keeps JSON data verbatim", func(t *testing.T) {
+		// Widget data is usually JSON; a *string must reach the form unescaped.
+		data := "{\"a\":\"x\\ny\"}"
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &EditMessageWidgetDataParams{InlineMessageID: "im", PublicData: &data})
+		assertNoErr(t, err)
+		_ = w.Close()
+		if want := "name=\"public_data\"\r\n\r\n" + data + "\r\n"; !strings.Contains(buf.String(), want) {
+			t.Fatalf("public_data not verbatim:\n%s", buf.String())
+		}
 	})
 
 	t.Run("EditMessageWidgetData omits unset data", func(t *testing.T) {
