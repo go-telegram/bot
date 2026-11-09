@@ -6,10 +6,11 @@ import (
 
 // TextQuote https://core.telegram.org/bots/api#textquote
 type TextQuote struct {
-	Text     string          `json:"text"`
-	Entities []MessageEntity `json:"entities,omitempty"`
-	Position int             `json:"position"`
-	IsManual bool            `json:"is_manual,omitempty"`
+	Text      string          `json:"text"`
+	Entities  []MessageEntity `json:"entities,omitempty"`
+	RichTexts []RichText      `json:"rich_texts,omitempty"`
+	Position  int             `json:"position"`
+	IsManual  bool            `json:"is_manual,omitempty"`
 }
 
 // ExternalReplyInfo https://core.telegram.org/bots/api#externalreplyinfo
@@ -28,6 +29,7 @@ type ExternalReplyInfo struct {
 	Video              *Video              `json:"video,omitempty"`
 	VideoNote          *VideoNote          `json:"video_note,omitempty"`
 	Voice              *Voice              `json:"voice,omitempty"`
+	Widget             *Widget             `json:"widget,omitempty"`
 	HasMediaSpoiler    bool                `json:"has_media_spoiler,omitempty"`
 	Checklist          *Checklist          `json:"checklist,omitempty"`
 	Contact            *Contact            `json:"contact,omitempty"`
@@ -51,6 +53,7 @@ type ReplyParameters struct {
 	Quote                    string          `json:"quote,omitempty"`
 	QuoteParseMode           ParseMode       `json:"quote_parse_mode,omitempty"`
 	QuoteEntities            []MessageEntity `json:"quote_entities,omitempty"`
+	QuoteRichTexts           []RichText      `json:"quote_rich_texts,omitempty"`
 	QuotePosition            int             `json:"quote_position,omitempty"`
 	ChecklistTaskID          int             `json:"checklist_task_id,omitempty"`
 	PollOptionID             string          `json:"poll_option_id,omitempty"`

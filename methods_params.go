@@ -21,7 +21,7 @@ type DeleteWebhookParams struct {
 // SendMessageParams https://core.telegram.org/bots/api#sendmessage
 type SendMessageParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -99,7 +99,7 @@ type CopyMessagesParams struct {
 // SendPhotoParams https://core.telegram.org/bots/api#sendphoto
 type SendPhotoParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -121,7 +121,7 @@ type SendPhotoParams struct {
 // SendAudioParams https://core.telegram.org/bots/api#sendaudio
 type SendAudioParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -145,7 +145,7 @@ type SendAudioParams struct {
 // SendDocumentParams https://core.telegram.org/bots/api#senddocument
 type SendDocumentParams struct {
 	BusinessConnectionID        string                             `json:"business_connection_id,omitempty"`
-	ChatID                      any                                `json:"chat_id"`
+	ChatID                      any                                `json:"chat_id,omitempty"`
 	MessageThreadID             int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID       int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters  *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -167,7 +167,7 @@ type SendDocumentParams struct {
 // SendVideoParams https://core.telegram.org/bots/api#sendvideo
 type SendVideoParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -196,7 +196,7 @@ type SendVideoParams struct {
 // SendAnimationParams https://core.telegram.org/bots/api#sendanimation
 type SendAnimationParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -222,7 +222,7 @@ type SendAnimationParams struct {
 // SendVoiceParams https://core.telegram.org/bots/api#sendvoice
 type SendVoiceParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -243,7 +243,7 @@ type SendVoiceParams struct {
 // SendVideoNoteParams https://core.telegram.org/bots/api#sendvideonote
 type SendVideoNoteParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -258,6 +258,47 @@ type SendVideoNoteParams struct {
 	SuggestedPostParameters    *models.SuggestedPostParameters    `json:"suggested_post_parameters,omitempty"`
 	ReplyParameters            *models.ReplyParameters            `json:"reply_parameters,omitempty"`
 	ReplyMarkup                models.ReplyMarkup                 `json:"reply_markup,omitempty"`
+}
+
+// SendWidgetParams https://core.telegram.org/bots/api#sendwidget
+type SendWidgetParams struct {
+	ChatID                any                     `json:"chat_id"`
+	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
+	HTML                  string                  `json:"html"`
+	Width                 int                     `json:"width,omitempty"`
+	Height                int                     `json:"height,omitempty"`
+	PublicData            string                  `json:"public_data,omitempty"`
+	ChatData              string                  `json:"chat_data,omitempty"`
+	Caption               string                  `json:"caption,omitempty"`
+	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
+	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                    `json:"show_caption_above_media,omitempty"`
+	AllowQueries          bool                    `json:"allow_queries,omitempty"`
+	IsShared              bool                    `json:"is_shared,omitempty"`
+	DisableNotification   bool                    `json:"disable_notification,omitempty"`
+	ProtectContent        bool                    `json:"protect_content,omitempty"`
+	AllowPaidBroadcast    bool                    `json:"allow_paid_broadcast,omitempty"`
+	MessageEffectID       string                  `json:"message_effect_id,omitempty"`
+	ReplyParameters       *models.ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup           models.ReplyMarkup      `json:"reply_markup,omitempty"`
+}
+
+// SendSharedWidgetParams https://core.telegram.org/bots/api#sendsharedwidget
+type SendSharedWidgetParams struct {
+	ChatID                any                     `json:"chat_id"`
+	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
+	WidgetID              string                  `json:"widget_id"`
+	ChatData              string                  `json:"chat_data,omitempty"`
+	Caption               string                  `json:"caption,omitempty"`
+	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
+	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
+	ShowCaptionAboveMedia bool                    `json:"show_caption_above_media,omitempty"`
+	DisableNotification   bool                    `json:"disable_notification,omitempty"`
+	ProtectContent        bool                    `json:"protect_content,omitempty"`
+	AllowPaidBroadcast    bool                    `json:"allow_paid_broadcast,omitempty"`
+	MessageEffectID       string                  `json:"message_effect_id,omitempty"`
+	ReplyParameters       *models.ReplyParameters `json:"reply_parameters,omitempty"`
+	ReplyMarkup           models.ReplyMarkup      `json:"reply_markup,omitempty"`
 }
 
 // SendPaidMediaParams https://core.telegram.org/bots/api#sendpaidmedia
@@ -298,7 +339,7 @@ type SendMediaGroupParams struct {
 // SendLocationParams https://core.telegram.org/bots/api#sendlocation
 type SendLocationParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -342,7 +383,7 @@ type StopMessageLiveLocationParams struct {
 // SendVenueParams https://core.telegram.org/bots/api#sendvenue
 type SendVenueParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -366,7 +407,7 @@ type SendVenueParams struct {
 // SendContactParams https://core.telegram.org/bots/api#sendcontact
 type SendContactParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -729,6 +770,12 @@ type AnswerCallbackQueryParams struct {
 	CacheTime       int    `json:"cache_time,omitempty"`
 }
 
+// AnswerWidgetQueryParams https://core.telegram.org/bots/api#answerwidgetquery
+type AnswerWidgetQueryParams struct {
+	WidgetQueryID string `json:"widget_query_id"`
+	Data          string `json:"data,omitempty"`
+}
+
 // GetUserChatBoostsParams https://core.telegram.org/bots/api#getuserchatboosts
 type GetUserChatBoostsParams struct {
 	ChatID any `json:"chat_id"`
@@ -854,6 +901,22 @@ type EditMessageReplyMarkupParams struct {
 	ReplyMarkup          models.ReplyMarkup `json:"reply_markup,omitempty"`
 }
 
+// EditMessageWidgetDataParams https://core.telegram.org/bots/api#editmessagewidgetdata
+type EditMessageWidgetDataParams struct {
+	ChatID          any     `json:"chat_id,omitempty"`
+	MessageID       int     `json:"message_id,omitempty"`
+	InlineMessageID string  `json:"inline_message_id,omitempty"`
+	PublicData      *string `json:"public_data,omitempty"`
+	ChatData        *string `json:"chat_data,omitempty"`
+}
+
+// EditSharedWidgetDataParams https://core.telegram.org/bots/api#editsharedwidgetdata
+type EditSharedWidgetDataParams struct {
+	WidgetID   string `json:"widget_id"`
+	PublicData string `json:"public_data"`
+	CacheTime  int    `json:"cache_time,omitempty"`
+}
+
 type StopPollParams struct {
 	BusinessConnectionID string             `json:"business_connection_id,omitempty"`
 	ChatID               any                `json:"chat_id"`
@@ -939,7 +1002,7 @@ type DeleteEphemeralMessageParams struct {
 // SendStickerParams https://core.telegram.org/bots/api#sendsticker
 type SendStickerParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -1198,14 +1261,18 @@ type SendGiftParams struct {
 
 // VerifyUserParams https://core.telegram.org/bots/api#verifyuser
 type VerifyUserParams struct {
-	UserID            int64  `json:"user_id"`
-	CustomDescription string `json:"custom_description,omitempty"`
+	UserID                     int64                  `json:"user_id"`
+	CustomDescription          string                 `json:"custom_description,omitempty"`
+	CustomDescriptionParseMode models.ParseMode       `json:"custom_description_parse_mode,omitempty"`
+	CustomDescriptionEntities  []models.MessageEntity `json:"custom_description_entities,omitempty"`
 }
 
 // VerifyChatParams https://core.telegram.org/bots/api#verifychat
 type VerifyChatParams struct {
-	ChatID            any    `json:"chat_id"`
-	CustomDescription string `json:"custom_description,omitempty"`
+	ChatID                     any                    `json:"chat_id"`
+	CustomDescription          string                 `json:"custom_description,omitempty"`
+	CustomDescriptionParseMode models.ParseMode       `json:"custom_description_parse_mode,omitempty"`
+	CustomDescriptionEntities  []models.MessageEntity `json:"custom_description_entities,omitempty"`
 }
 
 // RemoveUserVerificationParams https://core.telegram.org/bots/api#removeuserverification
@@ -1296,6 +1363,11 @@ type GetBusinessAccountGiftsParams struct {
 	Limit                       int    `json:"limit,omitempty"`
 }
 
+// GetUniqueGiftParams https://core.telegram.org/bots/api#getuniquegift
+type GetUniqueGiftParams struct {
+	Name string `json:"name"`
+}
+
 // ConvertGiftToStarsParams https://core.telegram.org/bots/api#convertgifttostars
 type ConvertGiftToStarsParams struct {
 	BusinessConnectionID string `json:"business_connection_id"`
@@ -1316,6 +1388,12 @@ type TransferGiftParams struct {
 	OwnedGiftID          string `json:"owned_gift_id"`
 	NewOwnerChatID       int64  `json:"new_owner_chat_id"`
 	StarCount            int    `json:"star_count"`
+}
+
+// DeleteBusinessAccountGiftParams https://core.telegram.org/bots/api#deletebusinessaccountgift
+type DeleteBusinessAccountGiftParams struct {
+	BusinessConnectionID string `json:"business_connection_id"`
+	OwnedGiftID          string `json:"owned_gift_id"`
 }
 
 // PostStoryParams https://core.telegram.org/bots/api#poststory
@@ -1388,7 +1466,7 @@ type SendMessageDraftParams struct {
 // SendRichMessageParams https://core.telegram.org/bots/api#sendrichmessage
 type SendRichMessageParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`
@@ -1474,7 +1552,7 @@ type DeleteMessageReactionParams struct {
 
 type SendLivePhotoParams struct {
 	BusinessConnectionID       string                             `json:"business_connection_id,omitempty"`
-	ChatID                     any                                `json:"chat_id"`
+	ChatID                     any                                `json:"chat_id,omitempty"`
 	MessageThreadID            int                                `json:"message_thread_id,omitempty"`
 	DirectMessagesTopicID      int                                `json:"direct_messages_topic_id,omitempty"`
 	EphemeralMessageParameters *models.EphemeralMessageParameters `json:"ephemeral_message_parameters,omitempty"`

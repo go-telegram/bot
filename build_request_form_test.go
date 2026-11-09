@@ -1109,6 +1109,57 @@ func (sliceReader) Read([]byte) (int, error) {
 	return 0, io.EOF
 }
 
+func Test_buildRequestForm_stringPointer(t *testing.T) {
+	empty := ""
+	quoted := "say \"hi\"\\n"
+	params := struct {
+		Keep  *string `json:"keep,omitempty"`
+		Clear *string `json:"clear,omitempty"`
+		Skip  *string `json:"skip,omitempty"`
+	}{
+		Keep:  &quoted,
+		Clear: &empty,
+	}
+
+	buf := bytes.NewBuffer(nil)
+	writer := multipart.NewWriter(buf)
+	writer.SetBoundary("XXX") //nolint
+	if _, err := buildRequestForm(writer, &params); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	reader := multipart.NewReader(buf, "XXX")
+	got := map[string]string{}
+	seen := map[string]bool{}
+	for {
+		part, err := reader.NextPart()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		body, err := io.ReadAll(part)
+		if err != nil {
+			t.Fatal(err)
+		}
+		seen[part.FormName()] = true
+		got[part.FormName()] = string(body)
+	}
+	if seen["skip"] {
+		t.Fatal("nil *string was written")
+	}
+	if !seen["clear"] || got["clear"] != "" {
+		t.Fatalf("empty *string: seen %v value %q", seen["clear"], got["clear"])
+	}
+	if got["keep"] != quoted {
+		t.Fatalf("quoted *string: got %q", got["keep"])
+	}
+}
+
 func Test_requestForm_addFilePart_incomparableReader(t *testing.T) {
 	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
 

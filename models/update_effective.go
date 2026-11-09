@@ -2,8 +2,9 @@ package models
 
 // EffectiveUser returns the user associated with the update, or nil if none is
 // available or u is nil. The result points into the update; it is not a copy.
-// For messages it returns From (including channel posts), for callbacks the
-// user pressing the button, and for membership changes the initiating user.
+// For messages it returns From (including channel posts), for callbacks and
+// widget queries the user who triggered them, and for membership changes the
+// initiating user.
 // Business connections return their owner, subscriptions their subscriber,
 // managed bot updates their User (not Bot), and boosts their source user.
 // Anonymous actors are not inferred from chats or message contents.
@@ -34,6 +35,10 @@ func (u *Update) EffectiveUser() *User {
 		return &u.ChosenInlineResult.From
 	case u.CallbackQuery != nil:
 		return &u.CallbackQuery.From
+	case u.WidgetQuery != nil:
+		return &u.WidgetQuery.From
+	case u.SharedWidgetQuery != nil:
+		return &u.SharedWidgetQuery.From
 	case u.ShippingQuery != nil:
 		return u.ShippingQuery.From
 	case u.PreCheckoutQuery != nil:
@@ -122,6 +127,8 @@ func (u *Update) EffectiveChat() *Chat {
 				return &m.InaccessibleMessage.Chat
 			}
 		}
+	case u.WidgetQuery != nil:
+		return u.WidgetQuery.Chat
 	case u.GuestMessage != nil:
 		return &u.GuestMessage.Chat
 	case u.MyChatMember != nil:

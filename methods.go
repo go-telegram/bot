@@ -134,6 +134,20 @@ func (b *Bot) SendVideoNote(ctx context.Context, params *SendVideoNoteParams) (*
 	return result, err
 }
 
+// SendWidget https://core.telegram.org/bots/api#sendwidget
+func (b *Bot) SendWidget(ctx context.Context, params *SendWidgetParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendWidget", params, result)
+	return result, err
+}
+
+// SendSharedWidget https://core.telegram.org/bots/api#sendsharedwidget
+func (b *Bot) SendSharedWidget(ctx context.Context, params *SendSharedWidgetParams) (*models.Message, error) {
+	result := &models.Message{}
+	err := b.rawRequest(ctx, "sendSharedWidget", params, result)
+	return result, err
+}
+
 // SendPaidMedia https://core.telegram.org/bots/api#sendpaidmedia
 func (b *Bot) SendPaidMedia(ctx context.Context, params *SendPaidMediaParams) (*models.Message, error) {
 	var result models.Message
@@ -410,6 +424,13 @@ func (b *Bot) GetChat(ctx context.Context, params *GetChatParams) (*models.ChatF
 	return result, err
 }
 
+// GetChatShareThemeBackdrops https://core.telegram.org/bots/api#getchatsharethemebackdrops
+func (b *Bot) GetChatShareThemeBackdrops(ctx context.Context) (*models.ChatShareThemeBackdrops, error) {
+	result := &models.ChatShareThemeBackdrops{}
+	err := b.rawRequest(ctx, "getChatShareThemeBackdrops", nil, result)
+	return result, err
+}
+
 // GetChatAdministrators https://core.telegram.org/bots/api#getchatadministrators
 func (b *Bot) GetChatAdministrators(ctx context.Context, params *GetChatAdministratorsParams) ([]models.ChatMember, error) {
 	var result []models.ChatMember
@@ -543,6 +564,13 @@ func (b *Bot) AnswerCallbackQuery(ctx context.Context, params *AnswerCallbackQue
 	return result, err
 }
 
+// AnswerWidgetQuery https://core.telegram.org/bots/api#answerwidgetquery
+func (b *Bot) AnswerWidgetQuery(ctx context.Context, params *AnswerWidgetQueryParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "answerWidgetQuery", params, &result)
+	return result, err
+}
+
 // GetUserChatBoosts https://core.telegram.org/bots/api#getuserchatboosts
 func (b *Bot) GetUserChatBoosts(ctx context.Context, params *GetUserChatBoostsParams) (*models.UserChatBoosts, error) {
 	result := &models.UserChatBoosts{}
@@ -671,6 +699,20 @@ func (b *Bot) EditMessageChecklist(ctx context.Context, params *EditMessageCheck
 // EditMessageReplyMarkup https://core.telegram.org/bots/api#editmessagereplymarkup
 func (b *Bot) EditMessageReplyMarkup(ctx context.Context, params *EditMessageReplyMarkupParams) (*models.Message, error) {
 	return b.editMethodRequest(ctx, "editMessageReplyMarkup", params)
+}
+
+// EditMessageWidgetData https://core.telegram.org/bots/api#editmessagewidgetdata
+func (b *Bot) EditMessageWidgetData(ctx context.Context, params *EditMessageWidgetDataParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editMessageWidgetData", params, &result)
+	return result, err
+}
+
+// EditSharedWidgetData https://core.telegram.org/bots/api#editsharedwidgetdata
+func (b *Bot) EditSharedWidgetData(ctx context.Context, params *EditSharedWidgetDataParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "editSharedWidgetData", params, &result)
+	return result, err
 }
 
 // StopPoll https://core.telegram.org/bots/api#stoppoll
@@ -1079,6 +1121,13 @@ func (b *Bot) GetBusinessAccountGifts(ctx context.Context, params *GetBusinessAc
 	return result, err
 }
 
+// GetUniqueGift https://core.telegram.org/bots/api#getuniquegift
+func (b *Bot) GetUniqueGift(ctx context.Context, params *GetUniqueGiftParams) (*models.UniqueGift, error) {
+	result := &models.UniqueGift{}
+	err := b.rawRequest(ctx, "getUniqueGift", params, result)
+	return result, err
+}
+
 // ConvertGiftToStars https://core.telegram.org/bots/api#convertgifttostars
 func (b *Bot) ConvertGiftToStars(ctx context.Context, params *ConvertGiftToStarsParams) (bool, error) {
 	var result bool
@@ -1097,6 +1146,13 @@ func (b *Bot) UpgradeGift(ctx context.Context, params *UpgradeGiftParams) (bool,
 func (b *Bot) TransferGift(ctx context.Context, params *TransferGiftParams) (bool, error) {
 	var result bool
 	err := b.rawRequest(ctx, "transferGift", params, &result)
+	return result, err
+}
+
+// DeleteBusinessAccountGift https://core.telegram.org/bots/api#deletebusinessaccountgift
+func (b *Bot) DeleteBusinessAccountGift(ctx context.Context, params *DeleteBusinessAccountGiftParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "deleteBusinessAccountGift", params, &result)
 	return result, err
 }
 

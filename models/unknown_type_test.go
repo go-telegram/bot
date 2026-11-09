@@ -26,6 +26,9 @@ func TestPolymorphicUnmarshal_UnknownDiscriminator(t *testing.T) {
 		richBlock      RichBlock
 		richText       RichText
 		paidMedia      PaidMedia
+		widgetQuery    WidgetQueryType
+		emojiType      EmojiType
+		shareTheme     ChatShareTheme
 	)
 
 	cases := []struct {
@@ -48,6 +51,9 @@ func TestPolymorphicUnmarshal_UnknownDiscriminator(t *testing.T) {
 		{"RichBlock", `{"type":"` + unknownType + `"}`, &richBlock, func() string { return string(richBlock.Type) }},
 		{"RichText", `{"type":"` + unknownType + `"}`, &richText, func() string { return string(richText.Type) }},
 		{"PaidMedia", `{"type":"` + unknownType + `"}`, &paidMedia, func() string { return string(paidMedia.Type) }},
+		{"WidgetQueryType", `{"type":"` + unknownType + `"}`, &widgetQuery, func() string { return string(widgetQuery.Type) }},
+		{"EmojiType", `{"type":"` + unknownType + `"}`, &emojiType, func() string { return string(emojiType.Type) }},
+		{"ChatShareTheme", `{"type":"` + unknownType + `"}`, &shareTheme, func() string { return string(shareTheme.Type) }},
 	}
 
 	for _, c := range cases {
@@ -92,6 +98,9 @@ func TestPolymorphicMarshal_UnknownDiscriminator(t *testing.T) {
 		{"BackgroundFill", &BackgroundFill{}},
 		{"RichBlock", &RichBlock{}},
 		{"RichText", &RichText{}},
+		{"WidgetQueryType", &WidgetQueryType{}},
+		{"EmojiType", &EmojiType{}},
+		{"ChatShareTheme", &ChatShareTheme{}},
 	}
 
 	for _, c := range cases {
@@ -136,6 +145,9 @@ func TestPolymorphicMarshal_EmptyDiscriminator(t *testing.T) {
 		{"BackgroundType", &BackgroundType{}},
 		{"BackgroundFill", &BackgroundFill{}},
 		{"RichBlock", &RichBlock{}},
+		{"WidgetQueryType", &WidgetQueryType{}},
+		{"EmojiType", &EmojiType{}},
+		{"ChatShareTheme", &ChatShareTheme{}},
 	}
 
 	for _, c := range cases {
@@ -212,6 +224,9 @@ func TestPolymorphicUnmarshal_EmptyDiscriminator(t *testing.T) {
 		{"RichBlock", &RichBlock{}},
 		{"RichText", &RichText{}},
 		{"PaidMedia", &PaidMedia{}},
+		{"WidgetQueryType", &WidgetQueryType{}},
+		{"EmojiType", &EmojiType{}},
+		{"ChatShareTheme", &ChatShareTheme{}},
 	}
 
 	for _, c := range cases {

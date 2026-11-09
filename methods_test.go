@@ -17,6 +17,8 @@ type httpClient struct {
 	resp      string
 	reqFields map[string]string
 	reqFiles  map[string]string // multipart file parts by name, with expected content
+	absent    []string
+	present   []string
 	t         *testing.T
 }
 
@@ -26,6 +28,24 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 			if v != req.FormValue(k) {
 				c.t.Errorf("invalid field %q value %q, expect %q", k, req.FormValue(k), v)
 				return nil, fmt.Errorf("invalid field %q value %q, expect %q", k, req.FormValue(k), v)
+			}
+		}
+	}
+	if len(c.absent) > 0 || len(c.present) > 0 {
+		if err := req.ParseMultipartForm(32 << 20); err != nil {
+			c.t.Errorf("parse form: %v", err)
+			return nil, fmt.Errorf("parse form: %w", err)
+		}
+		for _, name := range c.absent {
+			if _, ok := req.MultipartForm.Value[name]; ok {
+				c.t.Errorf("field %q must be absent, got %q", name, req.MultipartForm.Value[name])
+				return nil, fmt.Errorf("field %q must be absent", name)
+			}
+		}
+		for _, name := range c.present {
+			if _, ok := req.MultipartForm.Value[name]; !ok {
+				c.t.Errorf("field %q must be present", name)
+				return nil, fmt.Errorf("field %q must be present", name)
 			}
 		}
 	}
@@ -1736,5 +1756,153 @@ func TestBot_MessageDraftMethods(t *testing.T) {
 		})
 		assertNoErr(t, err)
 		assertTrue(t, resp)
+	})
+}
+
+func TestBot_API104(t *testing.T) {
+	t.Parallel()
+
+	t.Run("SendWidget", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":7,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":       "123",
+			"html":          "<b>x</b>",
+			"allow_queries": "true",
+			"is_shared":     "true",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendWidget(context.Background(), &SendWidgetParams{
+			ChatID:       123,
+			HTML:         "<b>x</b>",
+			AllowQueries: true,
+			IsShared:     true,
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 7, resp.ID)
+	})
+
+	t.Run("SendSharedWidget", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":8,"date":1,"chat":{"id":123,"type":"private"}}`, reqFields: map[string]string{
+			"chat_id":   "123",
+			"widget_id": "w",
+			"chat_data": "room",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SendSharedWidget(context.Background(), &SendSharedWidgetParams{
+			ChatID:   123,
+			WidgetID: "w",
+			ChatData: "room",
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 8, resp.ID)
+	})
+
+	t.Run("AnswerWidgetQuery", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"widget_query_id": "q",
+			"data":            "ok",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.AnswerWidgetQuery(context.Background(), &AnswerWidgetQueryParams{
+			WidgetQueryID: "q",
+			Data:          "ok",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetDataOmitsNil", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"inline_message_id": "im",
+		}, absent: []string{"public_data", "chat_data", "chat_id"}}
+		b := &Bot{client: c}
+		resp, err := b.EditMessageWidgetData(context.Background(), &EditMessageWidgetDataParams{
+			InlineMessageID: "im",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditMessageWidgetDataEmptyAndQuoted", func(t *testing.T) {
+		empty := ""
+		quoted := "say \"hi\""
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"message_id":  "4",
+			"public_data": "",
+			"chat_data":   quoted,
+		}, present: []string{"public_data"}}
+		b := &Bot{client: c}
+		resp, err := b.EditMessageWidgetData(context.Background(), &EditMessageWidgetDataParams{
+			MessageID:  4,
+			PublicData: &empty,
+			ChatData:   &quoted,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("EditSharedWidgetDataClears", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"widget_id":   "w",
+			"public_data": "",
+			"cache_time":  "30",
+		}, present: []string{"public_data"}}
+		b := &Bot{client: c}
+		resp, err := b.EditSharedWidgetData(context.Background(), &EditSharedWidgetDataParams{
+			WidgetID:   "w",
+			PublicData: "",
+			CacheTime:  30,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("SendMessageEphemeralCallbackOmitsChat", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"message_id":9,"date":1,"chat":{"id":1,"type":"private"}}`, reqFields: map[string]string{
+			"text":                         "hi",
+			"ephemeral_message_parameters": `{"callback_query_id":"q"}`,
+		}, absent: []string{"chat_id"}}
+		b := &Bot{client: c}
+		resp, err := b.SendMessage(context.Background(), &SendMessageParams{
+			Text: "hi",
+			EphemeralMessageParameters: &models.EphemeralMessageParameters{
+				CallbackQueryID: "q",
+			},
+		})
+		assertNoErr(t, err)
+		assertEqualInt(t, 9, resp.ID)
+	})
+
+	t.Run("GetUniqueGift", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"name":"PlushPepe-1"}`, reqFields: map[string]string{
+			"name": "PlushPepe-1",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.GetUniqueGift(context.Background(), &GetUniqueGiftParams{Name: "PlushPepe-1"})
+		assertNoErr(t, err)
+		assertEqualString(t, resp.Name, "PlushPepe-1")
+	})
+
+	t.Run("DeleteBusinessAccountGift", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"business_connection_id": "bc",
+			"owned_gift_id":          "g",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.DeleteBusinessAccountGift(context.Background(), &DeleteBusinessAccountGiftParams{
+			BusinessConnectionID: "bc",
+			OwnedGiftID:          "g",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("GetChatShareThemeBackdrops", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `{"backdrops":[{"id":7,"name":"Sunset","colors":{"center_color":1,"edge_color":2,"symbol_color":3,"text_color":4}}]}`}
+		b := &Bot{client: c}
+		resp, err := b.GetChatShareThemeBackdrops(context.Background())
+		assertNoErr(t, err)
+		if len(resp.Backdrops) != 1 || resp.Backdrops[0].Name != "Sunset" {
+			t.Fatalf("%+v", resp)
+		}
 	})
 }
