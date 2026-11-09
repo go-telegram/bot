@@ -191,7 +191,8 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 
 ## Message.Text and CallbackQuery.Data handlers
 
-For your convenience, you can use `Message.Text`, `CallbackQuery.Data` and `Message.Caption` handlers.
+For your convenience, you can match message text, photo captions, callback data,
+inline query text and widget query data.
 
 An example:
 
@@ -214,6 +215,8 @@ Handler Types:
 - `HandlerTypeCallbackQueryGameShortName` - for Update.CallbackQuery.GameShortName field
 - `HandlerTypePhotoCaption` - for Update.Message.Caption field
 - `HandlerTypeInlineQuery` - for Update.InlineQuery.Query field
+- `HandlerTypeWidgetQueryData` - for Update.WidgetQuery.Data field
+- `HandlerTypeSharedWidgetQueryData` - for Update.SharedWidgetQuery.Data field
 
 Use `RegisterHandlerInlineQuery(handler)` to handle all inline queries, including
 empty queries. It returns a handler ID and accepts optional middlewares, like
@@ -221,6 +224,18 @@ empty queries. It returns a handler ID and accepts optional middlewares, like
 `HandlerTypeInlineQuery` and `MatchTypeExact`, `MatchTypePrefix`, or
 `MatchTypeContains`, or use `RegisterHandlerRegexp`. Inline queries have no message
 entities, so command match types do not match them.
+
+Widget query data supports exact, prefix, substring and regular-expression
+matching, for example:
+
+```go
+b.RegisterHandler(bot.HandlerTypeWidgetQueryData, "buy:", bot.MatchTypePrefix, widgetHandler)
+b.RegisterHandler(bot.HandlerTypeSharedWidgetQueryData, "buy:", bot.MatchTypePrefix, sharedWidgetHandler)
+```
+
+Read the query ID from `update.WidgetQuery.ID` or `update.SharedWidgetQuery.ID`
+and answer it with `b.AnswerWidgetQuery`. Widget queries have no message entities,
+so command match types do not match them.
 
 RegisterHandler returns a handler ID string. You can use it to remove the handler later.
 
@@ -253,8 +268,28 @@ matchFunc := func(update *models.Update) bool {
 	return true
 }
 
-b.RegisterHandlerMatchFunc(bot.HandlerTypeMessageText, matchFunc, myHandler)
+b.RegisterHandlerMatchFunc(matchFunc, myHandler)
 ```
+
+## Update user and chat
+
+Use `update.EffectiveUser()` and `update.EffectiveChat()` when a handler or
+middleware works with multiple update types:
+
+```go
+if user := update.EffectiveUser(); user != nil {
+    log.Printf("user ID: %d", user.ID)
+}
+if chat := update.EffectiveChat(); chat != nil {
+    log.Printf("chat ID: %d", chat.ID)
+}
+```
+
+Both helpers return pointers into the original update and are safe to call on a
+nil update. A user or chat may be unavailable, so check each result for nil.
+For widget queries, `EffectiveUser` returns the sender; `EffectiveChat` returns
+the widget's chat when present. Inline widget queries and shared widget queries
+have no chat.
 
 ## InputFile
 
