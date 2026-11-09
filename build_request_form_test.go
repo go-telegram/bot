@@ -1160,6 +1160,17 @@ func Test_buildRequestForm_stringPointer(t *testing.T) {
 	}
 }
 
+func Test_buildRequestForm_nilStringPointer(t *testing.T) {
+	params := struct {
+		Data *string `json:"data"`
+	}{}
+	writer := multipart.NewWriter(bytes.NewBuffer(nil))
+	_, err := buildRequestForm(writer, &params)
+	if err == nil || !strings.Contains(err.Error(), `nil value for field data`) {
+		t.Fatalf("got %v", err)
+	}
+}
+
 func Test_requestForm_addFilePart_incomparableReader(t *testing.T) {
 	form := newRequestForm(multipart.NewWriter(bytes.NewBuffer(nil)))
 
