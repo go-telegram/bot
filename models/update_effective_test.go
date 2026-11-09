@@ -32,6 +32,9 @@ func TestUpdateEffective(t *testing.T) {
 		{"callback", `{"callback_query":{"from":{"id":1},"message":{"date":1,"from":{"id":3},"chat":{"id":2}}}}`, 1, 2},
 		{"inaccessible callback", `{"callback_query":{"from":{"id":1},"message":{"date":0,"chat":{"id":2}}}}`, 1, 2},
 		{"inline callback", `{"callback_query":{"from":{"id":1},"inline_message_id":"abc"}}`, 1, 0},
+		{"widget query", `{"widget_query":{"id":"q","from":{"id":1},"chat":{"id":2},"message_id":5,"chat_instance":"ci","type":{"type":"data"},"data":"d"}}`, 1, 2},
+		{"inline widget query", `{"widget_query":{"id":"q","from":{"id":1},"inline_message_id":"abc","chat_instance":"ci","type":{"type":"data"},"data":"d"}}`, 1, 0},
+		{"shared widget query", `{"shared_widget_query":{"id":"q","from":{"id":1},"type":{"type":"data"},"data":"d","widget_id":"w"}}`, 1, 0},
 		{"shipping", `{"shipping_query":{"from":{"id":1}}}`, 1, 0},
 		{"checkout", `{"pre_checkout_query":{"from":{"id":1}}}`, 1, 0},
 		{"paid media", `{"purchased_paid_media":{"from":{"id":1}}}`, 1, 0},
@@ -105,5 +108,13 @@ func TestUpdateEffectiveReturnsOriginalPointers(t *testing.T) {
 	u = &Update{CallbackQuery: &CallbackQuery{From: User{ID: 1}, Message: MaybeInaccessibleMessage{Message: &Message{Chat: Chat{ID: 2}}}}}
 	if u.EffectiveUser() != &u.CallbackQuery.From || u.EffectiveChat() != &u.CallbackQuery.Message.Message.Chat {
 		t.Fatal("callback effective objects must point into the original update")
+	}
+	u = &Update{WidgetQuery: &WidgetQuery{From: User{ID: 1}, Chat: &Chat{ID: 2}}}
+	if u.EffectiveUser() != &u.WidgetQuery.From || u.EffectiveChat() != u.WidgetQuery.Chat {
+		t.Fatal("widget query effective objects must point into the original update")
+	}
+	u = &Update{SharedWidgetQuery: &SharedWidgetQuery{From: User{ID: 1}}}
+	if u.EffectiveUser() != &u.SharedWidgetQuery.From || u.EffectiveChat() != nil {
+		t.Fatal("shared widget query must return its sender and no chat")
 	}
 }
