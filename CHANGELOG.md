@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fix: `MessageGenerationStopped.DraftID` accepts a quoted integer (#313).
+
 ## v1.28.0 (2026-11-09)
 
 - Add `Update.EffectiveUser()` and `Update.EffectiveChat()` helpers for resolving
