@@ -90,7 +90,9 @@ func (b *Bot) WebhookReplyHandler() http.HandlerFunc {
 // the response succeeded.
 //
 // The method is the Bot API method name, such as "answerInlineQuery", and the
-// params are its parameters, such as *AnswerInlineQueryParams.
+// params are its parameters, such as *AnswerInlineQueryParams. Supported
+// non-nil params must be pointers to structs, while nil and typed-nil pointers
+// are skipped without emitting fields.
 //
 // WebhookReply works only in a handler run by WebhookReplyHandler. It must be
 // called before the handler returns. It can only be called once per update.
@@ -104,23 +106,6 @@ func (b *Bot) WebhookReply(ctx context.Context, method string, params any) error
 		return fmt.Errorf("%w, update not handled by WebhookReplyHandler", ErrorWebhookReplyUnavailable)
 	}
 
-	var bodyBuf bytes.Buffer
-	form := multipart.NewWriter(&bodyBuf)
-
-	if errMethod := form.WriteField("method", method); errMethod != nil {
-		return fmt.Errorf("error build webhook reply for method %s, %w", method, errMethod)
-	}
-
-	if params != nil && !reflect.ValueOf(params).IsNil() {
-		if _, errFormData := buildRequestForm(form, params); errFormData != nil {
-			return fmt.Errorf("error build webhook reply for method %s, %w", method, errFormData)
-		}
-	}
-
-	if errFormClose := form.Close(); errFormClose != nil {
-		return fmt.Errorf("error form close for method %s, %w", method, errFormClose)
-	}
-
 	reply.mx.Lock()
 	defer reply.mx.Unlock()
 
@@ -130,6 +115,37 @@ func (b *Bot) WebhookReply(ctx context.Context, method string, params any) error
 
 	if reply.body != nil {
 		return fmt.Errorf("%w, update already replied to", ErrorWebhookReplyUnavailable)
+	}
+
+	if params != nil {
+		v := reflect.ValueOf(params)
+		switch v.Kind() {
+		case reflect.Pointer:
+			if v.IsNil() {
+				params = nil
+			} else if v.Elem().Kind() != reflect.Struct {
+				return fmt.Errorf("unsupported params type %T, expected nil or pointer to struct", params)
+			}
+		default:
+			return fmt.Errorf("unsupported params type %T, expected nil or pointer to struct", params)
+		}
+	}
+
+	var bodyBuf bytes.Buffer
+	form := multipart.NewWriter(&bodyBuf)
+
+	if errMethod := form.WriteField("method", method); errMethod != nil {
+		return fmt.Errorf("error build webhook reply for method %s, %w", method, errMethod)
+	}
+
+	if params != nil {
+		if _, errFormData := buildRequestForm(form, params); errFormData != nil {
+			return fmt.Errorf("error build webhook reply for method %s, %w", method, errFormData)
+		}
+	}
+
+	if errFormClose := form.Close(); errFormClose != nil {
+		return fmt.Errorf("error form close for method %s, %w", method, errFormClose)
 	}
 
 	if b.isDebug {

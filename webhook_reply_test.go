@@ -194,12 +194,166 @@ func TestWebhookReplyHandler_ReplyAfterReturn(t *testing.T) {
 	}
 }
 
+type countingReadError struct {
+	reads int
+	err   error
+}
+
+func (r *countingReadError) Read(_ []byte) (int, error) {
+	r.reads++
+	return 0, r.err
+}
+
 func TestWebhookReply_OutsideWebhookReplyHandler(t *testing.T) {
 	b := &Bot{}
 
 	err := b.WebhookReply(context.Background(), "sendMessage", &SendMessageParams{ChatID: 1, Text: "foo"})
 	if !errors.Is(err, ErrorWebhookReplyUnavailable) {
 		t.Fatalf("expected ErrorWebhookReplyUnavailable, got %v", err)
+	}
+}
+
+func TestWebhookReply_UnsupportedParamsType(t *testing.T) {
+	n := 1
+
+	tests := []struct {
+		name   string
+		params any
+	}{
+		{name: "struct value", params: SendMessageParams{ChatID: 1, Text: "foo"}},
+		{name: "pointer to non-struct", params: &n},
+		{name: "int", params: 1},
+		{name: "string", params: "foo"},
+		{name: "map", params: map[string]any{"chat_id": 1}},
+		{name: "slice", params: []string{"foo"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			reply := &webhookReply{}
+			ctx := context.WithValue(context.Background(), webhookReplyKey{}, reply)
+			b := &Bot{}
+
+			err := b.WebhookReply(ctx, "sendMessage", tt.params)
+			if err == nil {
+				t.Fatal("expected an error for unsupported params type")
+			}
+			if errors.Is(err, ErrorWebhookReplyUnavailable) {
+				t.Fatalf("expected a params type error, got %v", err)
+			}
+			if reply.body != nil {
+				t.Fatalf("expected no reply to be recorded, got %q", reply.body)
+			}
+		})
+	}
+}
+
+func TestWebhookReplyHandler_ReplyWithTypedNilParams(t *testing.T) {
+	errorsHandler := &mockErrorsHandler{}
+
+	b := newWebhookReplyTestBot(func(ctx context.Context, b *Bot, update *models.Update) {
+		var params *SendMessageParams
+		if err := b.WebhookReply(ctx, "logOut", params); err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+	}, errorsHandler)
+
+	w := serveWebhookReply(t, b, &models.Update{ID: 1})
+
+	form := readWebhookReplyForm(t, w)
+
+	if len(form) != 1 || form["method"][0] != "logOut" {
+		t.Fatalf("expected only method logOut, got %v", form)
+	}
+}
+
+func TestWebhookReplyHandler_RetryAfterFailedReply(t *testing.T) {
+	errorsHandler := &mockErrorsHandler{}
+
+	errRead := errors.New("read failed")
+
+	var errFirst, errRetry error
+	b := newWebhookReplyTestBot(func(ctx context.Context, b *Bot, update *models.Update) {
+		errFirst = b.WebhookReply(ctx, "sendDocument", &SendDocumentParams{
+			ChatID:   1,
+			Document: &models.InputFileUpload{Filename: "broken.txt", Data: &countingReadError{err: errRead}},
+		})
+		errRetry = b.WebhookReply(ctx, "sendMessage", &SendMessageParams{ChatID: 1, Text: "retry"})
+	}, errorsHandler)
+
+	w := serveWebhookReply(t, b, &models.Update{ID: 1})
+
+	if !errors.Is(errFirst, errRead) {
+		t.Fatalf("expected the read error, got %v", errFirst)
+	}
+	if errors.Is(errFirst, ErrorWebhookReplyUnavailable) {
+		t.Fatalf("expected failed reply to leave the reply available, got %v", errFirst)
+	}
+	if errRetry != nil {
+		t.Fatalf("unexpected error for retry: %v", errRetry)
+	}
+
+	form := readWebhookReplyForm(t, w)
+
+	if got := form["method"]; len(got) != 1 || got[0] != "sendMessage" {
+		t.Fatalf("expected method sendMessage, got %v", got)
+	}
+	if got := form["text"]; len(got) != 1 || got[0] != "retry" {
+		t.Fatalf("expected text retry, got %v", got)
+	}
+}
+
+func TestWebhookReplyHandler_SecondReplyDoesNotReadRejectedParams(t *testing.T) {
+	errorsHandler := &mockErrorsHandler{}
+
+	var errSecond error
+	reader := &countingReadError{err: errors.New("second read failed")}
+	b := newWebhookReplyTestBot(func(ctx context.Context, b *Bot, update *models.Update) {
+		if err := b.WebhookReply(ctx, "sendDocument", &SendDocumentParams{
+			ChatID:   1,
+			Document: &models.InputFileUpload{Filename: "first.txt", Data: bytes.NewReader([]byte("first"))},
+		}); err != nil {
+			t.Fatalf("unexpected error for first reply: %v", err)
+		}
+		errSecond = b.WebhookReply(ctx, "sendDocument", &SendDocumentParams{
+			ChatID:   1,
+			Document: &models.InputFileUpload{Filename: "second.txt", Data: reader},
+		})
+	}, errorsHandler)
+
+	serveWebhookReply(t, b, &models.Update{ID: 1})
+
+	if !errors.Is(errSecond, ErrorWebhookReplyUnavailable) {
+		t.Fatalf("expected ErrorWebhookReplyUnavailable, got %v", errSecond)
+	}
+	if reader.reads != 0 {
+		t.Fatalf("expected rejected second reply to avoid reading upload data, got %d reads", reader.reads)
+	}
+}
+
+func TestWebhookReplyHandler_ReplyAfterReturnDoesNotReadRejectedParams(t *testing.T) {
+	errorsHandler := &mockErrorsHandler{}
+
+	var replyCtx context.Context
+	b := newWebhookReplyTestBot(func(ctx context.Context, b *Bot, update *models.Update) {
+		replyCtx = ctx
+	}, errorsHandler)
+
+	w := serveWebhookReply(t, b, &models.Update{ID: 1})
+
+	reader := &countingReadError{err: errors.New("late read failed")}
+	err := b.WebhookReply(replyCtx, "sendDocument", &SendDocumentParams{
+		ChatID:   1,
+		Document: &models.InputFileUpload{Filename: "late.txt", Data: reader},
+	})
+	if !errors.Is(err, ErrorWebhookReplyUnavailable) {
+		t.Fatalf("expected ErrorWebhookReplyUnavailable, got %v", err)
+	}
+	if reader.reads != 0 {
+		t.Fatalf("expected rejected late reply to avoid reading upload data, got %d reads", reader.reads)
+	}
+	if w.Body.Len() != 0 {
+		t.Fatalf("expected empty body, got %q", w.Body.String())
 	}
 }
 
