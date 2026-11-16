@@ -2,6 +2,9 @@ package models
 
 import (
 	"encoding/json"
+	"math"
+	"math/big"
+	"strconv"
 	"testing"
 )
 
@@ -77,5 +80,51 @@ func TestUpdate_StoppedMessageGenerationQuotedDraftID(t *testing.T) {
 	}
 	if u.StoppedMessageGeneration.Chat.ID != 5 || u.StoppedMessageGeneration.MessageThreadID != 3 || u.StoppedMessageGeneration.DraftID != 42 {
 		t.Fatalf("bad update: %+v", u.StoppedMessageGeneration)
+	}
+}
+
+func TestMessageGenerationStopped_DraftIDIntRange(t *testing.T) {
+	maxStr := strconv.Itoa(math.MaxInt)
+	minStr := strconv.Itoa(math.MinInt)
+	over := new(big.Int).Add(big.NewInt(math.MaxInt), big.NewInt(1)).String()
+	under := new(big.Int).Sub(big.NewInt(math.MinInt), big.NewInt(1)).String()
+
+	for _, tc := range []struct {
+		raw  string
+		want int
+	}{
+		{maxStr, math.MaxInt},
+		{minStr, math.MinInt},
+	} {
+		for _, enc := range []string{tc.raw, `"` + tc.raw + `"`} {
+			var m MessageGenerationStopped
+			if err := json.Unmarshal([]byte(`{"draft_id":`+enc+`}`), &m); err != nil {
+				t.Fatalf("IntSize=%d draft_id=%s: unexpected error %v", strconv.IntSize, enc, err)
+			}
+			if m.DraftID != tc.want {
+				t.Fatalf("IntSize=%d draft_id=%s: got %d", strconv.IntSize, enc, m.DraftID)
+			}
+		}
+	}
+
+	for _, raw := range []string{over, under} {
+		for _, enc := range []string{raw, `"` + raw + `"`} {
+			var m MessageGenerationStopped
+			if err := json.Unmarshal([]byte(`{"draft_id":`+enc+`}`), &m); err == nil {
+				t.Fatalf("IntSize=%d draft_id=%s: expected error, got %d", strconv.IntSize, enc, m.DraftID)
+			}
+		}
+	}
+}
+
+func TestMessageGenerationStopped_DraftIDAbsentOrNullPreserved(t *testing.T) {
+	for _, src := range []string{`{}`, `null`, `{"draft_id":null}`} {
+		m := MessageGenerationStopped{DraftID: 42}
+		if err := json.Unmarshal([]byte(src), &m); err != nil {
+			t.Fatalf("%s: unmarshal: %v", src, err)
+		}
+		if m.DraftID != 42 {
+			t.Fatalf("%s: DraftID changed to %d", src, m.DraftID)
+		}
 	}
 }

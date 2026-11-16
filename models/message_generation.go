@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
 )
 
 // MessageGenerationStopped https://core.telegram.org/bots/api#messagegenerationstopped
@@ -23,13 +24,12 @@ func (m *MessageGenerationStopped) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	if v.DraftID == "" {
-		m.DraftID = 0
 		return nil
 	}
-	id, err := v.DraftID.Int64()
+	id, err := strconv.Atoi(v.DraftID.String())
 	if err != nil {
 		return err
 	}
-	m.DraftID = int(id)
+	m.DraftID = id
 	return nil
 }
