@@ -672,7 +672,7 @@ func (b *Bot) SetMyDefaultAdministratorRights(ctx context.Context, params *SetMy
 // GetMyDefaultAdministratorRights https://core.telegram.org/bots/api#getmydefaultadministratorrights
 func (b *Bot) GetMyDefaultAdministratorRights(ctx context.Context, params *GetMyDefaultAdministratorRightsParams) (*models.ChatAdministratorRights, error) {
 	result := &models.ChatAdministratorRights{}
-	err := b.rawRequest(ctx, "setMyDefaultAdministratorRights", params, &result)
+	err := b.rawRequest(ctx, "getMyDefaultAdministratorRights", params, &result)
 	return result, err
 }
 
