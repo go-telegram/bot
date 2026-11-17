@@ -1941,3 +1941,94 @@ func TestBot_API104(t *testing.T) {
 		}
 	})
 }
+
+func TestAnswerInlineQuery_CacheTime(t *testing.T) {
+	t.Parallel()
+
+	t.Run("DisableCache", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"inline_query_id": "test-query-id",
+			"cache_time":      "0",
+		}}
+		b := &Bot{client: c}
+		params := &AnswerInlineQueryParams{
+			InlineQueryID: "test-query-id",
+			CacheTime:     0,
+			DisableCache:  true,
+		}
+		resp, err := b.AnswerInlineQuery(context.Background(), params)
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+
+		data, err := json.Marshal(params)
+		assertNoErr(t, err)
+		if !strings.Contains(string(data), `"cache_time":0`) {
+			t.Errorf("json %s, expect cache_time 0", data)
+		}
+	})
+
+	t.Run("CacheTime", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"inline_query_id": "test-query-id",
+			"cache_time":      "30",
+		}}
+		b := &Bot{client: c}
+		params := &AnswerInlineQueryParams{
+			InlineQueryID: "test-query-id",
+			CacheTime:     30,
+		}
+		resp, err := b.AnswerInlineQuery(context.Background(), params)
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+
+		data, err := json.Marshal(params)
+		assertNoErr(t, err)
+		if !strings.Contains(string(data), `"cache_time":30`) {
+			t.Errorf("json %s, expect cache_time 30", data)
+		}
+	})
+
+	t.Run("ZeroOmitted", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"inline_query_id": "test-query-id",
+		}, absent: []string{"cache_time"}}
+		b := &Bot{client: c}
+		params := &AnswerInlineQueryParams{
+			InlineQueryID: "test-query-id",
+			CacheTime:     0,
+		}
+		resp, err := b.AnswerInlineQuery(context.Background(), params)
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+
+		data, err := json.Marshal(params)
+		assertNoErr(t, err)
+		if strings.Contains(string(data), `"cache_time"`) {
+			t.Errorf("json %s, cache_time must be absent", data)
+		}
+	})
+
+	t.Run("DisableCacheOverridesCacheTime", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"inline_query_id": "test-query-id",
+			"cache_time":      "0",
+			"is_personal":     "true",
+		}}
+		b := &Bot{client: c}
+		params := &AnswerInlineQueryParams{
+			InlineQueryID: "test-query-id",
+			CacheTime:     30,
+			IsPersonal:    true,
+			DisableCache:  true,
+		}
+		resp, err := b.AnswerInlineQuery(context.Background(), params)
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+
+		data, err := json.Marshal(params)
+		assertNoErr(t, err)
+		if !strings.Contains(string(data), `"cache_time":0`) || strings.Contains(string(data), `"cache_time":30`) {
+			t.Errorf("json %s, expect cache_time 0", data)
+		}
+	})
+}
