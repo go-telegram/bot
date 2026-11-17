@@ -1,9 +1,12 @@
 # Changelog
 
-## Unreleased
+## v1.29.0 (2026-11-17)
 
+- Add support for replying to updates directly in webhook responses (#305).
+- Fix: `GetMyDefaultAdministratorRights` calls the getter endpoint instead of changing the default administrator rights (#316).
 - Fix: `MessageGenerationStopped.DraftID` accepts a quoted integer (#313).
 - Fix: `ValidateWebappRequest` no longer decodes values a second time, so `+` and `%` in Mini App init data do not break the signature. The passed `url.Values` are left unchanged (#311).
+- Add an example for sending videos (#238).
 
 ## v1.28.0 (2026-11-09)
 
