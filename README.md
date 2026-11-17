@@ -90,6 +90,15 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 If you want to use webhooks, instead of using `bot.Start`, you should use the `bot.StartWebhook` method to start the bot.
 Also, you should use `bot.WebhookHandler()` method as HTTP handler for your server.
 
+`WebhookHandler` returns HTTP 503 until `StartWebhook` is accepting updates and
+after shutdown begins, so Telegram retries those updates later. Cancel the
+context passed to `StartWebhook` and wait for it to return: handlers receive
+that context, no further updates are dispatched, and `StartWebhook` returns
+once running handlers return. Handlers should return when the context is
+canceled, otherwise `StartWebhook` does not return. Accepted updates still
+queued at that point are dropped, since Telegram already received 200 for them,
+and their count is reported to the errors handler.
+
 ```go
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -97,16 +106,24 @@ func main() {
 
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
-		bot.WithWebhookSecretToken(os.Getenv("EXAMPLE_TELEGRAM_WEBHOOK_SECRET_TOKEN"))
+		bot.WithWebhookSecretToken(os.Getenv("EXAMPLE_TELEGRAM_WEBHOOK_SECRET_TOKEN")),
 	}
 
-	b, _ := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	b, err := bot.New(os.Getenv("EXAMPLE_TELEGRAM_BOT_TOKEN"), opts...)
+	if err != nil {
+		panic(err)
+	}
 
 	// call methods.SetWebhook if needed
 
-	go b.StartWebhook(ctx)
+	go func() {
+		if err := http.ListenAndServe(":2000", b.WebhookHandler()); err != nil {
+			log.Printf("webhook server: %v", err)
+			cancel()
+		}
+	}()
 
-	http.ListenAndServe(":2000", b.WebhookHandler())
+	b.StartWebhook(ctx)
 
 	// call methods.DeleteWebhook if needed
 }

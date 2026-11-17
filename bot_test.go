@@ -180,6 +180,7 @@ func TestBot_StartWebhookWithCorrectSecret(t *testing.T) {
 
 	mx := sync.Mutex{}
 	var called bool
+	handled := make(chan struct{}, 1)
 
 	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
 		if update.Message.ID != 1 {
@@ -188,14 +189,13 @@ func TestBot_StartWebhookWithCorrectSecret(t *testing.T) {
 		mx.Lock()
 		called = true
 		mx.Unlock()
+		handled <- struct{}{}
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go b.StartWebhook(ctx)
-
-	time.Sleep(time.Millisecond * 100)
+	stopped := startWebhookForTest(t, b, ctx)
 
 	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
 	if errReq != nil {
@@ -204,11 +204,12 @@ func TestBot_StartWebhookWithCorrectSecret(t *testing.T) {
 	}
 	req.Header.Set("X-Telegram-Bot-Api-Secret-Token", "zzzz")
 
-	b.WebhookHandler().ServeHTTP(nil, req)
+	b.WebhookHandler().ServeHTTP(httptest.NewRecorder(), req)
 
+	waitForUpdateTest(t, handled, "default handler to run")
 	cancel()
 
-	time.Sleep(time.Millisecond * 100)
+	waitForUpdateTest(t, stopped, "webhook to stop")
 
 	mx.Lock()
 	if !called {
@@ -229,6 +230,7 @@ func TestBot_StartWebhookWithNoSecret(t *testing.T) {
 
 	mx := sync.Mutex{}
 	var called bool
+	handled := make(chan struct{}, 1)
 
 	b.defaultHandlerFunc = func(ctx context.Context, bot *Bot, update *models.Update) {
 		if update.Message.ID != 1 {
@@ -237,14 +239,13 @@ func TestBot_StartWebhookWithNoSecret(t *testing.T) {
 		mx.Lock()
 		called = true
 		mx.Unlock()
+		handled <- struct{}{}
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go b.StartWebhook(ctx)
-
-	time.Sleep(time.Millisecond * 100)
+	stopped := startWebhookForTest(t, b, ctx)
 
 	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
 	if errReq != nil {
@@ -252,11 +253,12 @@ func TestBot_StartWebhookWithNoSecret(t *testing.T) {
 		return
 	}
 
-	b.WebhookHandler().ServeHTTP(nil, req)
+	b.WebhookHandler().ServeHTTP(httptest.NewRecorder(), req)
 
+	waitForUpdateTest(t, handled, "default handler to run")
 	cancel()
 
-	time.Sleep(time.Millisecond * 100)
+	waitForUpdateTest(t, stopped, "webhook to stop")
 
 	mx.Lock()
 	if !called {
@@ -269,7 +271,9 @@ func TestBot_StartWebhookWithWrongSecret(t *testing.T) {
 	s := newServerMock("xxx")
 	defer s.Close()
 
-	opts := []Option{WithServerURL(s.URL()), WithWebhookSecretToken("zzzz")}
+	reported := make(chan error, 4)
+	opts := []Option{WithServerURL(s.URL()), WithWebhookSecretToken("zzzz"),
+		WithErrorsHandler(func(err error) { reported <- err })}
 	b, err := New("xxx", opts...)
 	if err != nil {
 		t.Fatalf("unexpected error %q", err)
@@ -290,9 +294,7 @@ func TestBot_StartWebhookWithWrongSecret(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go b.StartWebhook(ctx)
-
-	time.Sleep(time.Millisecond * 100)
+	stopped := startWebhookForTest(t, b, ctx)
 
 	req, errReq := http.NewRequest(http.MethodPost, "", strings.NewReader(`{"update_id":1,"message":{"message_id":1}}`))
 	if errReq != nil {
@@ -301,11 +303,14 @@ func TestBot_StartWebhookWithWrongSecret(t *testing.T) {
 	}
 	req.Header.Set("X-Telegram-Bot-Api-Secret-Token", "wrong_secret")
 
-	b.WebhookHandler().ServeHTTP(nil, req)
+	b.WebhookHandler().ServeHTTP(httptest.NewRecorder(), req)
 
+	if got := waitForUpdateTest(t, reported, "secret token rejection"); !strings.Contains(got.Error(), "invalid webhook secret token") {
+		t.Errorf("reported %v, want the secret token rejection", got)
+	}
 	cancel()
 
-	time.Sleep(time.Millisecond * 100)
+	waitForUpdateTest(t, stopped, "webhook to stop")
 
 	mx.Lock()
 	if called {

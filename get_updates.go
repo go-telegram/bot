@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -25,9 +24,7 @@ type getUpdatesParams struct {
 type AllowedUpdates []string
 
 // GetUpdates https://core.telegram.org/bots/api#getupdates
-func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
-
+func (b *Bot) getUpdates(ctx context.Context, queue chan<- queuedUpdate) {
 	var timeoutAfterError time.Duration
 
 	for {
@@ -79,6 +76,9 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 		// offsetStuck is set when the last update of the batch left the offset where it
 		// was, so the very same batch comes back on the next request.
 		offsetStuck := false
+		lastID := atomic.LoadInt64(&b.lastUpdateID)
+		dispatched := make(chan struct{}, len(updates))
+		pending := 0
 
 		for _, raw := range updates {
 			upd, errDecode := decodeUpdate(raw)
@@ -92,7 +92,7 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 			}
 
 			offsetStuck = false
-			atomic.StoreInt64(&b.lastUpdateID, upd.ID)
+			lastID = upd.ID
 
 			if errDecode != nil {
 				b.error("error decode update %d, skipped, %s, %w", upd.ID, raw, errDecode)
@@ -101,11 +101,25 @@ func (b *Bot) getUpdates(ctx context.Context, wg *sync.WaitGroup) {
 
 			select {
 			case <-ctx.Done():
-				b.error("some updates lost, ctx done")
 				return
-			case b.updates <- upd:
+			case queue <- queuedUpdate{update: upd, dispatched: dispatched}:
+				pending++
 			}
 		}
+
+		// The next request acknowledges the whole batch, so keep the previous
+		// offset if cancellation comes before every update is dispatched.
+		for i := 0; i < pending; i++ {
+			select {
+			case <-ctx.Done():
+				return
+			case <-dispatched:
+			}
+		}
+		if ctx.Err() != nil {
+			return
+		}
+		atomic.StoreInt64(&b.lastUpdateID, lastID)
 
 		if offsetStuck {
 			// Back off as on a failed request instead of re-requesting the same
