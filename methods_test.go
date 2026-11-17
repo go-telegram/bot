@@ -16,6 +16,7 @@ import (
 
 type httpClient struct {
 	resp      string
+	reqPath   string
 	reqFields map[string]string
 	reqFiles  map[string]string // multipart file parts by name, with expected content
 	absent    []string
@@ -24,6 +25,9 @@ type httpClient struct {
 }
 
 func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
+	if c.reqPath != "" && req.URL.Path != c.reqPath {
+		return nil, fmt.Errorf("invalid request path %q, expect %q", req.URL.Path, c.reqPath)
+	}
 	if c.reqFields != nil {
 		for k, v := range c.reqFields {
 			if v != req.FormValue(k) {
@@ -1045,9 +1049,14 @@ func TestBot_Methods(t *testing.T) {
 	})
 
 	t.Run("GetMyDefaultAdministratorRights", func(t *testing.T) {
-		c := &httpClient{t: t, resp: `{"can_edit_messages":true}`, reqFields: map[string]string{
-			"for_channels": "true",
-		}}
+		c := &httpClient{
+			t:       t,
+			resp:    `{"can_edit_messages":true}`,
+			reqPath: "/bot/getMyDefaultAdministratorRights",
+			reqFields: map[string]string{
+				"for_channels": "true",
+			},
+		}
 		b := &Bot{client: c}
 		resp, err := b.GetMyDefaultAdministratorRights(context.Background(), &GetMyDefaultAdministratorRightsParams{
 			ForChannels: true,
