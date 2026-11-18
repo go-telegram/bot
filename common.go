@@ -17,11 +17,11 @@ import (
 
 var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
 
-// EscapeMarkdown escapes special symbols for Telegram MarkdownV2 syntax
+// EscapeMarkdown escapes plain text for Telegram MarkdownV2 syntax.
 func EscapeMarkdown(s string) string {
 	var result []rune
 	for _, r := range s {
-		if strings.ContainsRune(shouldBeEscaped, r) {
+		if r == '\\' || strings.ContainsRune(shouldBeEscaped, r) {
 			result = append(result, '\\')
 		}
 		result = append(result, r)
