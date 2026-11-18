@@ -44,32 +44,51 @@ func (b *Bot) WebhookHandler() http.HandlerFunc {
 	}
 }
 
-// queueWebhookUpdate reports whether the update was accepted. Registering as a
-// sender under updatesMx lets StartWebhook wait for in-flight sends before it
-// closes the queue.
+// queueWebhookUpdate reports whether the update was accepted. It checks
+// webhookCtx and sends under updatesMx, which StartWebhook also holds to stop
+// admission, and a request woken while waiting for space checks again. So an
+// update is never accepted after StartWebhook's ctx is canceled.
 func (b *Bot) queueWebhookUpdate(ctx context.Context, update *models.Update) bool {
-	b.updatesMx.Lock()
-	run := b.updatesRun
-	if run == nil {
+	var waitedRun *updatesRun
+	for {
+		b.updatesMx.Lock()
+		run := b.updatesRun
+		if waitedRun != nil && run != waitedRun {
+			// The run this request waited on has ended; that is a shutdown, not a misconfiguration.
+			b.updatesMx.Unlock()
+			return false
+		}
+		if run == nil {
+			b.updatesMx.Unlock()
+			b.error("webhook update rejected: StartWebhook is not running")
+			return false
+		}
+		if run.webhookCtx == nil || run.webhookCtx.Err() != nil || ctx.Err() != nil {
+			b.updatesMx.Unlock()
+			return false
+		}
+		if run.webhookQueued < cap(run.queue) {
+			// The reservation guarantees buffer space, so the send does not block
+			// and StartWebhook can close the queue once it stops admission.
+			run.webhookQueued++
+			run.queue <- queuedUpdate{update: update}
+			b.updatesMx.Unlock()
+			return true
+		}
+		if run.queueSpace == nil {
+			run.queueSpace = make(chan struct{})
+		}
+		space := run.queueSpace
+		stopping := run.webhookCtx.Done()
+		waitedRun = run
 		b.updatesMx.Unlock()
-		b.error("webhook update rejected: StartWebhook is not running")
-		return false
-	}
-	if run.webhookCtx == nil || run.webhookCtx.Err() != nil || ctx.Err() != nil {
-		b.updatesMx.Unlock()
-		return false
-	}
-	stopping := run.webhookCtx.Done()
-	run.senders.Add(1)
-	b.updatesMx.Unlock()
-	defer run.senders.Done()
 
-	select {
-	case <-ctx.Done():
-		return false
-	case <-stopping:
-		return false
-	case run.queue <- queuedUpdate{update: update}:
-		return true
+		select {
+		case <-ctx.Done():
+			return false
+		case <-stopping:
+			return false
+		case <-space:
+		}
 	}
 }

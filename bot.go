@@ -147,7 +147,6 @@ func (b *Bot) StartWebhook(ctx context.Context) {
 	b.updatesMx.Lock()
 	run.webhookCtx = nil
 	b.updatesMx.Unlock()
-	run.senders.Wait()
 	close(run.queue)
 	workers.Wait()
 

@@ -299,6 +299,104 @@ func TestWebhookHandler_StopsDispatchingOnShutdown(t *testing.T) {
 	}
 }
 
+// errBeforeDoneContext reports cancellation through Err before it closes Done.
+// It breaks the Context contract on purpose: with a real ctx, a request waiting
+// for queue space can find both Done and the freed space ready and pick either.
+// Holding Done open pins the case where it does not observe the cancellation.
+type errBeforeDoneContext struct {
+	context.Context
+	done        chan struct{}
+	mx          sync.Mutex
+	canceled    bool
+	errObserved chan struct{}
+}
+
+func newErrBeforeDoneContext() *errBeforeDoneContext {
+	return &errBeforeDoneContext{Context: context.Background(), done: make(chan struct{}), errObserved: make(chan struct{})}
+}
+
+func (ctx *errBeforeDoneContext) Done() <-chan struct{} { return ctx.done }
+
+func (ctx *errBeforeDoneContext) Err() error {
+	ctx.mx.Lock()
+	defer ctx.mx.Unlock()
+	if !ctx.canceled {
+		return nil
+	}
+	select {
+	case <-ctx.errObserved:
+	default:
+		close(ctx.errObserved)
+	}
+	return context.Canceled
+}
+
+func (ctx *errBeforeDoneContext) cancelErr() {
+	ctx.mx.Lock()
+	ctx.canceled = true
+	ctx.mx.Unlock()
+}
+
+func TestWebhookHandler_ShutdownDrainDoesNotAdmitWaitingUpdate(t *testing.T) {
+	ctx := newErrBeforeDoneContext()
+	firstStarted := make(chan struct{})
+	release := make(chan struct{})
+	delivered := make(chan int64, 3)
+	reported := make(chan error, 3)
+	b, err := New("xxx", WithSkipGetMe(), WithWorkers(1), WithUpdatesChannelCap(1), WithNotAsyncHandlers(),
+		WithErrorsHandler(func(err error) { reported <- err }),
+		WithDefaultHandler(func(_ context.Context, _ *Bot, update *models.Update) {
+			if update.ID == 1 {
+				close(firstStarted)
+				<-release
+			}
+			delivered <- update.ID
+		}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := func(body string, ctx context.Context) int {
+		w := httptest.NewRecorder()
+		b.WebhookHandler()(w, httptest.NewRequest(http.MethodPost, "/", strings.NewReader(body)).WithContext(ctx))
+		return w.Code
+	}
+
+	stopped := startWebhookForTest(t, b, ctx)
+	if got := request(`{"update_id":1}`, context.Background()); got != http.StatusOK {
+		t.Fatalf("status for first update = %d, want 200", got)
+	}
+	waitForUpdateTest(t, firstStarted, "first handler to start")
+	if got := request(`{"update_id":2}`, context.Background()); got != http.StatusOK {
+		t.Fatalf("status for queued update = %d, want 200", got)
+	}
+	blocked := &observedDoneContext{Context: context.Background(), observed: make(chan struct{})}
+	blockedStatus := make(chan int, 1)
+	go func() {
+		blockedStatus <- request(`{"update_id":3}`, blocked)
+	}()
+	waitForUpdateTest(t, blocked.observed, "request to wait for queue space")
+
+	// The worker drops the queued update after cancellation. That must not make
+	// room for the waiting request before it observes the shutdown.
+	ctx.cancelErr()
+	close(release)
+	waitForUpdateTest(t, ctx.errObserved, "worker to see the cancellation")
+	close(ctx.done)
+	if got := waitForUpdateTest(t, blockedStatus, "blocked request to return"); got != http.StatusServiceUnavailable {
+		t.Errorf("status for blocked update = %d, want 503", got)
+	}
+	waitForUpdateTest(t, stopped, "webhook to stop after cancellation")
+	if got := waitForUpdateTest(t, reported, "dropped update report"); !strings.Contains(got.Error(), "dropped 1") {
+		t.Errorf("reported %v, want only the update accepted before shutdown", got)
+	}
+	if got := waitForUpdateTest(t, delivered, "first handler to return"); got != 1 {
+		t.Errorf("delivered update %d, want 1", got)
+	}
+	if len(delivered) != 0 || len(reported) != 0 {
+		t.Errorf("unexpected deliveries %d or reports %d", len(delivered), len(reported))
+	}
+}
+
 func TestStartWebhook_ReturnsWhenAsyncHandlerWaitsForCancellation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

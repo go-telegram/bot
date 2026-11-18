@@ -22,9 +22,17 @@ type updatesRun struct {
 	// It stays first so 32-bit platforms align it for atomic access.
 	dropped int64
 
-	queue      chan queuedUpdate
-	webhookCtx context.Context
-	senders    sync.WaitGroup
+	queue     chan queuedUpdate
+	isWebhook bool
+
+	// The webhook admission fields are guarded by Bot.updatesMx. webhookCtx is
+	// nil once StartWebhook stops accepting updates. webhookQueued counts
+	// accepted updates that workers have not yet taken for dispatch. queueSpace,
+	// when set, is closed and cleared when a worker frees space.
+	webhookCtx    context.Context
+	webhookQueued int
+	queueSpace    chan struct{}
+
 	// done is closed when the run ends, so a later Start can proceed.
 	done chan struct{}
 }
@@ -45,7 +53,12 @@ func (b *Bot) beginUpdates(ctx context.Context, webhook bool) *updatesRun {
 		b.updatesMx.Lock()
 		previous := b.updatesRun
 		if previous == nil {
-			run := &updatesRun{queue: make(chan queuedUpdate, b.updatesChanCap), done: make(chan struct{})}
+			queueCap := b.updatesChanCap
+			if webhook && queueCap < 1 {
+				// Webhook admission sends under updatesMx and needs buffer space.
+				queueCap = 1
+			}
+			run := &updatesRun{queue: make(chan queuedUpdate, queueCap), isWebhook: webhook, done: make(chan struct{})}
 			if webhook {
 				run.webhookCtx = ctx
 			}
@@ -89,7 +102,7 @@ func (b *Bot) waitUpdates(ctx context.Context, run *updatesRun) {
 	var handlers sync.WaitGroup
 	defer handlers.Wait()
 	for item := range run.queue {
-		if ctx.Err() != nil {
+		if !b.takeQueued(ctx, run) {
 			// Keep draining so StartWebhook can report accepted updates that were never dispatched.
 			atomic.AddInt64(&run.dropped, 1)
 			continue
@@ -101,4 +114,25 @@ func (b *Bot) waitUpdates(ctx context.Context, run *updatesRun) {
 		handlers.Add(1)
 		b.dispatchUpdate(ctx, item.update, handlers.Done)
 	}
+}
+
+// takeQueued reports whether a received update should be dispatched. A webhook
+// update releases its slot only when it is dispatched, so shutdown does not wake
+// waiting WebhookHandler requests just to reject them.
+func (b *Bot) takeQueued(ctx context.Context, run *updatesRun) bool {
+	if !run.isWebhook {
+		return ctx.Err() == nil
+	}
+
+	b.updatesMx.Lock()
+	defer b.updatesMx.Unlock()
+	if ctx.Err() != nil {
+		return false
+	}
+	run.webhookQueued--
+	if run.queueSpace != nil {
+		close(run.queueSpace)
+		run.queueSpace = nil
+	}
+	return true
 }

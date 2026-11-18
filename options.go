@@ -102,7 +102,8 @@ func WithAllowedUpdates(params AllowedUpdates) Option {
 	}
 }
 
-// WithUpdatesChannelCap allows setting custom capacity for the Updates channel
+// WithUpdatesChannelCap allows setting custom capacity for the Updates channel.
+// StartWebhook uses a capacity of at least 1.
 func WithUpdatesChannelCap(cap int) Option {
 	return func(b *Bot) {
 		b.updatesChanCap = cap
