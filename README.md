@@ -90,14 +90,18 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 If you want to use webhooks, instead of using `bot.Start`, you should use the `bot.StartWebhook` method to start the bot.
 Also, you should use `bot.WebhookHandler()` method as HTTP handler for your server.
 
-`WebhookHandler` returns HTTP 503 until `StartWebhook` is accepting updates and
-after shutdown begins, so Telegram retries those updates later. Cancel the
-context passed to `StartWebhook` and wait for it to return: handlers receive
-that context, no further updates are dispatched, and `StartWebhook` returns
-once running handlers return. Handlers should return when the context is
-canceled, otherwise `StartWebhook` does not return. Accepted updates still
-queued at that point are dropped, since Telegram already received 200 for them,
-and their count is reported to the errors handler.
+For a valid update, `WebhookHandler` returns HTTP 200 once a worker takes the
+update, and the worker then runs its matchers, middlewares and handler. With
+`bot.WithNotAsyncHandlers`, a request therefore waits for a free worker. If
+`StartWebhook` is not running, or the run stops or the request is canceled
+before a worker takes the update, it returns HTTP 503 so Telegram can retry,
+and the update is not handled. An unreadable request body gets HTTP 400 for
+the same reason.
+
+Cancel the context passed to `StartWebhook` to shut down. Handlers receive a
+context derived from it that is canceled when the run stops. `StartWebhook`
+waits for running handlers to return. Cancel it before shutting down the HTTP
+server, so that requests still waiting for a worker get 503 right away.
 
 ```go
 func main() {

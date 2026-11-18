@@ -158,6 +158,13 @@ func TestNew_emptyToken(t *testing.T) {
 	}
 }
 
+func TestNewRejectsNegativeUpdatesChannelCap(t *testing.T) {
+	b, err := New("xxx", WithSkipGetMe(), WithUpdatesChannelCap(-1))
+	if b != nil || err == nil {
+		t.Fatalf("New returned (%v, %v), want a configuration error", b, err)
+	}
+}
+
 func TestNew(t *testing.T) {
 	s := newServerMock("xxx")
 	defer s.Close()

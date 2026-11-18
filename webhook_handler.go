@@ -10,8 +10,11 @@ import (
 )
 
 // WebhookHandler returns an HTTP handler for updates processed by StartWebhook.
-// It returns 503 when StartWebhook is not accepting updates, so Telegram
-// retries them later. An unreadable request body returns 400.
+// For a valid update, it returns 200 once a worker takes the update, after
+// which the worker runs its matchers, middlewares and handler. It returns 503
+// if StartWebhook is not running, or if no worker takes the update before the
+// run stops or the request is canceled, and 400 if the request body cannot be
+// read. Such an update is not handled, and Telegram sends it again.
 func (b *Bot) WebhookHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		if b.webhookSecretToken != "" && req.Header.Get("X-Telegram-Bot-Api-Secret-Token") != b.webhookSecretToken {
@@ -44,51 +47,36 @@ func (b *Bot) WebhookHandler() http.HandlerFunc {
 	}
 }
 
-// queueWebhookUpdate reports whether the update was accepted. It checks
-// webhookCtx and sends under updatesMx, which StartWebhook also holds to stop
-// admission, and a request woken while waiting for space checks again. So an
-// update is never accepted after StartWebhook's ctx is canceled.
 func (b *Bot) queueWebhookUpdate(ctx context.Context, update *models.Update) bool {
-	var waitedRun *updatesRun
-	for {
-		b.updatesMx.Lock()
-		run := b.updatesRun
-		if waitedRun != nil && run != waitedRun {
-			// The run this request waited on has ended; that is a shutdown, not a misconfiguration.
-			b.updatesMx.Unlock()
-			return false
-		}
-		if run == nil {
-			b.updatesMx.Unlock()
-			b.error("webhook update rejected: StartWebhook is not running")
-			return false
-		}
-		if run.webhookCtx == nil || run.webhookCtx.Err() != nil || ctx.Err() != nil {
-			b.updatesMx.Unlock()
-			return false
-		}
-		if run.webhookQueued < cap(run.queue) {
-			// The reservation guarantees buffer space, so the send does not block
-			// and StartWebhook can close the queue once it stops admission.
-			run.webhookQueued++
-			run.queue <- queuedUpdate{update: update}
-			b.updatesMx.Unlock()
-			return true
-		}
-		if run.queueSpace == nil {
-			run.queueSpace = make(chan struct{})
-		}
-		space := run.queueSpace
-		stopping := run.webhookCtx.Done()
-		waitedRun = run
-		b.updatesMx.Unlock()
+	b.updatesMx.Lock()
+	run := b.updatesRun
+	b.updatesMx.Unlock()
+	if run == nil {
+		b.error("webhook update rejected: StartWebhook is not running")
+		return false
+	}
+	if !run.webhook || run.ctx.Err() != nil || ctx.Err() != nil {
+		return false
+	}
 
-		select {
-		case <-ctx.Done():
-			return false
-		case <-stopping:
-			return false
-		case <-space:
-		}
+	dispatched := make(chan struct{})
+	requestDone := ctx.Done()
+	select {
+	case run.queue <- queuedUpdate{update: update, dispatched: dispatched, requestDone: requestDone}:
+	case <-requestDone:
+		return false
+	case <-run.ctx.Done():
+		return false
+	}
+
+	// The handoff is unbuffered, so the request and the worker agree on
+	// whether the worker took the update.
+	select {
+	case <-dispatched:
+		return true
+	case <-requestDone:
+		return false
+	case <-run.ctx.Done():
+		return false
 	}
 }

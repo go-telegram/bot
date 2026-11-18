@@ -3,10 +3,14 @@ package bot
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"reflect"
+	"runtime"
+	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -18,8 +22,11 @@ type getUpdatesClientFunc func(*http.Request) (*http.Response, error)
 
 func (f getUpdatesClientFunc) Do(req *http.Request) (*http.Response, error) {
 	// keep the body readable for req.FormValue
-	body, _ := io.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
 	_ = req.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 	req.Body = io.NopCloser(bytes.NewReader(body))
 	return f(req)
 }
@@ -34,7 +41,7 @@ func runGetUpdates(ctx context.Context, b *Bot) []*models.Update {
 		defer close(done)
 		for item := range queue {
 			delivered = append(delivered, item.update)
-			item.dispatched <- struct{}{}
+			item.claim.take()
 		}
 	}()
 	b.getUpdates(ctx, queue)
@@ -301,15 +308,14 @@ func TestBot_StartPollsWhileHandlerRuns(t *testing.T) {
 	}
 }
 
-// A batch canceled before every update is dispatched stays unconfirmed, so the
-// whole batch, including handled updates, comes back.
-func TestBot_StartReplaysBatchCanceledBeforeDispatch(t *testing.T) {
+// Cancellation confirms the updates before the first undispatched one, so
+// polling resumes there without replaying the handled update.
+func TestBot_StartResumesFromFirstUndispatchedUpdate(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	resumeCtx, cancelResume := context.WithCancel(context.Background())
 	defer cancelResume()
 
-	batch := `{"ok":true,"result":[{"update_id":40},{"update_id":42}]}`
 	firstStarted := make(chan struct{})
 	offsets := make(chan string, 4)
 	var handled []int64
@@ -327,7 +333,10 @@ func TestBot_StartReplaysBatchCanceledBeforeDispatch(t *testing.T) {
 			calls++
 			offsets <- req.FormValue("offset")
 			if calls == 1 {
-				return getUpdatesJSONResponse(batch), nil
+				if req.FormValue("offset") == "41" {
+					return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":42}]}`), nil
+				}
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":40},{"update_id":42}]}`), nil
 			}
 			<-req.Context().Done()
 			return nil, req.Context().Err()
@@ -356,16 +365,53 @@ func TestBot_StartReplaysBatchCanceledBeforeDispatch(t *testing.T) {
 		defer close(resumed)
 		b.Start(resumeCtx)
 	}()
-	if got := waitForUpdateTest(t, offsets, "resumed poll"); got != "1" {
-		t.Errorf("resumed poll offset = %q, want 1", got)
+	if got := waitForUpdateTest(t, offsets, "resumed poll"); got != "41" {
+		t.Errorf("resumed poll offset = %q, want 41", got)
 	}
-	if got := waitForUpdateTest(t, offsets, "poll after the replayed batch"); got != "43" {
-		t.Errorf("offset after the replayed batch = %q, want 43", got)
+	if got := waitForUpdateTest(t, offsets, "poll after the resumed batch"); got != "43" {
+		t.Errorf("offset after the resumed batch = %q, want 43", got)
 	}
 	cancelResume()
 	waitForUpdateTest(t, resumed, "resumed polling to stop")
-	if want := []int64{40, 40, 42}; !reflect.DeepEqual(handled, want) {
+	if want := []int64{40, 42}; !reflect.DeepEqual(handled, want) {
 		t.Errorf("handled updates = %v, want %v", handled, want)
+	}
+}
+
+func TestBot_StartKeepsOffsetWhenLastDispatchedHandlerCancels(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	offsets := make(chan string, 2)
+	var calls int
+	b, err := New("xxx", WithSkipGetMe(), WithNotAsyncHandlers(),
+		WithDefaultHandler(func(context.Context, *Bot, *models.Update) {
+			cancel()
+		}),
+		WithErrorsHandler(func(error) {
+			// The malformed record keeps the poller from reading the dispatch
+			// signal until after the valid update's handler cancels the run.
+			<-ctx.Done()
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			offsets <- req.FormValue("offset")
+			calls++
+			if calls == 1 {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":42},{"update_id":"invalid"}]}`), nil
+			}
+			return nil, context.Canceled
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	b.Start(ctx)
+	if got := waitForUpdateTest(t, offsets, "initial poll"); got != "1" {
+		t.Errorf("initial offset = %q, want 1", got)
+	}
+
+	b.Start(context.Background())
+	if got := waitForUpdateTest(t, offsets, "poll after restart"); got != "43" {
+		t.Errorf("offset after restart = %q, want 43", got)
 	}
 }
 
@@ -410,6 +456,197 @@ func TestBot_StartWaitsForDispatchedHandlers(t *testing.T) {
 	waitForUpdateTest(t, stopped, "Start to return after the handler")
 }
 
+// An update whose preparation exits counts as dispatched, so polling goes on
+// with the remaining worker instead of replaying it.
+func TestBot_StartConfirmsUpdateWhosePreparationExits(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	offsets := make(chan string, 4)
+	var calls int32
+	b, err := New("xxx", WithSkipGetMe(), WithWorkers(2), WithErrorsHandler(func(error) {}),
+		WithDefaultHandler(func(context.Context, *Bot, *models.Update) {}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			offsets <- req.FormValue("offset")
+			if atomic.AddInt32(&calls, 1) == 1 {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":7},{"update_id":8}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		if update.ID == 8 {
+			runtime.Goexit()
+		}
+		return false
+	}, b.defaultHandlerFunc)
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+	for _, want := range []string{"1", "9"} {
+		if got := waitForUpdateTest(t, offsets, "poll"); got != want {
+			t.Errorf("poll offset = %q, want %q", got, want)
+		}
+	}
+	cancel()
+	waitForUpdateTest(t, stopped, "polling to stop")
+}
+
+// When the only worker exits during preparation the run stops, and the next
+// run resumes after that update instead of replaying it forever.
+func TestBot_StartResumesAfterUpdateWhosePreparationExits(t *testing.T) {
+	b, err := New("xxx", WithSkipGetMe(), WithWorkers(1), WithNotAsyncHandlers(), WithErrorsHandler(func(error) {}),
+		WithDefaultHandler(func(context.Context, *Bot, *models.Update) {}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if req.FormValue("offset") == "1" {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":7},{"update_id":8},{"update_id":9}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		if update.ID == 8 {
+			runtime.Goexit()
+		}
+		return false
+	}, b.defaultHandlerFunc)
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(context.Background())
+	}()
+	waitForUpdateTest(t, stopped, "polling to stop after its only worker exits")
+	if got := atomic.LoadInt64(&b.lastUpdateID); got != 8 {
+		t.Errorf("last update ID = %d, want 8", got)
+	}
+}
+
+// A negative offset makes Telegram drop older updates. Polling must resume
+// from the batch it got, so an update not dispatched before shutdown is
+// delivered after a restart.
+func TestBot_StartWithNegativeOffsetKeepsUndispatchedUpdate(t *testing.T) {
+	var mx sync.Mutex
+	pending := []int64{100, 101}
+	var handled []int64
+	firstStarted := make(chan struct{})
+	restarted := false
+	b, err := New("xxx", WithSkipGetMe(), WithNotAsyncHandlers(), WithInitialOffset(-3), WithErrorsHandler(func(error) {}),
+		WithDefaultHandler(func(ctx context.Context, _ *Bot, update *models.Update) {
+			mx.Lock()
+			handled = append(handled, update.ID)
+			first := !restarted && update.ID == 100
+			mx.Unlock()
+			if first {
+				close(firstStarted)
+				<-ctx.Done()
+			}
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			offset, _ := strconv.ParseInt(req.FormValue("offset"), 10, 64)
+			mx.Lock()
+			// Follow the getUpdates offset rules of the Bot API.
+			if offset < 0 && len(pending) > int(-offset) {
+				pending = pending[len(pending)-int(-offset):]
+			}
+			var result []string
+			kept := pending[:0]
+			for _, id := range pending {
+				if offset <= 0 || id >= offset {
+					kept = append(kept, id)
+					result = append(result, fmt.Sprintf(`{"update_id":%d}`, id))
+				}
+			}
+			pending = kept
+			mx.Unlock()
+			if len(result) == 0 {
+				<-req.Context().Done()
+				return nil, req.Context().Err()
+			}
+			return getUpdatesJSONResponse(`{"ok":true,"result":[` + strings.Join(result, ",") + `]}`), nil
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+	waitForUpdateTest(t, firstStarted, "first handler to start")
+	cancel()
+	waitForUpdateTest(t, stopped, "polling to stop")
+
+	mx.Lock()
+	restarted = true
+	pending = append(pending, 102, 103)
+	mx.Unlock()
+	resumeCtx, cancelResume := context.WithCancel(context.Background())
+	defer cancelResume()
+	resumed := make(chan struct{})
+	go func() {
+		defer close(resumed)
+		b.Start(resumeCtx)
+	}()
+	deadline := time.Now().Add(5 * time.Second)
+	for {
+		mx.Lock()
+		n := len(handled)
+		mx.Unlock()
+		if n >= 4 || time.Now().After(deadline) {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
+	cancelResume()
+	waitForUpdateTest(t, resumed, "resumed polling to stop")
+	mx.Lock()
+	defer mx.Unlock()
+	if want := []int64{100, 101, 102, 103}; !reflect.DeepEqual(handled, want) {
+		t.Errorf("handled updates = %v, want %v", handled, want)
+	}
+}
+
+// A batch fetched with a negative offset moves the cursor to the batch before
+// any update is dispatched.
+func Test_getUpdates_negativeOffsetResumesFromBatch(t *testing.T) {
+	requested := make(chan struct{})
+	b, err := New("xxx", WithSkipGetMe(), WithInitialOffset(-3),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if req.FormValue("offset") != "-2" {
+				<-req.Context().Done()
+				return nil, req.Context().Err()
+			}
+			close(requested)
+			return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":100},{"update_id":101}]}`), nil
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		// Nobody reads the queue, so no update is dispatched.
+		b.getUpdates(ctx, make(chan queuedUpdate))
+	}()
+	waitForUpdateTest(t, requested, "poll with the negative offset")
+	cancel()
+	waitForUpdateTest(t, stopped, "polling to stop")
+	if got := atomic.LoadInt64(&b.lastUpdateID); got != 99 {
+		t.Errorf("last update ID = %d, want 99", got)
+	}
+}
+
 func TestBot_StartWithoutWorkersReportsError(t *testing.T) {
 	reported := make(chan error, 2)
 	b, err := New("xxx", WithSkipGetMe(), WithWorkers(0),
@@ -426,5 +663,83 @@ func TestBot_StartWithoutWorkersReportsError(t *testing.T) {
 	waitForUpdateTest(t, stopped, "Start without workers to return")
 	if got := waitForUpdateTest(t, reported, "workers error"); !strings.Contains(got.Error(), "without update workers") {
 		t.Errorf("reported %v, want the missing workers error", got)
+	}
+}
+
+// Cancellation while a matcher runs must not leave the update unconfirmed:
+// its handler still runs, so replaying it would run it twice.
+func TestBot_StartConfirmsUpdateCanceledDuringPreparation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	matching := make(chan struct{})
+	release := make(chan struct{})
+	var handled int32
+	b, err := New("xxx", WithSkipGetMe(), WithWorkers(1), WithErrorsHandler(func(error) {}),
+		WithDefaultHandler(func(context.Context, *Bot, *models.Update) { atomic.AddInt32(&handled, 1) }),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if req.FormValue("offset") == "1" {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":7}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.RegisterHandlerMatchFunc(func(*models.Update) bool {
+		close(matching)
+		<-release
+		return false
+	}, b.defaultHandlerFunc)
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+	waitForUpdateTest(t, matching, "matcher to run")
+	cancel()
+	close(release)
+	waitForUpdateTest(t, stopped, "polling to stop")
+	if got := atomic.LoadInt32(&handled); got != 1 {
+		t.Errorf("handled %d times, want 1", got)
+	}
+	if got := atomic.LoadInt64(&b.lastUpdateID); got != 7 {
+		t.Errorf("last update ID = %d, want 7", got)
+	}
+}
+
+// Cancellation while the poller waits to queue the next update still confirms
+// the updates already dispatched.
+func TestBot_StartConfirmsDispatchedUpdatesWhenCanceledWhileQueuing(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	firstStarted := make(chan struct{})
+	b, err := New("xxx", WithSkipGetMe(), WithWorkers(1), WithNotAsyncHandlers(), WithUpdatesChannelCap(0),
+		WithDefaultHandler(func(ctx context.Context, _ *Bot, update *models.Update) {
+			if update.ID == 1 {
+				close(firstStarted)
+				<-ctx.Done()
+			}
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if req.FormValue("offset") == "1" {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":1},{"update_id":2}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+	waitForUpdateTest(t, firstStarted, "first handler to start")
+	cancel()
+	waitForUpdateTest(t, stopped, "polling to stop")
+	if got := atomic.LoadInt64(&b.lastUpdateID); got != 1 {
+		t.Errorf("last update ID = %d, want 1", got)
 	}
 }

@@ -102,8 +102,11 @@ func WithAllowedUpdates(params AllowedUpdates) Option {
 	}
 }
 
-// WithUpdatesChannelCap allows setting custom capacity for the Updates channel.
-// StartWebhook uses a capacity of at least 1.
+// WithUpdatesChannelCap sets the capacity of the queue between the update
+// source and the workers. Start fetches the next batch only after the current
+// one is dispatched, and a webhook request waits until a worker takes its
+// update, so the capacity only bounds how many updates wait for a worker.
+// New returns an error for a negative capacity.
 func WithUpdatesChannelCap(cap int) Option {
 	return func(b *Bot) {
 		b.updatesChanCap = cap
@@ -131,7 +134,9 @@ func UseTestEnvironment() Option {
 	}
 }
 
-// WithNotAsyncHandlers allows to run handlers in the main goroutine
+// WithNotAsyncHandlers runs each handler in its worker goroutine.
+// A worker then takes the next update only after its handler returns, so a
+// WebhookHandler request may wait for a busy worker.
 func WithNotAsyncHandlers() Option {
 	return func(b *Bot) {
 		b.notAsyncHandlers = true
