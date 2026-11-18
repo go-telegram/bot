@@ -12,8 +12,16 @@ import (
 
 func TestEscapeMarkdown(t *testing.T) {
 	res := EscapeMarkdown("foo \\! _*[]()~`>#+-=|{}.! bar")
-	if res != "foo \\\\! \\_\\*\\[\\]\\(\\)\\~\\`\\>\\#\\+\\-\\=\\|\\{\\}\\.\\! bar" {
+	if res != "foo \\\\\\! \\_\\*\\[\\]\\(\\)\\~\\`\\>\\#\\+\\-\\=\\|\\{\\}\\.\\! bar" {
 		t.Fatalf("unexpected result %q", res)
+	}
+}
+
+func TestEscapeMarkdown_PreservesLiteralBackslashes(t *testing.T) {
+	input := "C:\\temp\\notes!\\"
+	want := "C:\\\\temp\\\\notes\\!\\\\"
+	if got := EscapeMarkdown(input); got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 }
 
