@@ -109,12 +109,25 @@ func buildRequestForm(w *multipart.Writer, params any) (int, error) {
 
 	var fieldsCount int
 
+	// answerInlineQuery treats an omitted cache_time as 300 seconds. DisableCache
+	// is the only way to send 0, and it replaces CacheTime so the part is written once.
+	inlineQuery, _ := params.(*AnswerInlineQueryParams)
+	if inlineQuery != nil && inlineQuery.DisableCache {
+		if err := addFormFieldString(form, "cache_time", "0"); err != nil {
+			return 0, err
+		}
+		fieldsCount++
+	}
+
 	for i := 0; i < v.NumField(); i++ {
 		jsonTag := v.Type().Field(i).Tag.Get("json")
 		if jsonTag == "-" || jsonTag == "" {
 			continue
 		}
 		fieldName := strings.Split(jsonTag, ",")[0]
+		if inlineQuery != nil && inlineQuery.DisableCache && fieldName == "cache_time" {
+			continue
+		}
 		omitempty := strings.Contains(jsonTag, ",omitempty")
 
 		if omitempty && v.Field(i).IsZero() {

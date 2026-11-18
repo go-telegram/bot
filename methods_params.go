@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"encoding/json"
+
 	"github.com/go-telegram/bot/models"
 )
 
@@ -1105,6 +1107,27 @@ type AnswerInlineQueryParams struct {
 	IsPersonal    bool                             `json:"is_personal,omitempty"`
 	NextOffset    string                           `json:"next_offset,omitempty"`
 	Button        *models.InlineQueryResultsButton `json:"button,omitempty"`
+	// DisableCache sends cache_time 0. A zero CacheTime is omitted, and Telegram
+	// then caches results for 300 seconds. When set, the flag overrides CacheTime.
+	DisableCache bool `json:"-"`
+}
+
+// MarshalJSON encodes the params as the struct does. DisableCache forces
+// cache_time to 0, including when CacheTime is non-zero. The alias keeps this
+// method from calling itself.
+func (p AnswerInlineQueryParams) MarshalJSON() ([]byte, error) {
+	type alias AnswerInlineQueryParams
+	data, err := json.Marshal(alias(p))
+	if err != nil || !p.DisableCache {
+		return data, err
+	}
+
+	var obj map[string]json.RawMessage
+	if err := json.Unmarshal(data, &obj); err != nil {
+		return nil, err
+	}
+	obj["cache_time"] = json.RawMessage("0")
+	return json.Marshal(obj)
 }
 
 type AnswerWebAppQueryParams struct {
