@@ -35,8 +35,9 @@ func (b *Bot) findHandler(upd *models.Update) HandlerFunc {
 	b.handlersMx.RLock()
 	defer b.handlersMx.RUnlock()
 
+	username := b.botUsername()
 	for _, h := range b.handlers {
-		if h.match(upd) {
+		if h.match(upd, username) {
 			return h.handler
 		}
 	}

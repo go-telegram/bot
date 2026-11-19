@@ -34,6 +34,13 @@ type MatchFunc func(update *models.Update) bool
 type Bot struct {
 	lastUpdateID int64
 
+	// usernameMx guards username, the username from the last successful GetMe
+	// call for the bot the token belongs to. SetToken holds it while changing the
+	// token, so checking the bot ID and clearing the username happen together;
+	// other code still reads the token without it.
+	usernameMx sync.RWMutex
+	username   string
+
 	url                string
 	token              string
 	pollTimeout        time.Duration
@@ -117,9 +124,34 @@ func (b *Bot) ID() int64 {
 	return i
 }
 
-// SetToken sets the bot token
+// SetToken sets the bot token. If the token belongs to a different bot, by its
+// ID prefix, the username recorded by GetMe is cleared until GetMe succeeds
+// again. A new token for the same bot, as after revoking the old one, keeps it.
 func (b *Bot) SetToken(token string) {
+	b.usernameMx.Lock()
+	defer b.usernameMx.Unlock()
+	previousID := b.ID()
 	b.token = token
+	if b.ID() != previousID {
+		b.username = ""
+	}
+}
+
+// setUsername records the username GetMe returned, unless the token now
+// belongs to another bot, as when it was switched during the request. The
+// token starts with the bot's ID, which GetMe returns as the user ID.
+func (b *Bot) setUsername(me *models.User) {
+	b.usernameMx.Lock()
+	defer b.usernameMx.Unlock()
+	if me.ID == b.ID() {
+		b.username = me.Username
+	}
+}
+
+func (b *Bot) botUsername() string {
+	b.usernameMx.RLock()
+	defer b.usernameMx.RUnlock()
+	return b.username
 }
 
 // Token returns the bot token
