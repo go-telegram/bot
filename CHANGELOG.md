@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.30.0 (2026-11-19)
+
+- Preserve update delivery during shutdown (#317). Polling resumes at the first
+  undispatched update; later updates may be delivered again. `WebhookHandler`
+  returns HTTP 200 once a worker takes the update, or 503 if no worker takes it
+  before shutdown, so Telegram can retry.
+- `Start` and `StartWebhook` now wait for running handlers to return. Handlers
+  should respect context cancellation; a handler that never returns will block
+  shutdown. With `WithNotAsyncHandlers`, webhook requests wait for a free worker (#317).
+- Set `AnswerInlineQueryParams.DisableCache` to send an explicit `cache_time: 0`.
+  It overrides `CacheTime`; without the flag, a zero `CacheTime` is still omitted (#318).
+- Fix: `EscapeMarkdown` escapes literal backslashes in plain text for MarkdownV2 (#319).
+
 ## v1.29.0 (2026-11-17)
 
 - Add support for replying to updates directly in webhook responses (#305).
