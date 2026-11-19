@@ -835,6 +835,48 @@ func TestExtractCommand(t *testing.T) {
 			want: "",
 		},
 		{
+			name: "after Cyrillic text",
+			data: "привет /help",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 7,
+				Length: 5,
+			},
+			want:   "help",
+			wantOK: true,
+		},
+		{
+			name: "after emoji outside the BMP",
+			data: "👋 /start now",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 3,
+				Length: 6,
+			},
+			want:   "start",
+			wantOK: true,
+		},
+		{
+			name: "offset inside a surrogate pair",
+			data: "👋/start",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 1,
+				Length: 3,
+			},
+			want: "",
+		},
+		{
+			name: "length past end in UTF-16 units",
+			data: "你好 /start",
+			entity: models.MessageEntity{
+				Type:   models.MessageEntityTypeBotCommand,
+				Offset: 3,
+				Length: 7,
+			},
+			want: "",
+		},
+		{
 			name: "length too small",
 			data: "/",
 			entity: models.MessageEntity{
