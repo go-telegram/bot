@@ -59,7 +59,9 @@ type Bot struct {
 
 	allowedUpdates AllowedUpdates
 
-	updates chan *models.Update
+	updatesChanCap int
+	updatesMx      sync.Mutex
+	updatesRun     *updatesRun
 }
 
 // New creates new Bot instance
@@ -81,11 +83,14 @@ func New(token string, options ...Option) (*Bot, error) {
 		checkInitTimeout:   defaultCheckInitTimeout,
 		workers:            defaultWorkers,
 
-		updates: make(chan *models.Update, defaultUpdatesChanCap),
+		updatesChanCap: defaultUpdatesChanCap,
 	}
 
 	for _, o := range options {
 		o(b)
+	}
+	if b.updatesChanCap < 0 {
+		return nil, fmt.Errorf("updates channel capacity must be non-negative")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), b.checkInitTimeout)
@@ -122,31 +127,36 @@ func (b *Bot) Token() string {
 	return b.token
 }
 
-// StartWebhook starts the Bot with webhook mode
+// StartWebhook processes updates from WebhookHandler until ctx is canceled.
+// WebhookHandler answers a valid update with HTTP 200 once a worker takes it,
+// and with 503 if the run stops first. Handlers receive a context derived from
+// ctx and canceled when the run stops. StartWebhook waits for running handlers
+// to return. If every worker exits early, such as through runtime.Goexit in a
+// matcher or in a handler run with WithNotAsyncHandlers, the run stops. If
+// another Start or StartWebhook is running on the same Bot, it waits for that
+// run to end first. Calling it from a handler of the running Bot therefore
+// blocks until the ctx passed to that call is canceled.
 func (b *Bot) StartWebhook(ctx context.Context) {
-	wg := sync.WaitGroup{}
-
-	wg.Add(b.workers)
-	for i := 0; i < b.workers; i++ {
-		go b.waitUpdates(ctx, &wg)
-	}
-
-	wg.Wait()
+	b.start(ctx, true)
 }
 
-// Start the bot
+// Start receives and processes updates by polling until ctx is canceled. A
+// batch is confirmed once all its updates have been dispatched to handlers, so
+// polling continues while asynchronous handlers run. With WithNotAsyncHandlers,
+// a batch is dispatched only as fast as its handlers run. On cancellation,
+// Start waits for dispatched handlers before returning. When polling resumes
+// after cancellation, it starts from the first update of the batch that was not
+// dispatched, so updates handled after it may be delivered again. Telegram
+// learns the new offset only from the next poll, so after a process restart it
+// may deliver the last batch again: delivery is at least once. Handlers receive
+// a context derived from ctx and canceled when the run stops. They should
+// return when it is canceled. If every worker exits early, such as through
+// runtime.Goexit in a matcher or in a handler run with WithNotAsyncHandlers,
+// the run stops. If another Start or StartWebhook is running on the same Bot,
+// it waits for that run to end first. Calling it from a handler of the running
+// Bot therefore blocks until the ctx passed to that call is canceled.
 func (b *Bot) Start(ctx context.Context) {
-	wg := sync.WaitGroup{}
-
-	wg.Add(1)
-	go b.getUpdates(ctx, &wg)
-
-	wg.Add(b.workers)
-	for i := 0; i < b.workers; i++ {
-		go b.waitUpdates(ctx, &wg)
-	}
-
-	wg.Wait()
+	b.start(ctx, false)
 }
 
 func defaultErrorsHandler(err error) {
