@@ -3,9 +3,11 @@ package bot
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"sync"
 	"testing"
@@ -411,4 +413,145 @@ func TestBot_SetToken(t *testing.T) {
 	if b.token != "123456:xxx" {
 		t.Errorf("SetToken() = %s, want %s", b.token, "123456:xxx")
 	}
+}
+
+func getMeClient(t *testing.T, username string) HttpClient {
+	return getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+		if !strings.HasSuffix(req.URL.Path, "/getMe") {
+			t.Errorf("unexpected request %s", req.URL.Path)
+		}
+		return getUpdatesJSONResponse(`{"ok":true,"result":{"id":1,"is_bot":true,"first_name":"bot","username":"` + username + `"}}`), nil
+	})
+}
+
+func addressedCommandUpdate(text string) *models.Update {
+	return &models.Update{Message: &models.Message{
+		Text:     text,
+		Entities: []models.MessageEntity{{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: len(text)}},
+	}}
+}
+
+func TestBot_ProcessUpdateMatchesCommandAddressedToBot(t *testing.T) {
+	var handled []string
+	b, err := New("1:token", WithHTTPClient(time.Second, getMeClient(t, "my_bot")), WithNotAsyncHandlers(),
+		WithDefaultHandler(func(_ context.Context, _ *Bot, update *models.Update) {
+			handled = append(handled, "default "+update.Message.Text)
+		}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.RegisterHandler(HandlerTypeMessageText, "start", MatchTypeCommandStartOnly, func(_ context.Context, _ *Bot, update *models.Update) {
+		handled = append(handled, "start "+update.Message.Text)
+	})
+
+	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@my_bot"))
+	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@other_bot"))
+
+	want := []string{"start /start@my_bot", "default /start@other_bot"}
+	if !reflect.DeepEqual(handled, want) {
+		t.Errorf("handled %q, want %q", handled, want)
+	}
+}
+
+func TestBot_SetTokenForgetsUsernameOfAnotherBot(t *testing.T) {
+	b, err := New("1:token", WithHTTPClient(time.Second, getMeClient(t, "my_bot")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.SetToken("1:revoked-and-replaced")
+	if got := b.botUsername(); got != "my_bot" {
+		t.Errorf("username after a new token of the same bot = %q, want my_bot", got)
+	}
+	b.SetToken("2:token")
+	if got := b.botUsername(); got != "" {
+		t.Errorf("username after switching to another bot = %q, want empty", got)
+	}
+}
+
+func TestBot_GetMeIgnoresUsernameOfAnotherBot(t *testing.T) {
+	var b *Bot
+	// GetMe is sent with bot 2's token, and the token is switched back to bot 1
+	// before the reply arrives, so the reply describes another bot.
+	b, err := New("1:token", WithSkipGetMe(), WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+		b.SetToken("1:token")
+		return getUpdatesJSONResponse(`{"ok":true,"result":{"id":2,"is_bot":true,"first_name":"bot","username":"other_bot"}}`), nil
+	})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.SetToken("2:token")
+	if _, err := b.GetMe(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	if got := b.botUsername(); got != "" {
+		t.Errorf("username = %q, want empty for a GetMe answered by another bot", got)
+	}
+}
+
+func TestBot_GetMeFailureKeepsUsername(t *testing.T) {
+	fail := false
+	b, err := New("1:token", WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+		if fail {
+			return nil, errors.New("network down")
+		}
+		return getUpdatesJSONResponse(`{"ok":true,"result":{"id":1,"is_bot":true,"first_name":"bot","username":"my_bot"}}`), nil
+	})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	fail = true
+	if _, err := b.GetMe(context.Background()); err == nil {
+		t.Fatal("GetMe succeeded, want an error")
+	}
+	if got := b.botUsername(); got != "my_bot" {
+		t.Errorf("username after a failed GetMe = %q, want my_bot", got)
+	}
+}
+
+func TestBot_GetMeDecodeErrorRecordsNoUsername(t *testing.T) {
+	b, err := New("1:token", WithSkipGetMe(), WithHTTPClient(time.Second, getUpdatesClientFunc(func(*http.Request) (*http.Response, error) {
+		// The id and username decode even though is_bot fails.
+		return getUpdatesJSONResponse(`{"ok":true,"result":{"id":1,"username":"my_bot","is_bot":"yes"}}`), nil
+	})))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := b.GetMe(context.Background()); err == nil {
+		t.Fatal("GetMe succeeded, want a decode error")
+	}
+	if got := b.botUsername(); got != "" {
+		t.Errorf("username = %q, want empty after a failed GetMe", got)
+	}
+}
+
+// Run with -race: the username is read while it is set and while the token
+// changes.
+func TestBot_UsernameConcurrentAccess(t *testing.T) {
+	b := &Bot{token: "1:token"}
+	var wg sync.WaitGroup
+	for i := 0; i < 4; i++ {
+		wg.Add(3)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				b.setUsername(&models.User{ID: 1, Username: "my_bot"})
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				b.SetToken("2:token")
+				b.SetToken("1:token")
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				if got := b.botUsername(); got != "" && got != "my_bot" {
+					t.Errorf("username = %q", got)
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
