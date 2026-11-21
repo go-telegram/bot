@@ -18,7 +18,7 @@ type User struct {
 	AddedToAttachmentMenu      bool   `json:"added_to_attachment_menu,omitempty"`
 	CanJoinGroups              bool   `json:"can_join_groups,omitempty"`
 	CanReadAllGroupMessages    bool   `json:"can_read_all_group_messages,omitempty"`
-	SupportInlineQueries       bool   `json:"support_inline_queries,omitempty"`
+	SupportInlineQueries       bool   `json:"supports_inline_queries,omitempty"`
 	CanConnectToBusiness       bool   `json:"can_connect_to_business,omitempty"`
 	HasTopicsEnabled           bool   `json:"has_topics_enabled,omitempty"`
 	AllowsUsersToCreateTopics  bool   `json:"allows_users_to_create_topics,omitempty"`

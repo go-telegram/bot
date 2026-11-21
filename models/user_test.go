@@ -35,3 +35,34 @@ func TestUser_SupportsJoinRequestQueries(t *testing.T) {
 		})
 	}
 }
+
+// TestUser_SupportInlineQueries verifies supports_inline_queries decodes when present and stays false when absent.
+func TestUser_SupportInlineQueries(t *testing.T) {
+	tests := []struct {
+		name string
+		src  string
+		want bool
+	}{
+		{
+			name: "with supports_inline_queries",
+			src:  `{"id":1,"is_bot":true,"first_name":"Bot","supports_inline_queries":true}`,
+			want: true,
+		},
+		{
+			name: "without supports_inline_queries",
+			src:  `{"id":1,"is_bot":true,"first_name":"Bot"}`,
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var u User
+			if err := json.Unmarshal([]byte(tt.src), &u); err != nil {
+				t.Fatalf("unmarshal: %v", err)
+			}
+			if u.SupportInlineQueries != tt.want {
+				t.Fatalf("supports_inline_queries = %v, want %v", u.SupportInlineQueries, tt.want)
+			}
+		})
+	}
+}
