@@ -275,9 +275,9 @@ type InputRichBlockBlockQuotation struct {
 
 // InputRichBlockExpandableBlockQuotation https://core.telegram.org/bots/api#inputrichblockexpandableblockquotation
 type InputRichBlockExpandableBlockQuotation struct {
-	Type   RichBlockType `json:"type"` // always "expandable_blockquote"
-	Text   RichText      `json:"text"`
-	Credit *RichText     `json:"credit,omitempty"`
+	Type   RichBlockType    `json:"type"` // always "expandable_blockquote"
+	Blocks []InputRichBlock `json:"blocks"`
+	Credit *RichText        `json:"credit,omitempty"`
 }
 
 // InputRichBlockPullQuotation https://core.telegram.org/bots/api#inputrichblockpullquotation

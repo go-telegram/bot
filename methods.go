@@ -30,8 +30,8 @@ func (b *Bot) DeleteWebhook(ctx context.Context, params *DeleteWebhookParams) (b
 }
 
 // GetMe https://core.telegram.org/bots/api#getme
-func (b *Bot) GetMe(ctx context.Context) (*models.User, error) {
-	result := &models.User{}
+func (b *Bot) GetMe(ctx context.Context) (*models.BotFullInfo, error) {
+	result := &models.BotFullInfo{}
 	err := b.rawRequest(ctx, "getMe", nil, result)
 	return result, err
 }
@@ -582,6 +582,13 @@ func (b *Bot) GetUserChatBoosts(ctx context.Context, params *GetUserChatBoostsPa
 func (b *Bot) GetBusinessConnection(ctx context.Context, params *GetBusinessConnectionParams) (*models.BusinessConnection, error) {
 	result := &models.BusinessConnection{}
 	err := b.rawRequest(ctx, "getBusinessConnection", params, &result)
+	return result, err
+}
+
+// SetMySettings https://core.telegram.org/bots/api#setmysettings
+func (b *Bot) SetMySettings(ctx context.Context, params *SetMySettingsParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "setMySettings", params, &result)
 	return result, err
 }
 

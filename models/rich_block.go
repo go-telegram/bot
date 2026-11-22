@@ -275,7 +275,7 @@ type RichBlockBlockQuotation struct {
 // RichBlockExpandableBlockQuotation https://core.telegram.org/bots/api#richblockexpandableblockquotation
 type RichBlockExpandableBlockQuotation struct {
 	Type   RichBlockType `json:"type"`
-	Text   RichText      `json:"text"`
+	Blocks []RichBlock   `json:"blocks"`
 	Credit *RichText     `json:"credit,omitempty"`
 }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `GetMe` returns `BotFullInfo`. Fields that Telegram returned only from `getMe` moved there, including `active_usernames`, `inline_query_placeholder`, `needs_inline_query_location`, `has_topic_sidebar`, `has_main_web_app` and `supports_join_request_queries`. `User` keeps the fields sent for ordinary users. Inline queries use the documented `supports_inline_queries` name.
+- Add `SetMySettings`. Omitted parameters stay unchanged: a nil bool or integer is not sent, `False()` and a zero feedback denominator are sent, and an empty placeholder string clears the inline placeholder.
+- Callback queries from the bot's own messages can arrive with `inline_message_id` instead of `message` when `callback_query_mode` says so. `WriteAccessAllowed.Inviter` is the bot owner who invited the user into the private chat.
+- Expandable block quotations use `blocks` instead of `text`, on both received and outgoing rich messages. Nested files inside those blocks are uploaded.
+
 ## v1.30.0 (2026-11-19)
 
 - Preserve update delivery during shutdown (#317). Polling resumes at the first

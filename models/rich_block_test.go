@@ -110,12 +110,16 @@ func TestRichBlock_MarshalDoesNotMutate(t *testing.T) {
 }
 
 func TestRichBlock_ExpandableBlockQuotation(t *testing.T) {
-	rb := richBlockRoundTrip(t, `{"type":"expandable_blockquote","text":"quoted","credit":"author"}`)
+	rb := richBlockRoundTrip(t, `{"type":"expandable_blockquote","blocks":[{"type":"paragraph","text":"quoted"}],"credit":"author"}`)
 	if rb.Type != RichBlockTypeExpandableBlockQuotation {
 		t.Fatalf("wrong type %q", rb.Type)
 	}
-	if rb.RichBlockExpandableBlockQuotation == nil || rb.RichBlockExpandableBlockQuotation.Text.PlainText != "quoted" {
-		t.Fatal("expandable blockquote text not decoded")
+	q := rb.RichBlockExpandableBlockQuotation
+	if q == nil || len(q.Blocks) != 1 || q.Blocks[0].RichBlockParagraph == nil || q.Blocks[0].RichBlockParagraph.Text.PlainText != "quoted" {
+		t.Fatal("expandable blockquote blocks not decoded")
+	}
+	if q.Credit == nil || q.Credit.PlainText != "author" {
+		t.Fatal("expandable blockquote credit not decoded")
 	}
 }
 

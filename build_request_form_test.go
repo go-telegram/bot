@@ -554,6 +554,12 @@ func Test_addInputRichBlockAttachments_containerBlocks(t *testing.T) {
 			},
 		},
 		{
+			Type: models.RichBlockTypeExpandableBlockQuotation,
+			InputRichBlockExpandableBlockQuotation: &models.InputRichBlockExpandableBlockQuotation{
+				Blocks: []models.InputRichBlock{richDocumentBlock("expandable.pdf")},
+			},
+		},
+		{
 			Type: models.RichBlockTypeCollage,
 			InputRichBlockCollage: &models.InputRichBlockCollage{
 				Blocks: []models.InputRichBlock{richDocumentBlock("collage.pdf")},
@@ -587,7 +593,7 @@ func Test_addInputRichBlockAttachments_containerBlocks(t *testing.T) {
 
 	assertEqualString(t,
 		formFileNames(t, buf.String(), "XXX"),
-		"list.pdf,quote.pdf,collage.pdf,slideshow.pdf,details.pdf",
+		"list.pdf,quote.pdf,expandable.pdf,collage.pdf,slideshow.pdf,details.pdf",
 	)
 }
 
@@ -603,6 +609,7 @@ func Test_addInputRichBlockAttachments_missingVariant(t *testing.T) {
 		models.RichBlockTypeVoiceNote,
 		models.RichBlockTypeList,
 		models.RichBlockTypeBlockQuotation,
+		models.RichBlockTypeExpandableBlockQuotation,
 		models.RichBlockTypeCollage,
 		models.RichBlockTypeSlideshow,
 		models.RichBlockTypeDetails,
