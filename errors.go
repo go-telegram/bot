@@ -13,6 +13,10 @@ var (
 	ErrorNotFound                = errors.New("not found")
 	ErrorConflict                = errors.New("conflict")
 	ErrorWebhookReplyUnavailable = errors.New("webhook reply unavailable")
+	ErrorWebAppInitDataMalformed = errors.New("malformed web app data")
+	ErrorWebAppInitDataUnsigned  = errors.New("web app data has no hash or signature")
+	ErrorWebAppInitDataInvalid   = errors.New("invalid web app data hash or signature")
+	ErrorWebAppInitDataExpired   = errors.New("web app data expired")
 )
 
 type TooManyRequestsError struct {

@@ -2,12 +2,9 @@ package bot
 
 import (
 	"crypto/hmac"
-	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/url"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -103,48 +100,43 @@ type WebAppUser struct {
 
 // ValidateWebappRequest validates Mini App init data.
 // values must already be decoded, as returned by url.ParseQuery or http.Request.URL.Query.
-// The function does not modify values.
+// It uses the first value per key and leaves values unchanged.
+// An empty token, LF in signed names or values, or '=' in signed names returns nil, false.
 func ValidateWebappRequest(values url.Values, token string) (user *WebAppUser, ok bool) {
-	h := values.Get("hash")
+	fields := prepareWebAppRequest(values, token)
+	if fields == nil {
+		return nil, false
+	}
 
-	var vals []string
+	expected := webAppHMAC(token, webAppDataCheckString(fields))
+	if !hmac.Equal([]byte(expected), []byte(values.Get("hash"))) {
+		return nil, false
+	}
 
 	var u WebAppUser
+	if v, ok := fields["user"]; ok {
+		if err := json.Unmarshal([]byte(v), &u); err != nil {
+			return nil, false
+		}
+	}
 
+	return &u, true
+}
+
+func prepareWebAppRequest(values url.Values, token string) map[string]string {
+	if token == "" {
+		return nil
+	}
+
+	fields := make(map[string]string, len(values))
 	for k, v := range values {
 		if k == "hash" {
 			continue
 		}
-		if len(v) == 0 {
-			return nil, false
+		if len(v) == 0 || !isUnambiguousWebAppField(k, v[0]) {
+			return nil
 		}
-		vv := v[0]
-		vals = append(vals, k+"="+vv)
-		if k == "user" {
-			errDecodeUser := json.Unmarshal([]byte(vv), &u)
-			if errDecodeUser != nil {
-				return nil, false
-			}
-		}
+		fields[k] = v[0]
 	}
-
-	sort.Slice(vals, func(i, j int) bool {
-		return vals[i] < vals[j]
-	})
-
-	hmac1 := hmac.New(sha256.New, []byte("WebAppData"))
-	hmac1.Write([]byte(token))
-	r1 := hmac1.Sum(nil)
-
-	data := []byte(strings.Join(vals, "\n"))
-
-	hmac2 := hmac.New(sha256.New, r1)
-	hmac2.Write(data)
-	r2 := hmac2.Sum(nil)
-
-	if h != fmt.Sprintf("%x", r2) {
-		return nil, false
-	}
-
-	return &u, true
+	return fields
 }
