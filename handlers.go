@@ -43,7 +43,9 @@ type handler struct {
 	matchFunc MatchFunc
 }
 
-func (h handler) match(update *models.Update) bool {
+// match reports whether the handler accepts update. botUsername is the bot's
+// username, or empty if unknown.
+func (h handler) match(update *models.Update, botUsername string) bool {
 	if h.matchType == matchTypeFunc {
 		return h.matchFunc(update)
 	}
@@ -61,9 +63,9 @@ func (h handler) match(update *models.Update) bool {
 	case MatchTypeContains:
 		return h.matchContains(data)
 	case MatchTypeCommand:
-		return h.matchCommand(data, entities)
+		return h.matchCommand(data, entities, botUsername)
 	case MatchTypeCommandStartOnly:
-		return h.matchCommandStartOnly(data, entities)
+		return h.matchCommandStartOnly(data, entities, botUsername)
 	case matchTypeRegexp:
 		return h.matchRegexp(data)
 	default:
@@ -165,11 +167,11 @@ func utf16Index(s string, n int) (int, bool) {
 	return len(s), units == n
 }
 
-func (h handler) matchCommand(data string, entities []models.MessageEntity) bool {
+func (h handler) matchCommand(data string, entities []models.MessageEntity, botUsername string) bool {
 	for _, e := range entities {
 		if e.Type == models.MessageEntityTypeBotCommand {
 			command, ok := extractCommand(data, e)
-			if ok && command == h.pattern {
+			if ok && h.isCommand(command, botUsername) {
 				return true
 			}
 		}
@@ -177,16 +179,30 @@ func (h handler) matchCommand(data string, entities []models.MessageEntity) bool
 	return false
 }
 
-func (h handler) matchCommandStartOnly(data string, entities []models.MessageEntity) bool {
+func (h handler) matchCommandStartOnly(data string, entities []models.MessageEntity, botUsername string) bool {
 	for _, e := range entities {
 		if e.Type == models.MessageEntityTypeBotCommand && e.Offset == 0 {
 			command, ok := extractCommand(data, e)
-			if ok && command == h.pattern {
+			if ok && h.isCommand(command, botUsername) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+// isCommand reports whether command, without its leading "/", is the handler's
+// command. In groups, clients address a command to a bot by appending its
+// username, as in /start@bot_username. Telegram usernames are case-insensitive.
+func (h handler) isCommand(command, botUsername string) bool {
+	if command == h.pattern {
+		return true
+	}
+	if h.pattern == "" || botUsername == "" {
+		return false
+	}
+	name, target, addressed := strings.Cut(command, "@")
+	return addressed && name == h.pattern && strings.EqualFold(target, botUsername)
 }
 
 func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...Middleware) string {

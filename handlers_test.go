@@ -37,7 +37,7 @@ func Test_match_func(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{ID: 42})
+	res := h.match(&models.Update{ID: 42}, "")
 	if !called {
 		t.Error("not called")
 	}
@@ -53,12 +53,12 @@ func Test_match_exact(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{Message: &models.Message{Text: "zzz"}})
+	res := h.match(&models.Update{Message: &models.Message{Text: "zzz"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
 
-	res = h.match(&models.Update{Message: &models.Message{Text: "xxx"}})
+	res = h.match(&models.Update{Message: &models.Message{Text: "xxx"}}, "")
 	if !res {
 		t.Error("unexpected false result")
 	}
@@ -71,12 +71,12 @@ func Test_match_caption_exact(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{Message: &models.Message{Caption: "zzz"}})
+	res := h.match(&models.Update{Message: &models.Message{Caption: "zzz"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
 
-	res = h.match(&models.Update{Message: &models.Message{Caption: "xxx"}})
+	res = h.match(&models.Update{Message: &models.Message{Caption: "xxx"}}, "")
 	if !res {
 		t.Error("unexpected false result")
 	}
@@ -89,12 +89,12 @@ func Test_match_prefix(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xabcdef"}})
+	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xabcdef"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
 
-	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "abcdef"}})
+	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "abcdef"}}, "")
 	if !res {
 		t.Error("unexpected false result")
 	}
@@ -107,12 +107,12 @@ func Test_match_contains(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xxabxx"}})
+	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xxabxx"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
 
-	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xxabcdef"}})
+	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "xxabcdef"}}, "")
 	if !res {
 		t.Error("unexpected false result")
 	}
@@ -127,12 +127,12 @@ func Test_match_regexp(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "123abc"}})
+	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "123abc"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
 
-	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "abcdef"}})
+	res = h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "abcdef"}}, "")
 	if !res {
 		t.Error("unexpected false result")
 	}
@@ -145,7 +145,7 @@ func Test_match_invalid_type(t *testing.T) {
 
 	h := findHandler(b, id)
 
-	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "123abc"}})
+	res := h.match(&models.Update{CallbackQuery: &models.CallbackQuery{Data: "123abc"}}, "")
 	if res {
 		t.Error("unexpected true result")
 	}
@@ -193,7 +193,7 @@ func Test_match_exact_game(t *testing.T) {
 		},
 	}
 
-	res := h.match(&u)
+	res := h.match(&u, "")
 	if !res {
 		t.Error("unexpected true result")
 	}
@@ -216,7 +216,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if !res {
 			t.Error("unexpected result")
 		}
@@ -238,7 +238,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if !res {
 			t.Error("unexpected result")
 		}
@@ -260,7 +260,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if res {
 			t.Error("unexpected result")
 		}
@@ -282,7 +282,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if !res {
 			t.Error("unexpected result")
 		}
@@ -304,7 +304,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if res {
 			t.Error("unexpected result")
 		}
@@ -326,7 +326,7 @@ func Test_match_command_start(t *testing.T) {
 			},
 		}
 
-		res := h.match(&u)
+		res := h.match(&u, "")
 		if res {
 			t.Error("unexpected result")
 		}
@@ -343,7 +343,7 @@ func Test_match_NilUpdateMessageIsFalse(t *testing.T) {
 		Message: nil,
 	}
 
-	res := h.match(&u)
+	res := h.match(&u, "")
 	if res {
 		t.Error("want 'false', but got 'true'")
 	}
@@ -901,6 +901,46 @@ func TestExtractCommand(t *testing.T) {
 	}
 }
 
+func Test_match_commandAddressedToBot(t *testing.T) {
+	tests := []struct {
+		name        string
+		pattern     string
+		text        string
+		botUsername string
+		want        bool
+	}{
+		{name: "addressed to the bot", pattern: "foo", text: "/foo@my_bot", botUsername: "my_bot", want: true},
+		{name: "username in another case", pattern: "foo", text: "/foo@My_Bot", botUsername: "my_bot", want: true},
+		{name: "addressed to another bot", pattern: "foo", text: "/foo@other_bot", botUsername: "my_bot", want: false},
+		{name: "addressed to a bot whose username extends ours", pattern: "foo", text: "/foo@my_bot_2", botUsername: "my_bot", want: false},
+		{name: "another command", pattern: "foo", text: "/bar@my_bot", botUsername: "my_bot", want: false},
+		{name: "empty username suffix", pattern: "foo", text: "/foo@", botUsername: "my_bot", want: false},
+		{name: "username unknown", pattern: "foo", text: "/foo@my_bot", botUsername: "", want: false},
+		{name: "empty username suffix with username unknown", pattern: "foo", text: "/foo@", botUsername: "", want: false},
+		{name: "empty pattern", pattern: "", text: "/@my_bot", botUsername: "my_bot", want: false},
+		{name: "pattern with the username", pattern: "foo@my_bot", text: "/foo@my_bot", botUsername: "", want: true},
+	}
+	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption} {
+		for _, matchType := range []MatchType{MatchTypeCommand, MatchTypeCommandStartOnly} {
+			for _, tt := range tests {
+				t.Run(tt.name, func(t *testing.T) {
+					entities := []models.MessageEntity{{Type: models.MessageEntityTypeBotCommand, Offset: 0, Length: len(tt.text)}}
+					u := &models.Update{Message: &models.Message{
+						Text:            tt.text,
+						Entities:        entities,
+						Caption:         tt.text,
+						CaptionEntities: entities,
+					}}
+					h := handler{handlerType: handlerType, matchType: matchType, pattern: tt.pattern}
+					if got := h.match(u, tt.botUsername); got != tt.want {
+						t.Errorf("match = %v, want %v: handlerType=%d matchType=%d", got, tt.want, handlerType, matchType)
+					}
+				})
+			}
+		}
+	}
+}
+
 func TestHandler_matchCommand(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -970,7 +1010,7 @@ func TestHandler_matchCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := handler{pattern: tt.pattern}
-			result := h.matchCommand(tt.data, tt.entities)
+			result := h.matchCommand(tt.data, tt.entities, "")
 			if result != tt.wantMatch {
 				t.Errorf("matchCommand() = %v, want %v", result, tt.wantMatch)
 			}
@@ -1037,7 +1077,7 @@ func TestHandler_matchCommandStartOnly(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := handler{pattern: tt.pattern}
-			result := h.matchCommandStartOnly(tt.data, tt.entities)
+			result := h.matchCommandStartOnly(tt.data, tt.entities, "")
 			if result != tt.wantMatch {
 				t.Errorf("matchCommandStartOnly() = %v, want %v", result, tt.wantMatch)
 			}
@@ -1080,7 +1120,7 @@ func Test_match_invalidCommandEntities(t *testing.T) {
 							CaptionEntities: entities,
 						}}
 						h := handler{handlerType: handlerType, matchType: matchType, pattern: pattern}
-						if h.match(u) {
+						if h.match(u, "") {
 							t.Errorf("invalid command matched: handlerType=%d matchType=%d pattern=%q", handlerType, matchType, pattern)
 						}
 					})
@@ -1105,7 +1145,7 @@ func Test_match_commandSkipsInvalidEntities(t *testing.T) {
 	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption} {
 		for _, matchType := range []MatchType{MatchTypeCommand, MatchTypeCommandStartOnly} {
 			h := handler{handlerType: handlerType, matchType: matchType, pattern: "start"}
-			if !h.match(u) {
+			if !h.match(u, "") {
 				t.Errorf("valid command after invalid entity did not match: handlerType=%d matchType=%d", handlerType, matchType)
 			}
 		}
@@ -1116,7 +1156,7 @@ func Test_match_missingUpdateData(t *testing.T) {
 	for _, handlerType := range []HandlerType{HandlerTypeMessageText, HandlerTypePhotoCaption, HandlerTypeCallbackQueryData, HandlerTypeCallbackQueryGameShortName, HandlerTypeInlineQuery, HandlerTypeWidgetQueryData, HandlerTypeSharedWidgetQueryData} {
 		for _, matchType := range []MatchType{MatchTypeExact, MatchTypePrefix, MatchTypeContains, matchTypeRegexp} {
 			h := handler{handlerType: handlerType, matchType: matchType, re: regexp.MustCompile("")}
-			if h.match(&models.Update{}) {
+			if h.match(&models.Update{}, "") {
 				t.Errorf("missing data matched an empty pattern: handlerType=%d matchType=%d", handlerType, matchType)
 			}
 		}
@@ -1126,7 +1166,7 @@ func Test_match_missingUpdateData(t *testing.T) {
 func Test_match_unknownHandlerTypePreservesEmptyData(t *testing.T) {
 	for _, matchType := range []MatchType{MatchTypeExact, MatchTypePrefix, MatchTypeContains, matchTypeRegexp} {
 		h := handler{handlerType: HandlerType(999), matchType: matchType, re: regexp.MustCompile("")}
-		if !h.match(&models.Update{}) {
+		if !h.match(&models.Update{}, "") {
 			t.Errorf("unknown handler type no longer matches an empty pattern: matchType=%d", matchType)
 		}
 	}
@@ -1162,7 +1202,7 @@ func Test_match_inlineQuery(t *testing.T) {
 				id = b.RegisterHandler(HandlerTypeInlineQuery, tt.pattern, tt.matchType, nil)
 			}
 			h := findHandler(b, id)
-			if got := h.match(&models.Update{InlineQuery: &models.InlineQuery{Query: tt.query}}); got != tt.want {
+			if got := h.match(&models.Update{InlineQuery: &models.InlineQuery{Query: tt.query}}, ""); got != tt.want {
 				t.Errorf("match(%q) = %v, want %v", tt.query, got, tt.want)
 			}
 		})
@@ -1196,7 +1236,7 @@ func Test_match_widgetQuery(t *testing.T) {
 			} else {
 				upd.SharedWidgetQuery = &models.SharedWidgetQuery{Data: tt.data}
 			}
-			if got := h.match(upd); got != tt.want {
+			if got := h.match(upd, ""); got != tt.want {
 				t.Errorf("match(%q) = %v, want %v", tt.data, got, tt.want)
 			}
 		})

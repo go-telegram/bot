@@ -88,7 +88,9 @@ func WithServerURL(serverURL string) Option {
 	}
 }
 
-// WithSkipGetMe allows skip call GetMe on bot init
+// WithSkipGetMe allows skip call GetMe on bot init. A MatchTypeCommand or
+// MatchTypeCommandStartOnly handler for a bare command such as start then
+// matches /start@bot_username only after a GetMe call succeeds.
 func WithSkipGetMe() Option {
 	return func(b *Bot) {
 		b.skipGetMe = true
