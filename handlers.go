@@ -132,11 +132,37 @@ func (h handler) matchRegexp(data string) bool {
 
 func extractCommand(data string, entity models.MessageEntity) (string, bool) {
 	// Check the offset before subtracting, avoiding overflow in offset + length.
+	// A string never has more UTF-16 code units than bytes, so an entity that
+	// fails this check cannot fit in the text either.
 	if entity.Offset < 0 || entity.Offset > len(data) || entity.Length <= 1 || entity.Length > len(data)-entity.Offset {
 		return "", false
 	}
-	// Skipping the "/" character at the beginning of the command
-	return data[entity.Offset+1 : entity.Offset+entity.Length], true
+	// Telegram counts entity offsets and lengths in UTF-16 code units.
+	from, okFrom := utf16Index(data, entity.Offset)
+	to, okTo := utf16Index(data[from:], entity.Length)
+	if !okFrom || !okTo {
+		return "", false
+	}
+	// Skip the "/" character at the beginning of the command.
+	return data[from+1 : from+to], true
+}
+
+// utf16Index returns the byte index of the n-th UTF-16 code unit in s. It
+// reports false when n is negative, falls inside a surrogate pair or is past
+// the end of s. An invalid UTF-8 byte counts as one unit, as U+FFFD would.
+func utf16Index(s string, n int) (int, bool) {
+	units := 0
+	for i, r := range s {
+		if units >= n {
+			return i, units == n
+		}
+		units++
+		if r > 0xFFFF {
+			// Outside the BMP, a rune takes a surrogate pair.
+			units++
+		}
+	}
+	return len(s), units == n
 }
 
 func (h handler) matchCommand(data string, entities []models.MessageEntity) bool {
