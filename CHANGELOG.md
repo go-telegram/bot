@@ -2,10 +2,12 @@
 
 ## Unreleased
 
-- `GetMe` returns `BotFullInfo`. Fields that Telegram returned only from `getMe` moved there, including `active_usernames`, `inline_query_placeholder`, `needs_inline_query_location`, `has_topic_sidebar`, `has_main_web_app` and `supports_join_request_queries`. `User` keeps the fields sent for ordinary users. Inline queries use the documented `supports_inline_queries` name.
+- Breaking: `GetMe` now returns `*models.BotFullInfo` instead of `*models.User`.
+- Breaking: `RichBlockExpandableBlockQuotation` and `InputRichBlockExpandableBlockQuotation` replace `Text` with `Blocks`. Nested files inside those blocks are uploaded.
+- `BotFullInfo` adds `active_usernames`, `inline_query_placeholder`, `needs_inline_query_location`, and `has_topic_sidebar`. It also adds `has_main_web_app`, which `getMe` already returned and `User` did not declare.
+- Fields that `getMe` used to return on `User` move to `BotFullInfo`: `can_join_groups`, `can_read_all_group_messages`, `supports_inline_queries`, `can_connect_to_business`, `has_topics_enabled`, `allows_users_to_create_topics`, `can_manage_bots`, `supports_guest_queries`, and `supports_join_request_queries`. `User` keeps the fields sent for ordinary users.
 - Add `SetMySettings`. Omitted parameters stay unchanged: a nil bool or integer is not sent, `False()` and a zero feedback denominator are sent, and an empty placeholder string clears the inline placeholder.
 - Callback queries from the bot's own messages can arrive with `inline_message_id` instead of `message` when `callback_query_mode` says so. `WriteAccessAllowed.Inviter` is the bot owner who invited the user into the private chat.
-- Expandable block quotations use `blocks` instead of `text`, on both received and outgoing rich messages. Nested files inside those blocks are uploaded.
 
 ## v1.30.0 (2026-11-19)
 

@@ -30,9 +30,15 @@ func (b *Bot) DeleteWebhook(ctx context.Context, params *DeleteWebhookParams) (b
 }
 
 // GetMe https://core.telegram.org/bots/api#getme
+// GetMe also records the bot's username when the returned bot is the one the
+// token belongs to, so a MatchTypeCommand or MatchTypeCommandStartOnly handler
+// for start also matches /start@bot_username.
 func (b *Bot) GetMe(ctx context.Context) (*models.BotFullInfo, error) {
 	result := &models.BotFullInfo{}
 	err := b.rawRequest(ctx, "getMe", nil, result)
+	if err == nil {
+		b.setUsername(result.ID, result.Username)
+	}
 	return result, err
 }
 
@@ -358,6 +364,20 @@ func (b *Bot) ApproveChatJoinRequest(ctx context.Context, params *ApproveChatJoi
 func (b *Bot) DeclineChatJoinRequest(ctx context.Context, params *DeclineChatJoinRequestParams) (bool, error) {
 	var result bool
 	err := b.rawRequest(ctx, "declineChatJoinRequest", params, &result)
+	return result, err
+}
+
+// AnswerChatJoinRequestQuery https://core.telegram.org/bots/api#answerchatjoinrequestquery
+func (b *Bot) AnswerChatJoinRequestQuery(ctx context.Context, params *AnswerChatJoinRequestQueryParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "answerChatJoinRequestQuery", params, &result)
+	return result, err
+}
+
+// SendChatJoinRequestWebApp https://core.telegram.org/bots/api#sendchatjoinrequestwebapp
+func (b *Bot) SendChatJoinRequestWebApp(ctx context.Context, params *SendChatJoinRequestWebAppParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "sendChatJoinRequestWebApp", params, &result)
 	return result, err
 }
 

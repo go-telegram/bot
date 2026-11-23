@@ -639,6 +639,16 @@ type DeclineChatJoinRequestParams struct {
 	UserID int64 `json:"user_id"`
 }
 
+type AnswerChatJoinRequestQueryParams struct {
+	ChatJoinRequestQueryID string                            `json:"chat_join_request_query_id"`
+	Result                 models.ChatJoinRequestQueryResult `json:"result"`
+}
+
+type SendChatJoinRequestWebAppParams struct {
+	ChatJoinRequestQueryID string `json:"chat_join_request_query_id"`
+	WebAppURL              string `json:"web_app_url"`
+}
+
 type SetChatPhotoParams struct {
 	ChatID any              `json:"chat_id"`
 	Photo  models.InputFile `json:"photo"`

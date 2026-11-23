@@ -8,7 +8,17 @@ type ChatJoinRequest struct {
 	Date       int             `json:"date"`
 	Bio        string          `json:"bio,omitempty"`
 	InviteLink *ChatInviteLink `json:"invite_link,omitempty"`
+	QueryID    string          `json:"query_id,omitempty"`
 }
+
+// ChatJoinRequestQueryResult https://core.telegram.org/bots/api#answerchatjoinrequestquery
+type ChatJoinRequestQueryResult string
+
+const (
+	ChatJoinRequestQueryResultApprove ChatJoinRequestQueryResult = "approve"
+	ChatJoinRequestQueryResultDecline ChatJoinRequestQueryResult = "decline"
+	ChatJoinRequestQueryResultQueue   ChatJoinRequestQueryResult = "queue"
+)
 
 // ChatPhoto https://core.telegram.org/bots/api#chatphoto
 type ChatPhoto struct {
@@ -158,6 +168,7 @@ type ChatFullInfo struct {
 	LinkedChatID                       int64                 `json:"linked_chat_id,omitempty"`
 	Location                           *ChatLocation         `json:"location,omitempty"`
 	PaidMessageStarCount               int                   `json:"paid_message_star_count,omitempty"`
+	GuardBot                           *User                 `json:"guard_bot,omitempty"`
 	Rating                             *UserRating           `json:"rating,omitempty"`
 	FirstProfileAudio                  *Audio                `json:"first_profile_audio,omitempty"`
 	TonWalletCard                      *TonWalletCard        `json:"ton_wallet_card,omitempty"`
