@@ -361,6 +361,20 @@ func (b *Bot) DeclineChatJoinRequest(ctx context.Context, params *DeclineChatJoi
 	return result, err
 }
 
+// AnswerChatJoinRequestQuery https://core.telegram.org/bots/api#answerchatjoinrequestquery
+func (b *Bot) AnswerChatJoinRequestQuery(ctx context.Context, params *AnswerChatJoinRequestQueryParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "answerChatJoinRequestQuery", params, &result)
+	return result, err
+}
+
+// SendChatJoinRequestWebApp https://core.telegram.org/bots/api#sendchatjoinrequestwebapp
+func (b *Bot) SendChatJoinRequestWebApp(ctx context.Context, params *SendChatJoinRequestWebAppParams) (bool, error) {
+	var result bool
+	err := b.rawRequest(ctx, "sendChatJoinRequestWebApp", params, &result)
+	return result, err
+}
+
 // SetChatPhoto https://core.telegram.org/bots/api#setchatphoto
 func (b *Bot) SetChatPhoto(ctx context.Context, params *SetChatPhotoParams) (bool, error) {
 	var result bool

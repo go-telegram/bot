@@ -582,6 +582,53 @@ func TestBot_Methods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 
+	t.Run("AnswerChatJoinRequestQuery", func(t *testing.T) {
+		for _, tc := range []struct {
+			result models.ChatJoinRequestQueryResult
+			want   string
+		}{
+			{models.ChatJoinRequestQueryResultApprove, "approve"},
+			{models.ChatJoinRequestQueryResultDecline, "decline"},
+			{models.ChatJoinRequestQueryResultQueue, "queue"},
+		} {
+			c := &httpClient{
+				t:       t,
+				resp:    `true`,
+				reqPath: "/bot/answerChatJoinRequestQuery",
+				reqFields: map[string]string{
+					"chat_join_request_query_id": "q1",
+					"result":                     tc.want,
+				},
+			}
+			b := &Bot{client: c}
+			resp, err := b.AnswerChatJoinRequestQuery(context.Background(), &AnswerChatJoinRequestQueryParams{
+				ChatJoinRequestQueryID: "q1",
+				Result:                 tc.result,
+			})
+			assertNoErr(t, err)
+			assertTrue(t, resp)
+		}
+	})
+
+	t.Run("SendChatJoinRequestWebApp", func(t *testing.T) {
+		c := &httpClient{
+			t:       t,
+			resp:    `true`,
+			reqPath: "/bot/sendChatJoinRequestWebApp",
+			reqFields: map[string]string{
+				"chat_join_request_query_id": "q1",
+				"web_app_url":                "https://example.com/app",
+			},
+		}
+		b := &Bot{client: c}
+		resp, err := b.SendChatJoinRequestWebApp(context.Background(), &SendChatJoinRequestWebAppParams{
+			ChatJoinRequestQueryID: "q1",
+			WebAppURL:              "https://example.com/app",
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
 	t.Run("SetChatPhoto", func(t *testing.T) {
 		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
 			"chat_id": "123",
