@@ -239,13 +239,17 @@ func newWebAppInitData(fields map[string]string) (*WebAppInitData, error) {
 	return d, nil
 }
 
-// Sort complete lines to preserve the ordering used by ValidateWebappRequest.
 func webAppDataCheckString(fields map[string]string) string {
-	lines := make([]string, 0, len(fields))
-	for k, v := range fields {
-		lines = append(lines, k+"="+v)
+	keys := make([]string, 0, len(fields))
+	for key := range fields {
+		keys = append(keys, key)
 	}
-	sort.Strings(lines)
+	sort.Strings(keys)
+
+	lines := make([]string, len(keys))
+	for i, key := range keys {
+		lines[i] = key + "=" + fields[key]
+	}
 	return strings.Join(lines, "\n")
 }
 

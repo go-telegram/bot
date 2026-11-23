@@ -2,6 +2,8 @@ package bot
 
 import (
 	"crypto/ed25519"
+	"crypto/hmac"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
@@ -326,6 +328,47 @@ func TestValidateWebAppInitData_Lexicographic(t *testing.T) {
 	tampered := reencode(t, raw, func(v url.Values) { v.Set("custom_field", "y") })
 	data, err = ValidateWebAppInitData(tampered, testWebAppToken)
 	requireWebAppError(t, data, err, ErrorWebAppInitDataInvalid)
+}
+
+func TestWebAppValidators_PrefixFieldOrder(t *testing.T) {
+	const authDate = 1770000000
+	const botID = 123456
+	const query = "field2=second&auth_date=1770000000&field=first"
+	const fieldOrder = "auth_date=1770000000\nfield=first\nfield2=second"
+
+	secret := hmac.New(sha256.New, []byte("WebAppData"))
+	secret.Write([]byte(testWebAppToken))
+	mac := hmac.New(sha256.New, secret.Sum(nil))
+	mac.Write([]byte(fieldOrder))
+	hmacQuery := query + "&hash=" + hex.EncodeToString(mac.Sum(nil))
+
+	t.Run("HMAC", func(t *testing.T) {
+		data, err := ValidateWebAppInitData(hmacQuery, testWebAppToken)
+		if err != nil || data == nil || data.AuthDate != authDate {
+			t.Fatalf("data = %+v, err = %v", data, err)
+		}
+	})
+
+	t.Run("Ed25519", func(t *testing.T) {
+		priv := testWebAppKey()
+		message := strconv.Itoa(botID) + ":WebAppData\n" + fieldOrder
+		signature := base64.RawURLEncoding.EncodeToString(ed25519.Sign(priv, []byte(message)))
+		data, err := ValidateWebAppInitDataSignature(query+"&signature="+signature, botID, priv.Public().(ed25519.PublicKey))
+		if err != nil || data == nil || data.AuthDate != authDate {
+			t.Fatalf("data = %+v, err = %v", data, err)
+		}
+	})
+
+	t.Run("legacy", func(t *testing.T) {
+		values, err := url.ParseQuery(hmacQuery)
+		if err != nil {
+			t.Fatal(err)
+		}
+		user, ok := ValidateWebappRequest(values, testWebAppToken)
+		if !ok || user == nil {
+			t.Fatalf("user = %+v, ok = %v", user, ok)
+		}
+	})
 }
 
 func TestValidateWebAppInitData_Unsigned(t *testing.T) {
