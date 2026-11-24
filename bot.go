@@ -30,7 +30,9 @@ type Middleware func(next HandlerFunc) HandlerFunc
 type HandlerFunc func(ctx context.Context, bot *Bot, update *models.Update)
 type MatchFunc func(update *models.Update) bool
 
-// Bot represents Telegram Bot main object
+// Bot is a Telegram bot client. It receives updates by polling or through a
+// webhook, runs middlewares and handlers for them, and provides methods for
+// Telegram API calls.
 type Bot struct {
 	lastUpdateID int64
 

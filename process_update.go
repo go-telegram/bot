@@ -17,7 +17,9 @@ func applyMiddlewares(h HandlerFunc, m ...Middleware) HandlerFunc {
 	return wrapped
 }
 
-// ProcessUpdate allows you to process update
+// ProcessUpdate finds the handler for upd, applies the bot middlewares and runs
+// it. The handler runs in a new goroutine, or in the calling goroutine with
+// WithNotAsyncHandlers.
 func (b *Bot) ProcessUpdate(ctx context.Context, upd *models.Update) {
 	h := b.findHandler(upd)
 
