@@ -43,6 +43,11 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		ShowAlert:       false,
 	})
 
+	msg := update.CallbackQuery.Message.Message
+	if msg == nil {
+		return
+	}
+
 	switch update.CallbackQuery.Data {
 	case "btn_opt1":
 		currentOptions[0] = !currentOptions[0]
@@ -52,19 +57,19 @@ func callbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		currentOptions[2] = !currentOptions[2]
 	case "btn_select":
 		b.DeleteMessage(ctx, &bot.DeleteMessageParams{
-			ChatID:    update.CallbackQuery.Message.Message.Chat.ID,
-			MessageID: update.CallbackQuery.Message.Message.ID,
+			ChatID:    msg.Chat.ID,
+			MessageID: msg.ID,
 		})
 		b.SendMessage(ctx, &bot.SendMessageParams{
-			ChatID: update.CallbackQuery.Message.Message.Chat.ID,
+			ChatID: msg.Chat.ID,
 			Text:   fmt.Sprintf("Selected options: %v", currentOptions),
 		})
 		return
 	}
 
 	b.EditMessageReplyMarkup(ctx, &bot.EditMessageReplyMarkupParams{
-		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
-		MessageID:   update.CallbackQuery.Message.Message.ID,
+		ChatID:      msg.Chat.ID,
+		MessageID:   msg.ID,
 		ReplyMarkup: buildKeyboard(),
 	})
 }

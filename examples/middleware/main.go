@@ -54,18 +54,34 @@ func showMessageWithUserName(next bot.HandlerFunc) bot.HandlerFunc {
 	}
 }
 
+type callbackFlightKey struct {
+	chatID    int64
+	messageID int
+}
+
 // singleFlight is a middleware that ensures that only one callback query is processed at a time.
 func singleFlight(next bot.HandlerFunc) bot.HandlerFunc {
 	sf := sync.Map{}
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
-		if update.CallbackQuery != nil {
-			key := update.CallbackQuery.Message.Message.ID
-			if _, loaded := sf.LoadOrStore(key, struct{}{}); loaded {
-				return
-			}
-			defer sf.Delete(key)
-			next(ctx, b, update)
+		if update.CallbackQuery == nil {
+			return
 		}
+		q := update.CallbackQuery
+		var key any
+		switch {
+		case q.InlineMessageID != "":
+			key = q.InlineMessageID
+		case q.Message.Message != nil:
+			key = callbackFlightKey{chatID: q.Message.Message.Chat.ID, messageID: q.Message.Message.ID}
+		default:
+			next(ctx, b, update)
+			return
+		}
+		if _, loaded := sf.LoadOrStore(key, struct{}{}); loaded {
+			return
+		}
+		defer sf.Delete(key)
+		next(ctx, b, update)
 	}
 }
 
