@@ -13,11 +13,11 @@ import (
 	"time"
 )
 
-// escape special symbols in text for MarkdownV2 parse mode
-
-var shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
+const shouldBeEscaped = "_*[]()~`>#+-=|{}.!"
 
 // EscapeMarkdown escapes plain text for Telegram MarkdownV2 syntax.
+// Use it for user input and other dynamic text.
+// For example, EscapeMarkdown("Hello_world") returns "Hello\_world".
 func EscapeMarkdown(s string) string {
 	var result []rune
 	for _, r := range s {
@@ -29,7 +29,9 @@ func EscapeMarkdown(s string) string {
 	return string(result)
 }
 
-// EscapeMarkdownUnescaped escapes unescaped special symbols for Telegram Markdown v2 syntax
+// EscapeMarkdownUnescaped escapes special symbols that are not already escaped
+// for Telegram MarkdownV2 syntax. Use it for text that may already contain
+// MarkdownV2 escapes.
 func EscapeMarkdownUnescaped(s string) string {
 	var result []rune
 	var escaped bool
@@ -47,10 +49,6 @@ func EscapeMarkdownUnescaped(s string) string {
 	}
 	return string(result)
 }
-
-// log functions
-
-// random string generator
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

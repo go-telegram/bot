@@ -7,40 +7,51 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+// HandlerType selects the update data that a handler matches against.
 type HandlerType int
 
 const (
-	HandlerTypeMessageText HandlerType = iota
-	HandlerTypeCallbackQueryData
-	HandlerTypeCallbackQueryGameShortName
-	HandlerTypePhotoCaption
-	HandlerTypeInlineQuery
-	HandlerTypeWidgetQueryData
-	HandlerTypeSharedWidgetQueryData
+	HandlerTypeMessageText                HandlerType = iota // Text of Update.Message
+	HandlerTypeCallbackQueryData                             // Data of Update.CallbackQuery
+	HandlerTypeCallbackQueryGameShortName                    // GameShortName of Update.CallbackQuery
+	HandlerTypePhotoCaption                                  // Caption of Update.Message, for any message type
+	HandlerTypeInlineQuery                                   // Query of Update.InlineQuery
+	HandlerTypeWidgetQueryData                               // Data of Update.WidgetQuery
+	HandlerTypeSharedWidgetQueryData                         // Data of Update.SharedWidgetQuery
 )
 
+// MatchType defines how a handler pattern is compared with the update data.
 type MatchType int
 
 const (
-	MatchTypeExact MatchType = iota
-	MatchTypePrefix
-	MatchTypeContains
+	MatchTypeExact    MatchType = iota // Data equals pattern
+	MatchTypePrefix                    // Data starts with pattern
+	MatchTypeContains                  // Data contains pattern
+	// MatchTypeCommand matches a bot command anywhere in a message text or
+	// caption, so it works only with HandlerTypeMessageText and
+	// HandlerTypePhotoCaption. Specify the command without the slash, such as
+	// "start". It also matches /start@bot_username once GetMe has succeeded.
 	MatchTypeCommand
+	// MatchTypeCommandStartOnly is like MatchTypeCommand, but the command must
+	// be at the start of the text or caption.
 	MatchTypeCommandStartOnly
 
-	matchTypeRegexp
-	matchTypeFunc
+	// Internal match types (not for public use)
+	matchTypeRegexp // Regular expression matching (use RegisterHandlerRegexp)
+	matchTypeFunc   // Custom function matching (use RegisterHandlerMatchFunc)
 )
 
+// handler is a registered update handler with its matching rules.
 type handler struct {
-	id          string
-	handlerType HandlerType
-	matchType   MatchType
-	handler     HandlerFunc
+	id          string      // Unique handler identifier for registration/unregistration
+	handlerType HandlerType // Type of content to extract from update
+	matchType   MatchType   // How to match extracted content against pattern
+	handler     HandlerFunc // Function to execute when match is found
 
-	pattern   string
-	re        *regexp.Regexp
-	matchFunc MatchFunc
+	// Pattern matching fields (used based on matchType)
+	pattern   string         // String pattern for basic matching
+	re        *regexp.Regexp // Compiled regex for regexp matching
+	matchFunc MatchFunc      // Custom function for function-based matching
 }
 
 // match reports whether the handler accepts update. botUsername is the bot's
@@ -205,6 +216,9 @@ func (h handler) isCommand(command, botUsername string) bool {
 	return addressed && name == h.pattern && strings.EqualFold(target, botUsername)
 }
 
+// RegisterHandlerMatchFunc registers f for updates accepted by matchFunc.
+// Handlers are checked in registration order, and only the first match runs.
+// Middlewares in m wrap f. Returns an ID that can be passed to UnregisterHandler.
 func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -223,6 +237,10 @@ func (b *Bot) RegisterHandlerMatchFunc(matchFunc MatchFunc, f HandlerFunc, m ...
 	return id
 }
 
+// RegisterHandlerRegexp registers f for updates whose data, selected by
+// handlerType, matches re. Handlers are checked in registration order, and only
+// the first match runs. Middlewares in m wrap f. Returns an ID that can be
+// passed to UnregisterHandler.
 func (b *Bot) RegisterHandlerRegexp(handlerType HandlerType, re *regexp.Regexp, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -249,6 +267,10 @@ func (b *Bot) RegisterHandlerInlineQuery(f HandlerFunc, m ...Middleware) string 
 	return b.RegisterHandler(HandlerTypeInlineQuery, "", MatchTypePrefix, f, m...)
 }
 
+// RegisterHandler registers f for updates whose data, selected by handlerType,
+// matches pattern according to matchType. Handlers are checked in registration
+// order, and only the first match runs. Middlewares in m wrap f. Returns an ID
+// that can be passed to UnregisterHandler.
 func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType MatchType, f HandlerFunc, m ...Middleware) string {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
@@ -268,6 +290,7 @@ func (b *Bot) RegisterHandler(handlerType HandlerType, pattern string, matchType
 	return id
 }
 
+// UnregisterHandler removes the handler with the given ID. An unknown ID is ignored.
 func (b *Bot) UnregisterHandler(id string) {
 	b.handlersMx.Lock()
 	defer b.handlersMx.Unlock()
