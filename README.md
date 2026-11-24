@@ -515,12 +515,77 @@ Validate request from Telegram Webapp
 
 https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
 
-```go
-// get url values from request
-values := req.URL.Query()
+Load the bot token at startup.
 
-user, ok := bot.ValidateWebappRequest(values, os.Getenv("TELEGRAM_BOT_TOKEN"))
+```go
+token := os.Getenv("TELEGRAM_BOT_TOKEN")
+if token == "" {
+    log.Fatal("TELEGRAM_BOT_TOKEN is not set or empty")
+}
+```
+
+In the request handler, pass the decoded query values.
+
+```go
+user, ok := bot.ValidateWebappRequest(req.URL.Query(), token)
 if !ok {
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+}
+log.Println(user.ID)
+```
+
+It returns only the user. Use `ValidateWebAppInitData` when the full init data is needed.
+
+### `ValidateWebAppInitData(initData, token string) (*WebAppInitData, error)`
+
+Parse the raw `Telegram.WebApp.initData` string and validate its hash with the bot token
+
+https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app
+
+```go
+data, err := bot.ValidateWebAppInitData(initData, token)
+if err == nil {
+    err = data.CheckAuthDate(time.Hour)
+}
+if errors.Is(err, bot.ErrorWebAppInitDataExpired) {
+    http.Error(w, "Expired", http.StatusUnauthorized)
+    return
+}
+if err != nil {
+    http.Error(w, "Unauthorized", http.StatusUnauthorized)
+    return
+}
+if data.User != nil {
+    log.Println(data.User.ID)
+}
+```
+
+### `ValidateWebAppInitDataSignature(initData string, botID int64, publicKey ed25519.PublicKey) (*WebAppInitData, error)`
+
+Parse the raw `Telegram.WebApp.initData` string and validate its Ed25519 signature, for a third party that has the bot ID but not the token
+
+The returned `Hash` is passed through without verification.
+
+https://core.telegram.org/bots/webapps#validating-data-for-third-party-use
+
+Decode the public key at startup.
+
+```go
+publicKey, err := hex.DecodeString(bot.WebAppPublicKeyHex)
+if err != nil {
+    panic(err)
+}
+```
+
+In the request handler, pass the raw init data and the decoded key.
+
+```go
+data, err := bot.ValidateWebAppInitDataSignature(initData, botID, publicKey)
+if err == nil {
+    err = data.CheckAuthDate(time.Hour)
+}
+if err != nil {
     http.Error(w, "Unauthorized", http.StatusUnauthorized)
     return
 }
