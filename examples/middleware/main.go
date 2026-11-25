@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	b.RegisterHandler(bot.HandlerTypeCallbackQueryData, "", bot.MatchTypeExact, func(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.RegisterHandler(bot.HandlerTypeCallbackQueryData, "", bot.MatchTypePrefix, func(ctx context.Context, b *bot.Bot, update *models.Update) {
 		log.Printf("callback query data: %s", update.CallbackQuery.Data)
 	}, singleFlight)
 
