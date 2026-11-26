@@ -141,12 +141,12 @@ func (b *Bot) SetToken(token string) {
 
 // setUsername records the username GetMe returned, unless the token now
 // belongs to another bot, as when it was switched during the request. The
-// token starts with the bot's ID, which GetMe returns as the user ID.
-func (b *Bot) setUsername(me *models.User) {
+// token starts with the bot's ID, which GetMe returns as id.
+func (b *Bot) setUsername(id int64, username string) {
 	b.usernameMx.Lock()
 	defer b.usernameMx.Unlock()
-	if me.ID == b.ID() {
-		b.username = me.Username
+	if id == b.ID() {
+		b.username = username
 	}
 }
 

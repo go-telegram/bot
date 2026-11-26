@@ -534,7 +534,7 @@ func TestBot_UsernameConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 100; j++ {
-				b.setUsername(&models.User{ID: 1, Username: "my_bot"})
+				b.setUsername(1, "my_bot")
 			}
 		}()
 		go func() {

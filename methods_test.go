@@ -21,12 +21,19 @@ type httpClient struct {
 	reqFiles  map[string]string // multipart file parts by name, with expected content
 	absent    []string
 	present   []string
+	emptyBody bool
 	t         *testing.T
 }
 
 func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 	if c.reqPath != "" && req.URL.Path != c.reqPath {
 		return nil, fmt.Errorf("invalid request path %q, expect %q", req.URL.Path, c.reqPath)
+	}
+	if c.emptyBody {
+		if req.ContentLength != 0 || req.Header.Get("Content-Type") != "" {
+			c.t.Errorf("expected empty body, content-type %q length %d", req.Header.Get("Content-Type"), req.ContentLength)
+			return nil, fmt.Errorf("expected empty body")
+		}
 	}
 	if c.reqFields != nil {
 		for k, v := range c.reqFields {
@@ -137,11 +144,14 @@ func TestBot_Methods(t *testing.T) {
 	})
 
 	t.Run("GetMe", func(t *testing.T) {
-		c := &httpClient{t: t, resp: `{"username":"foo"}`}
+		c := &httpClient{t: t, resp: `{"id":1,"is_bot":true,"first_name":"Bot","username":"foo","supports_inline_queries":true,"has_topic_sidebar":true}`}
 		b := &Bot{client: c}
 		resp, err := b.GetMe(context.Background())
 		assertNoErr(t, err)
 		assertEqualString(t, resp.Username, "foo")
+		if !resp.SupportsInlineQueries || !resp.HasTopicSidebar {
+			t.Fatalf("%+v", resp)
+		}
 	})
 
 	t.Run("Logout", func(t *testing.T) {
@@ -2076,6 +2086,58 @@ func TestAnswerInlineQuery_CacheTime(t *testing.T) {
 		assertNoErr(t, err)
 		if !strings.Contains(string(data), `"cache_time":0`) || strings.Contains(string(data), `"cache_time":30`) {
 			t.Errorf("json %s, expect cache_time 0", data)
+		}
+	})
+}
+
+func TestBot_SetMySettings(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		c := &httpClient{t: t, resp: `true`, emptyBody: true}
+		b := &Bot{client: c}
+		resp, err := b.SetMySettings(context.Background(), &SetMySettingsParams{})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("explicit values", func(t *testing.T) {
+		empty := ""
+		zero := 0
+		c := &httpClient{t: t, resp: `true`, reqFields: map[string]string{
+			"can_join_groups":                   "false",
+			"inline_query_placeholder":          "",
+			"inline_feedback_share_denominator": "0",
+			"callback_query_mode":               "inline",
+		}, present: []string{"inline_query_placeholder"}, absent: []string{
+			"supports_inline_queries",
+			"has_topic_sidebar",
+		}}
+		b := &Bot{client: c}
+		resp, err := b.SetMySettings(context.Background(), &SetMySettingsParams{
+			CanJoinGroups:                  False(),
+			InlineQueryPlaceholder:         &empty,
+			InlineFeedbackShareDenominator: &zero,
+			CallbackQueryMode:              CallbackQueryModeInline,
+		})
+		assertNoErr(t, err)
+		assertTrue(t, resp)
+	})
+
+	t.Run("preserves placeholder characters", func(t *testing.T) {
+		placeholder := "{\"count\":1,\"path\":\"a\\\\b\"}\n<b>&amp;</b> \"quoted\""
+		buf := &bytes.Buffer{}
+		w := multipart.NewWriter(buf)
+		_, err := buildRequestForm(w, &SetMySettingsParams{
+			InlineQueryPlaceholder: &placeholder,
+		})
+		assertNoErr(t, err)
+		if err := w.Close(); err != nil {
+			t.Fatal(err)
+		}
+		form, err := multipart.NewReader(buf, w.Boundary()).ReadForm(1 << 20)
+		assertNoErr(t, err)
+		got, ok := form.Value["inline_query_placeholder"]
+		if !ok || len(got) != 1 || got[0] != placeholder {
+			t.Fatalf("placeholder: got %v, want %q", got, placeholder)
 		}
 	})
 }

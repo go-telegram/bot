@@ -20,7 +20,7 @@ func TestInputRichBlock_Marshal(t *testing.T) {
 		{"divider", InputRichBlock{Type: RichBlockTypeDivider, InputRichBlockDivider: &InputRichBlockDivider{}}, "divider"},
 		{"math", InputRichBlock{Type: RichBlockTypeMathematicalExpression, InputRichBlockMathematicalExpression: &InputRichBlockMathematicalExpression{Expression: "x^2"}}, "mathematical_expression"},
 		{"thinking", InputRichBlock{Type: RichBlockTypeThinking, InputRichBlockThinking: &InputRichBlockThinking{Text: RichText{PlainText: "reasoning"}}}, "thinking"},
-		{"expandable_blockquote", InputRichBlock{Type: RichBlockTypeExpandableBlockQuotation, InputRichBlockExpandableBlockQuotation: &InputRichBlockExpandableBlockQuotation{Text: RichText{PlainText: "q"}}}, "expandable_blockquote"},
+		{"expandable_blockquote", InputRichBlock{Type: RichBlockTypeExpandableBlockQuotation, InputRichBlockExpandableBlockQuotation: &InputRichBlockExpandableBlockQuotation{Blocks: []InputRichBlock{{Type: RichBlockTypeParagraph, InputRichBlockParagraph: &InputRichBlockParagraph{Text: RichText{PlainText: "q"}}}}}}, "expandable_blockquote"},
 		{"buttons", InputRichBlock{Type: RichBlockTypeButtons, InputRichBlockButtons: &InputRichBlockButtons{Buttons: []RichMessageButton{{Text: RichText{PlainText: "Go"}, CallbackData: "go"}}, Align: "right"}}, "buttons"},
 		{"document", InputRichBlock{Type: RichBlockTypeDocument, InputRichBlockDocument: &InputRichBlockDocument{Document: InputMediaDocument{Media: "d"}}}, "document"},
 	}

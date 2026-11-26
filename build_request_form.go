@@ -418,6 +418,10 @@ func addInputRichBlockAttachments(form *requestForm, block models.InputRichBlock
 		if block.InputRichBlockBlockQuotation != nil {
 			return addInputRichBlockSliceAttachments(form, block.InputRichBlockBlockQuotation.Blocks)
 		}
+	case models.RichBlockTypeExpandableBlockQuotation:
+		if block.InputRichBlockExpandableBlockQuotation != nil {
+			return addInputRichBlockSliceAttachments(form, block.InputRichBlockExpandableBlockQuotation.Blocks)
+		}
 	case models.RichBlockTypeCollage:
 		if block.InputRichBlockCollage != nil {
 			return addInputRichBlockSliceAttachments(form, block.InputRichBlockCollage.Blocks)

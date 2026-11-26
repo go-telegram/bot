@@ -70,8 +70,11 @@ type ChatShared struct {
 }
 
 // WriteAccessAllowed https://core.telegram.org/bots/api#writeaccessallowed
+//
+// Inviter is the owner of the bot when that owner invited the user to the private chat.
 type WriteAccessAllowed struct {
 	FromRequest        bool   `json:"from_request,omitempty"`
 	WebAppName         string `json:"web_app_name,omitempty"`
 	FromAttachmentMenu bool   `json:"from_attachment_menu,omitempty"`
+	Inviter            *User  `json:"inviter,omitempty"`
 }
