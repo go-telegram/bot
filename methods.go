@@ -30,14 +30,14 @@ func (b *Bot) DeleteWebhook(ctx context.Context, params *DeleteWebhookParams) (b
 }
 
 // GetMe https://core.telegram.org/bots/api#getme
-// GetMe also records the bot's username when the returned bot is the one the
+// GetMe also records the bot's usernames when the returned bot is the one the
 // token belongs to, so a MatchTypeCommand or MatchTypeCommandStartOnly handler
 // for start also matches /start@bot_username.
 func (b *Bot) GetMe(ctx context.Context) (*models.BotFullInfo, error) {
 	result := &models.BotFullInfo{}
 	err := b.rawRequest(ctx, "getMe", nil, result)
 	if err == nil {
-		b.setUsername(result.ID, result.Username)
+		b.setUsernames(result)
 	}
 	return result, err
 }

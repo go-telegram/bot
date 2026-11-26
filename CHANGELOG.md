@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Command handlers also recognize commands addressed to any active username returned by `GetMe`.
 - Breaking: `GetMe` now returns `*models.BotFullInfo` instead of `*models.User`.
 - Breaking: `RichBlockExpandableBlockQuotation` and `InputRichBlockExpandableBlockQuotation` replace `Text` with `Blocks`. Nested files inside those blocks are uploaded.
 - `BotFullInfo` adds `active_usernames`, `inline_query_placeholder`, `needs_inline_query_location`, and `has_topic_sidebar`. It also adds `has_main_web_app`, which `getMe` already returned and `User` did not declare.

@@ -433,7 +433,10 @@ func addressedCommandUpdate(text string) *models.Update {
 
 func TestBot_ProcessUpdateMatchesCommandAddressedToBot(t *testing.T) {
 	var handled []string
-	b, err := New("1:token", WithHTTPClient(time.Second, getMeClient(t, "my_bot")), WithNotAsyncHandlers(),
+	client := getUpdatesClientFunc(func(*http.Request) (*http.Response, error) {
+		return getUpdatesJSONResponse(`{"ok":true,"result":{"id":1,"username":"my_bot","active_usernames":["alias_bot"]}}`), nil
+	})
+	b, err := New("1:token", WithSkipGetMe(), WithHTTPClient(time.Second, client), WithNotAsyncHandlers(),
 		WithDefaultHandler(func(_ context.Context, _ *Bot, update *models.Update) {
 			handled = append(handled, "default "+update.Message.Text)
 		}))
@@ -444,10 +447,18 @@ func TestBot_ProcessUpdateMatchesCommandAddressedToBot(t *testing.T) {
 		handled = append(handled, "start "+update.Message.Text)
 	})
 
+	me, err := b.GetMe(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	me.ActiveUsernames[0] = "other_bot" // The caller must not change routing by mutating the result.
 	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@my_bot"))
+	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@ALIAS_bot"))
 	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@other_bot"))
+	b.SetToken("2:new_bot")
+	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@ALIAS_bot"))
 
-	want := []string{"start /start@my_bot", "default /start@other_bot"}
+	want := []string{"start /start@my_bot", "start /start@ALIAS_bot", "default /start@other_bot", "default /start@ALIAS_bot"}
 	if !reflect.DeepEqual(handled, want) {
 		t.Errorf("handled %q, want %q", handled, want)
 	}
@@ -459,11 +470,11 @@ func TestBot_SetTokenForgetsUsernameOfAnotherBot(t *testing.T) {
 		t.Fatal(err)
 	}
 	b.SetToken("1:revoked-and-replaced")
-	if got := b.botUsername(); got != "my_bot" {
+	if got := b.botUsernames(); !reflect.DeepEqual(got, []string{"my_bot"}) {
 		t.Errorf("username after a new token of the same bot = %q, want my_bot", got)
 	}
 	b.SetToken("2:token")
-	if got := b.botUsername(); got != "" {
+	if got := b.botUsernames(); len(got) != 0 {
 		t.Errorf("username after switching to another bot = %q, want empty", got)
 	}
 }
@@ -483,7 +494,7 @@ func TestBot_GetMeIgnoresUsernameOfAnotherBot(t *testing.T) {
 	if _, err := b.GetMe(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	if got := b.botUsername(); got != "" {
+	if got := b.botUsernames(); len(got) != 0 {
 		t.Errorf("username = %q, want empty for a GetMe answered by another bot", got)
 	}
 }
@@ -503,7 +514,7 @@ func TestBot_GetMeFailureKeepsUsername(t *testing.T) {
 	if _, err := b.GetMe(context.Background()); err == nil {
 		t.Fatal("GetMe succeeded, want an error")
 	}
-	if got := b.botUsername(); got != "my_bot" {
+	if got := b.botUsernames(); !reflect.DeepEqual(got, []string{"my_bot"}) {
 		t.Errorf("username after a failed GetMe = %q, want my_bot", got)
 	}
 }
@@ -519,7 +530,7 @@ func TestBot_GetMeDecodeErrorRecordsNoUsername(t *testing.T) {
 	if _, err := b.GetMe(context.Background()); err == nil {
 		t.Fatal("GetMe succeeded, want a decode error")
 	}
-	if got := b.botUsername(); got != "" {
+	if got := b.botUsernames(); len(got) != 0 {
 		t.Errorf("username = %q, want empty after a failed GetMe", got)
 	}
 }
@@ -534,7 +545,7 @@ func TestBot_UsernameConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 100; j++ {
-				b.setUsername(1, "my_bot")
+				b.setUsernames(&models.BotFullInfo{ID: 1, Username: "my_bot"})
 			}
 		}()
 		go func() {
@@ -547,7 +558,7 @@ func TestBot_UsernameConcurrentAccess(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 100; j++ {
-				if got := b.botUsername(); got != "" && got != "my_bot" {
+				if got := b.botUsernames(); len(got) != 0 && !reflect.DeepEqual(got, []string{"my_bot"}) {
 					t.Errorf("username = %q", got)
 				}
 			}

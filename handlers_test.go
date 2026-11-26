@@ -1010,7 +1010,7 @@ func TestHandler_matchCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := handler{pattern: tt.pattern}
-			result := h.matchCommand(tt.data, tt.entities, "")
+			result := h.matchCommand(tt.data, tt.entities, nil)
 			if result != tt.wantMatch {
 				t.Errorf("matchCommand() = %v, want %v", result, tt.wantMatch)
 			}
@@ -1077,7 +1077,7 @@ func TestHandler_matchCommandStartOnly(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := handler{pattern: tt.pattern}
-			result := h.matchCommandStartOnly(tt.data, tt.entities, "")
+			result := h.matchCommandStartOnly(tt.data, tt.entities, nil)
 			if result != tt.wantMatch {
 				t.Errorf("matchCommandStartOnly() = %v, want %v", result, tt.wantMatch)
 			}
