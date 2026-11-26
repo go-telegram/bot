@@ -479,6 +479,89 @@ func TestBot_SetTokenForgetsUsernameOfAnotherBot(t *testing.T) {
 	}
 }
 
+func TestBot_GetMeLegacy(t *testing.T) {
+	const wantJSON = `{"id":1,"is_bot":true,"first_name":"Bot","username":"my_bot"}`
+	calls := 0
+	client := getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+		calls++
+		if req.URL.Path != "/bot1:token/getMe" {
+			t.Errorf("request path = %s, want /bot1:token/getMe", req.URL.Path)
+		}
+		return getUpdatesJSONResponse(`{"ok":true,"result":` + strings.TrimSuffix(wantJSON, "}") + `,"active_usernames":["alias_bot"]}}`), nil
+	})
+	b, err := New("1:token", WithSkipGetMe(), WithHTTPClient(time.Second, client), WithNotAsyncHandlers())
+	if err != nil {
+		t.Fatal(err)
+	}
+	handled := false
+	b.RegisterHandler(HandlerTypeMessageText, "start", MatchTypeCommand, func(context.Context, *Bot, *models.Update) {
+		handled = true
+	})
+
+	me, err := b.GetMeLegacy(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := json.Marshal(me)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != wantJSON {
+		t.Errorf("legacy user = %s, want %s", got, wantJSON)
+	}
+	if calls != 1 {
+		t.Errorf("getMe requests = %d, want 1", calls)
+	}
+	b.ProcessUpdate(context.Background(), addressedCommandUpdate("/start@Alias_Bot"))
+	if !handled {
+		t.Error("command was not routed to the handler using an active username")
+	}
+}
+
+func TestBot_GetMeLegacyIndependentFlags(t *testing.T) {
+	for _, flag := range []string{
+		"can_join_groups", "can_read_all_group_messages", "supports_inline_queries",
+		"can_connect_to_business", "has_topics_enabled", "allows_users_to_create_topics",
+		"can_manage_bots", "supports_join_request_queries", "supports_guest_queries",
+	} {
+		t.Run(flag, func(t *testing.T) {
+			b := &Bot{client: getUpdatesClientFunc(func(*http.Request) (*http.Response, error) {
+				return getUpdatesJSONResponse(`{"ok":true,"result":{"id":1,"is_bot":true,"` + flag + `":true}}`), nil
+			})}
+			user, err := b.GetMeLegacy(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			data, err := json.Marshal(user)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var got map[string]json.RawMessage
+			if err := json.Unmarshal(data, &got); err != nil {
+				t.Fatal(err)
+			}
+			delete(got, "id")
+			delete(got, "is_bot")
+			if len(got) != 1 || string(got[flag]) != "true" {
+				t.Errorf("legacy user = %s, want only %s among optional fields", data, flag)
+			}
+		})
+	}
+}
+
+func TestBot_GetMeLegacyPreservesError(t *testing.T) {
+	b := &Bot{client: getUpdatesClientFunc(func(*http.Request) (*http.Response, error) {
+		return getUpdatesJSONResponse(`{"ok":false,"error_code":401,"description":"Unauthorized"}`), nil
+	})}
+	me, err := b.GetMeLegacy(context.Background())
+	if !errors.Is(err, ErrorUnauthorized) {
+		t.Errorf("error = %v, want ErrorUnauthorized", err)
+	}
+	if me == nil || *me != (models.User{}) {
+		t.Errorf("legacy user on failure = %+v, want a zero user", me)
+	}
+}
+
 func TestBot_GetMeIgnoresUsernameOfAnotherBot(t *testing.T) {
 	var b *Bot
 	// GetMe is sent with bot 2's token, and the token is switched back to bot 1

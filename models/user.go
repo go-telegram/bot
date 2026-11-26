@@ -16,6 +16,25 @@ type User struct {
 	LanguageCode          string `json:"language_code,omitempty"`
 	IsPremium             bool   `json:"is_premium,omitempty"`
 	AddedToAttachmentMenu bool   `json:"added_to_attachment_menu,omitempty"`
+
+	// Deprecated: Use BotFullInfo.CanJoinGroups.
+	CanJoinGroups bool `json:"can_join_groups,omitempty"`
+	// Deprecated: Use BotFullInfo.CanReadAllGroupMessages.
+	CanReadAllGroupMessages bool `json:"can_read_all_group_messages,omitempty"`
+	// Deprecated: Use BotFullInfo.SupportsInlineQueries.
+	SupportInlineQueries bool `json:"supports_inline_queries,omitempty"`
+	// Deprecated: Use BotFullInfo.CanConnectToBusiness.
+	CanConnectToBusiness bool `json:"can_connect_to_business,omitempty"`
+	// Deprecated: Use BotFullInfo.HasTopicsEnabled.
+	HasTopicsEnabled bool `json:"has_topics_enabled,omitempty"`
+	// Deprecated: Use BotFullInfo.AllowsUsersToCreateTopics.
+	AllowsUsersToCreateTopics bool `json:"allows_users_to_create_topics,omitempty"`
+	// Deprecated: Use BotFullInfo.CanManageBots.
+	CanManageBots bool `json:"can_manage_bots,omitempty"`
+	// Deprecated: Use BotFullInfo.SupportsJoinRequestQueries.
+	SupportsJoinRequestQueries bool `json:"supports_join_request_queries,omitempty"`
+	// Deprecated: Use BotFullInfo.SupportsGuestQueries.
+	SupportsGuestQueries bool `json:"supports_guest_queries,omitempty"`
 }
 
 // BotFullInfo https://core.telegram.org/bots/api#botfullinfo

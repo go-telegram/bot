@@ -2,9 +2,51 @@ package models
 
 import (
 	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 )
+
+func TestExpandableBlockQuotationLegacyText(t *testing.T) {
+	const wire = `{"type":"expandable_blockquote","blocks":[{"type":"paragraph","text":"new"}]}`
+	const legacyWire = `{"type":"expandable_blockquote","blocks":[{"type":"paragraph","text":"new"}],"text":"old"}`
+	var received RichBlock
+	var input InputRichBlock
+	if err := json.Unmarshal([]byte(legacyWire), &received); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal([]byte(legacyWire), &input); err != nil {
+		t.Fatal(err)
+	}
+	q := received.RichBlockExpandableBlockQuotation
+	iq := input.InputRichBlockExpandableBlockQuotation
+	if q == nil || iq == nil {
+		t.Fatal("expandable quotation not decoded")
+	}
+	if !reflect.ValueOf(q.Text).IsZero() || !reflect.ValueOf(iq.Text).IsZero() {
+		t.Fatal("deprecated Text was decoded")
+	}
+	// A nonzero array value also counts as legacy Text, even when empty.
+	q.Text = RichText{Array: []RichText{}}
+	iq.Text = RichText{PlainText: "old"}
+	for _, block := range []any{received, input} {
+		got, err := json.Marshal(block)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if string(got) != wire {
+			t.Errorf("%T: got %s, want %s", block, got, wire)
+		}
+	}
+
+	q.Blocks = nil
+	iq.Blocks = []InputRichBlock{}
+	for _, block := range []any{received, input} {
+		if _, err := json.Marshal(block); err == nil || !strings.Contains(err.Error(), "Text is deprecated; use Blocks") {
+			t.Errorf("%T: got %v, want deprecated Text error", block, err)
+		}
+	}
+}
 
 func richBlockRoundTrip(t *testing.T, src string) RichBlock {
 	t.Helper()

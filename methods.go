@@ -42,6 +42,28 @@ func (b *Bot) GetMe(ctx context.Context) (*models.BotFullInfo, error) {
 	return result, err
 }
 
+// GetMeLegacy returns the result of GetMe in the previous User format.
+//
+// Deprecated: Use GetMe.
+func (b *Bot) GetMeLegacy(ctx context.Context) (*models.User, error) {
+	me, err := b.GetMe(ctx)
+	return &models.User{
+		ID:                         me.ID,
+		IsBot:                      me.IsBot,
+		FirstName:                  me.FirstName,
+		Username:                   me.Username,
+		CanJoinGroups:              me.CanJoinGroups,
+		CanReadAllGroupMessages:    me.CanReadAllGroupMessages,
+		SupportInlineQueries:       me.SupportsInlineQueries,
+		CanConnectToBusiness:       me.CanConnectToBusiness,
+		HasTopicsEnabled:           me.HasTopicsEnabled,
+		AllowsUsersToCreateTopics:  me.AllowsUsersToCreateTopics,
+		CanManageBots:              me.CanManageBots,
+		SupportsJoinRequestQueries: me.SupportsJoinRequestQueries,
+		SupportsGuestQueries:       me.SupportsGuestQueries,
+	}, err
+}
+
 // Logout https://core.telegram.org/bots/api#logout
 func (b *Bot) Logout(ctx context.Context) (bool, error) {
 	var result bool
