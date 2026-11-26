@@ -1527,6 +1527,25 @@ func TestBot_RichMessageMethods(t *testing.T) {
 		assertTrue(t, resp)
 	})
 
+	t.Run("SendRichMessageRejectsLegacyExpandableQuoteText", func(t *testing.T) {
+		b := &Bot{client: getUpdatesClientFunc(func(*http.Request) (*http.Response, error) {
+			t.Fatal("request made with legacy quotation text")
+			return nil, nil
+		})}
+		_, err := b.SendRichMessage(context.Background(), &SendRichMessageParams{
+			ChatID: 123,
+			RichMessage: models.InputRichMessage{Blocks: []models.InputRichBlock{{
+				Type: models.RichBlockTypeExpandableBlockQuotation,
+				InputRichBlockExpandableBlockQuotation: &models.InputRichBlockExpandableBlockQuotation{
+					Text: models.RichText{PlainText: "legacy quotation"},
+				},
+			}}},
+		})
+		if err == nil || !strings.Contains(err.Error(), "Text is deprecated; use Blocks") {
+			t.Fatalf("got %v, want deprecated Text error", err)
+		}
+	})
+
 	t.Run("SendRichMessageWithAttachment", func(t *testing.T) {
 		c := &httpClient{
 			t:    t,

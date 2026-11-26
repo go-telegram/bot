@@ -2,6 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
+	"reflect"
 )
 
 // RichBlockType https://core.telegram.org/bots/api#richblock
@@ -277,6 +279,25 @@ type RichBlockExpandableBlockQuotation struct {
 	Type   RichBlockType `json:"type"`
 	Blocks []RichBlock   `json:"blocks"`
 	Credit *RichText     `json:"credit,omitempty"`
+
+	// Deprecated: Use Blocks. Text is not decoded from JSON.
+	Text RichText `json:"-"`
+}
+
+// MarshalJSON implements json.Marshaler.
+func (q RichBlockExpandableBlockQuotation) MarshalJSON() ([]byte, error) {
+	if err := checkExpandableBlockQuotationText(q.Text, len(q.Blocks)); err != nil {
+		return nil, err
+	}
+	type wire RichBlockExpandableBlockQuotation
+	return json.Marshal(wire(q))
+}
+
+func checkExpandableBlockQuotationText(text RichText, blockCount int) error {
+	if blockCount == 0 && !reflect.ValueOf(text).IsZero() {
+		return errors.New("Text is deprecated; use Blocks")
+	}
+	return nil
 }
 
 // RichBlockPullQuotation https://core.telegram.org/bots/api#richblockpullquotation

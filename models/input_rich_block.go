@@ -278,6 +278,18 @@ type InputRichBlockExpandableBlockQuotation struct {
 	Type   RichBlockType    `json:"type"` // always "expandable_blockquote"
 	Blocks []InputRichBlock `json:"blocks"`
 	Credit *RichText        `json:"credit,omitempty"`
+
+	// Deprecated: Use Blocks. Text is not decoded or sent.
+	Text RichText `json:"-"`
+}
+
+// MarshalJSON implements json.Marshaler.
+func (q InputRichBlockExpandableBlockQuotation) MarshalJSON() ([]byte, error) {
+	if err := checkExpandableBlockQuotationText(q.Text, len(q.Blocks)); err != nil {
+		return nil, err
+	}
+	type wire InputRichBlockExpandableBlockQuotation
+	return json.Marshal(wire(q))
 }
 
 // InputRichBlockPullQuotation https://core.telegram.org/bots/api#inputrichblockpullquotation
