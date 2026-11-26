@@ -30,7 +30,8 @@ const (
 	// MatchTypeCommand matches a bot command anywhere in a message text or
 	// caption, so it works only with HandlerTypeMessageText and
 	// HandlerTypePhotoCaption. Specify the command without the slash, such as
-	// "start". It also matches /start@bot_username once GetMe has succeeded.
+	// "start". After GetMe succeeds it also matches commands addressed to the
+	// bot's primary username or any of its active usernames.
 	MatchTypeCommand
 	// MatchTypeCommandStartOnly is like MatchTypeCommand, but the command must
 	// be at the start of the text or caption.
@@ -54,9 +55,8 @@ type handler struct {
 	matchFunc MatchFunc      // Custom function for function-based matching
 }
 
-// match reports whether the handler accepts update. botUsername is the bot's
-// username, or empty if unknown.
-func (h handler) match(update *models.Update, botUsername string) bool {
+// match reports whether the handler accepts update.
+func (h handler) match(update *models.Update, usernames ...string) bool {
 	if h.matchType == matchTypeFunc {
 		return h.matchFunc(update)
 	}
@@ -74,9 +74,9 @@ func (h handler) match(update *models.Update, botUsername string) bool {
 	case MatchTypeContains:
 		return h.matchContains(data)
 	case MatchTypeCommand:
-		return h.matchCommand(data, entities, botUsername)
+		return h.matchCommand(data, entities, usernames)
 	case MatchTypeCommandStartOnly:
-		return h.matchCommandStartOnly(data, entities, botUsername)
+		return h.matchCommandStartOnly(data, entities, usernames)
 	case matchTypeRegexp:
 		return h.matchRegexp(data)
 	default:
@@ -178,11 +178,11 @@ func utf16Index(s string, n int) (int, bool) {
 	return len(s), units == n
 }
 
-func (h handler) matchCommand(data string, entities []models.MessageEntity, botUsername string) bool {
+func (h handler) matchCommand(data string, entities []models.MessageEntity, usernames []string) bool {
 	for _, e := range entities {
 		if e.Type == models.MessageEntityTypeBotCommand {
 			command, ok := extractCommand(data, e)
-			if ok && h.isCommand(command, botUsername) {
+			if ok && h.isCommand(command, usernames) {
 				return true
 			}
 		}
@@ -190,11 +190,11 @@ func (h handler) matchCommand(data string, entities []models.MessageEntity, botU
 	return false
 }
 
-func (h handler) matchCommandStartOnly(data string, entities []models.MessageEntity, botUsername string) bool {
+func (h handler) matchCommandStartOnly(data string, entities []models.MessageEntity, usernames []string) bool {
 	for _, e := range entities {
 		if e.Type == models.MessageEntityTypeBotCommand && e.Offset == 0 {
 			command, ok := extractCommand(data, e)
-			if ok && h.isCommand(command, botUsername) {
+			if ok && h.isCommand(command, usernames) {
 				return true
 			}
 		}
@@ -205,15 +205,20 @@ func (h handler) matchCommandStartOnly(data string, entities []models.MessageEnt
 // isCommand reports whether command, without its leading "/", is the handler's
 // command. In groups, clients address a command to a bot by appending its
 // username, as in /start@bot_username. Telegram usernames are case-insensitive.
-func (h handler) isCommand(command, botUsername string) bool {
+func (h handler) isCommand(command string, usernames []string) bool {
 	if command == h.pattern {
 		return true
 	}
-	if h.pattern == "" || botUsername == "" {
+	name, target, addressed := strings.Cut(command, "@")
+	if !addressed || target == "" || h.pattern == "" || name != h.pattern {
 		return false
 	}
-	name, target, addressed := strings.Cut(command, "@")
-	return addressed && name == h.pattern && strings.EqualFold(target, botUsername)
+	for _, username := range usernames {
+		if strings.EqualFold(target, username) {
+			return true
+		}
+	}
+	return false
 }
 
 // RegisterHandlerMatchFunc registers f for updates accepted by matchFunc.

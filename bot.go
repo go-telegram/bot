@@ -36,12 +36,12 @@ type MatchFunc func(update *models.Update) bool
 type Bot struct {
 	lastUpdateID int64
 
-	// usernameMx guards username, the username from the last successful GetMe
+	// usernameMx guards usernames, an immutable snapshot from the last successful GetMe
 	// call for the bot the token belongs to. SetToken holds it while changing the
 	// token, so checking the bot ID and clearing the username happen together;
 	// other code still reads the token without it.
 	usernameMx sync.RWMutex
-	username   string
+	usernames  []string
 
 	url                string
 	token              string
@@ -127,33 +127,34 @@ func (b *Bot) ID() int64 {
 }
 
 // SetToken sets the bot token. If the token belongs to a different bot, by its
-// ID prefix, the username recorded by GetMe is cleared until GetMe succeeds
-// again. A new token for the same bot, as after revoking the old one, keeps it.
+// ID prefix, the usernames recorded by GetMe are cleared until GetMe succeeds
+// again. A new token for the same bot, as after revoking the old one, keeps them.
 func (b *Bot) SetToken(token string) {
 	b.usernameMx.Lock()
 	defer b.usernameMx.Unlock()
 	previousID := b.ID()
 	b.token = token
 	if b.ID() != previousID {
-		b.username = ""
+		b.usernames = nil
 	}
 }
 
-// setUsername records the username GetMe returned, unless the token now
+// setUsernames records the usernames GetMe returned, unless the token now
 // belongs to another bot, as when it was switched during the request. The
 // token starts with the bot's ID, which GetMe returns as id.
-func (b *Bot) setUsername(id int64, username string) {
+func (b *Bot) setUsernames(me *models.BotFullInfo) {
 	b.usernameMx.Lock()
 	defer b.usernameMx.Unlock()
-	if id == b.ID() {
-		b.username = username
+	if me.ID == b.ID() {
+		// GetMe returns me to the caller; don't share its mutable slice.
+		b.usernames = append([]string{me.Username}, me.ActiveUsernames...)
 	}
 }
 
-func (b *Bot) botUsername() string {
+func (b *Bot) botUsernames() []string {
 	b.usernameMx.RLock()
 	defer b.usernameMx.RUnlock()
-	return b.username
+	return b.usernames
 }
 
 // Token returns the bot token
