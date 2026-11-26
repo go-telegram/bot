@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.31.0 (2026-11-26)
 
 ### Breaking changes
 
@@ -24,6 +24,14 @@ See the [Bot API 10.5 migration guide](README.md#migrating-to-bot-api-105) for e
 - Depending on `callback_query_mode`, callback queries from the bot's own messages can
   carry `inline_message_id` instead of `message`. `WriteAccessAllowed.Inviter` identifies
   the bot owner who invited the user into the private chat (#324).
+
+### Other changes
+
+- Validate and parse Mini App init data with `ValidateWebAppInitData` (bot token)
+  or `ValidateWebAppInitDataSignature` (Ed25519 public key) (#325).
+- Add support for join request queries (#323).
+- Fix command matching after non-ASCII text and for commands addressed to the bot
+  by username (#321, #320).
 
 ## v1.30.0 (2026-11-19)
 
