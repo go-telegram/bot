@@ -199,8 +199,8 @@ You can use all these methods as bot funcs. All methods have name like in offici
 
 `bot.SendMessage`, `bot.GetMe`, `bot.SendPhoto`, etc
 
-All methods have signature `(ctx context.Context, params <PARAMS>) (<response>, error)`.
-Except `GetMe`, `Close` and `Logout` which have no params
+Most methods take a context and a pointer to a parameters struct and return a response and an error.
+`GetMe`, `GetMeLegacy`, `Close`, and `Logout` take only a context.
 
 `<PARAMS>` is a struct with fields that corresponds to Telegram Bot API parameters.
 All Params structs have name like for corresponded methods, but with `Params` suffix.
@@ -212,6 +212,33 @@ You should pass params by pointer
 ```go
 bot.SendMessage(ctx, &bot.SendMessageParams{...})
 ```
+
+### Migrating to Bot API 10.5
+
+`b.GetMe(ctx)` now returns `*models.BotFullInfo`. Code that only reads `me.ID` or
+`me.Username` from an inferred result needs no changes. If you used
+`me.SupportInlineQueries`, use `me.SupportsInlineQueries` (with an **s** after `Support`).
+If a caller still needs `*models.User`, switch that call to `b.GetMeLegacy(ctx)`
+while migrating. The legacy method is deprecated.
+
+Expandable quotations in rich messages now contain blocks. Read `Blocks` on
+`models.RichBlockExpandableBlockQuotation`; the library no longer populates `Text`.
+To send a text quotation, put the rich text in a paragraph block:
+
+```go
+quote := models.InputRichBlockExpandableBlockQuotation{
+	Blocks: []models.InputRichBlock{{
+		Type: models.RichBlockTypeParagraph,
+		InputRichBlockParagraph: &models.InputRichBlockParagraph{
+			Text: models.RichText{PlainText: "Quoted text"},
+		},
+	}},
+}
+```
+
+Sending a nonzero `Text` with no blocks returns `Text is deprecated; use Blocks`
+before the request is sent. If both are set, only `Blocks` is used. Ordinary
+message text (`SendMessageParams.Text` and `models.Message.Text`) is unchanged.
 
 ## Options
 
@@ -234,7 +261,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithDebugHandler(handler DebugHandler)` - add debug handler
 - `WithHTTPClient(pollTimeout time.Duration, client HttpClient)` - set custom http client
 - `WithServerURL(serverURL string)` - set server url
-- `WithSkipGetMe()` - skip call GetMe on bot init. A command handler for a bare command such as `start` then matches `/start@bot_username` only after `GetMe` succeeds.
+- `WithSkipGetMe()` - skip `GetMe` during initialization. Command handlers still match `/start`; to also match `/start@username` for the bot's primary or active usernames, call `GetMe` successfully first.
 - `WithAllowedUpdates(params AllowedUpdates)` - set [allowed_updates](https://core.telegram.org/bots/api#getupdates) for getUpdates method
 - `WithUpdatesChannelCap(cap int)` - set updates channel capacity, by default 1024
 - `WithWebhookSecretToken(webhookSecretToken string)` - set X-Telegram-Bot-Api-Secret-Token header sent from telegram servers to confirm validity of update

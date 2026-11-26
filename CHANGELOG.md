@@ -2,13 +2,28 @@
 
 ## Unreleased
 
-- Command handlers also recognize commands addressed to any active username returned by `GetMe`.
-- Breaking: `GetMe` now returns `*models.BotFullInfo` instead of `*models.User`. Call the deprecated `GetMeLegacy` if you still need `*models.User`.
-- Breaking: Expandable block quotations now use `Blocks`. The deprecated `Text` field is not populated when decoding. Sending `Text` without any blocks returns `Text is deprecated; use Blocks`; when blocks are present, `Text` is ignored. Nested files inside `Blocks` are uploaded.
-- `BotFullInfo` adds `active_usernames`, `inline_query_placeholder`, `needs_inline_query_location`, and `has_topic_sidebar`. It also adds `has_main_web_app`, which `getMe` already returned and `User` did not declare.
-- Bot settings now come from `BotFullInfo`. The nine previous bot setting fields on `User` are deprecated but still populated by `GetMeLegacy`.
-- Add `SetMySettings`. Omitted parameters stay unchanged: a nil bool or integer is not sent, `False()` and a zero feedback denominator are sent, and an empty placeholder string clears the inline placeholder.
-- Callback queries from the bot's own messages can arrive with `inline_message_id` instead of `message` when `callback_query_mode` says so. `WriteAccessAllowed.Inviter` is the bot owner who invited the user into the private chat.
+### Breaking changes
+
+See the [Bot API 10.5 migration guide](README.md#migrating-to-bot-api-105) for examples.
+
+- `GetMe` returns `*models.BotFullInfo` instead of `*models.User`. The deprecated
+  `GetMeLegacy` returns `*models.User` and populates its nine legacy bot settings (#324, #328).
+- Expandable rich-message quotations use `Blocks` instead of `Text`. The deprecated
+  `Text` field is not populated on read. Sending nonzero `Text` without blocks returns
+  `Text is deprecated; use Blocks` before any HTTP request. When both are set, only
+  `Blocks` is sent, including any nested file uploads (#324, #328).
+
+### Bot API 10.5
+
+- `BotFullInfo` exposes active usernames, the inline query placeholder, whether inline
+  queries need a location, topic sidebar status, and whether the bot has a main Web App (#324).
+- Command handlers recognize commands addressed to any active username returned by `GetMe` (#327).
+- `SetMySettings` updates only the settings you supply. Use `bot.False()` to send an
+  explicit `false`, a pointer to zero to disable inline feedback, or a pointer to an
+  empty string to restore the default inline query placeholder (#324).
+- Depending on `callback_query_mode`, callback queries from the bot's own messages can
+  carry `inline_message_id` instead of `message`. `WriteAccessAllowed.Inviter` identifies
+  the bot owner who invited the user into the private chat (#324).
 
 ## v1.30.0 (2026-11-19)
 
