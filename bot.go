@@ -69,6 +69,7 @@ type Bot struct {
 	allowedUpdates AllowedUpdates
 
 	updatesChanCap int
+	shutdownGrace  time.Duration
 	updatesMx      sync.Mutex
 	updatesRun     *updatesRun
 }
@@ -100,6 +101,9 @@ func New(token string, options ...Option) (*Bot, error) {
 	}
 	if b.updatesChanCap < 0 {
 		return nil, fmt.Errorf("updates channel capacity must be non-negative")
+	}
+	if b.shutdownGrace < 0 {
+		return nil, fmt.Errorf("shutdown grace must be non-negative")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), b.checkInitTimeout)
@@ -164,13 +168,15 @@ func (b *Bot) Token() string {
 
 // StartWebhook processes updates from WebhookHandler until ctx is canceled.
 // WebhookHandler answers a valid update with HTTP 200 once a worker takes it,
-// and with 503 if the run stops first. Handlers receive a context derived from
-// ctx and canceled when the run stops. StartWebhook waits for running handlers
-// to return. If every worker exits early, such as through runtime.Goexit in a
-// matcher or in a handler run with WithNotAsyncHandlers, the run stops. If
-// another Start or StartWebhook is running on the same Bot, it waits for that
-// run to end first. Calling it from a handler of the running Bot therefore
-// blocks until the ctx passed to that call is canceled.
+// and with 503 if the run stops first. By default, handlers receive a context
+// derived from ctx that is canceled when the run stops, and StartWebhook waits
+// for running handlers to return; see WithShutdownGrace to keep that context
+// alive for a bounded drain period on shutdown. If every worker exits early,
+// such as through runtime.Goexit in a matcher or in a handler run with
+// WithNotAsyncHandlers, the run stops. If another Start or StartWebhook is
+// running on the same Bot, it waits for that run to end first. Calling it from
+// a handler of the running Bot therefore blocks until the ctx passed to that
+// call is canceled.
 func (b *Bot) StartWebhook(ctx context.Context) {
 	b.start(ctx, true)
 }
@@ -183,13 +189,15 @@ func (b *Bot) StartWebhook(ctx context.Context) {
 // after cancellation, it starts from the first update of the batch that was not
 // dispatched, so updates handled after it may be delivered again. Telegram
 // learns the new offset only from the next poll, so after a process restart it
-// may deliver the last batch again: delivery is at least once. Handlers receive
-// a context derived from ctx and canceled when the run stops. They should
-// return when it is canceled. If every worker exits early, such as through
-// runtime.Goexit in a matcher or in a handler run with WithNotAsyncHandlers,
-// the run stops. If another Start or StartWebhook is running on the same Bot,
-// it waits for that run to end first. Calling it from a handler of the running
-// Bot therefore blocks until the ctx passed to that call is canceled.
+// may deliver the last batch again: delivery is at least once. By default,
+// handlers receive a context derived from ctx and canceled when the run stops,
+// and they should return when it is canceled; see WithShutdownGrace to keep
+// that context alive for a bounded drain period on shutdown. If every worker
+// exits early, such as through runtime.Goexit in a matcher or in a handler run
+// with WithNotAsyncHandlers, the run stops. If another Start or StartWebhook is
+// running on the same Bot, it waits for that run to end first. Calling it from
+// a handler of the running Bot therefore blocks until the ctx passed to that
+// call is canceled.
 func (b *Bot) Start(ctx context.Context) {
 	b.start(ctx, false)
 }

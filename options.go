@@ -173,3 +173,18 @@ func WithInitialOffset(offset int64) Option {
 		b.lastUpdateID = offset
 	}
 }
+
+// WithShutdownGrace sets the maximum time Start and StartWebhook wait for
+// already-dispatched handlers to finish after ctx is canceled. During that
+// grace period, handlers keep a non-canceled context derived from ctx
+// (preserving its values) so outbound calls can complete; once the grace period
+// expires, that context is canceled and Start or StartWebhook returns even if a
+// handler has not returned. When d is zero (the default), handlers receive a
+// context that is canceled immediately with ctx and Start or StartWebhook waits
+// for all dispatched handlers to return. New returns an error for a negative
+// duration.
+func WithShutdownGrace(d time.Duration) Option {
+	return func(b *Bot) {
+		b.shutdownGrace = d
+	}
+}

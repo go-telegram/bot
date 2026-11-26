@@ -167,6 +167,13 @@ func TestNewRejectsNegativeUpdatesChannelCap(t *testing.T) {
 	}
 }
 
+func TestNewRejectsNegativeShutdownGrace(t *testing.T) {
+	b, err := New("xxx", WithSkipGetMe(), WithShutdownGrace(-time.Second))
+	if b != nil || err == nil {
+		t.Fatalf("New returned (%v, %v), want a configuration error", b, err)
+	}
+}
+
 func TestNew(t *testing.T) {
 	s := newServerMock("xxx")
 	defer s.Close()

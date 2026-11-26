@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/go-telegram/bot/models"
 )
@@ -18,10 +19,33 @@ type queuedUpdate struct {
 }
 
 type updatesRun struct {
-	ctx     context.Context
-	webhook bool
-	queue   chan queuedUpdate
-	done    chan struct{}
+	ctx        context.Context
+	handlerCtx context.Context
+	webhook    bool
+	queue      chan queuedUpdate
+	done       chan struct{}
+}
+
+// detachedContext preserves values from parent without propagating its
+// deadline or cancellation (Go 1.18 equivalent of context.WithoutCancel).
+type detachedContext struct {
+	parent context.Context
+}
+
+func (detachedContext) Deadline() (time.Time, bool) {
+	return time.Time{}, false
+}
+
+func (detachedContext) Done() <-chan struct{} {
+	return nil
+}
+
+func (detachedContext) Err() error {
+	return nil
+}
+
+func (c detachedContext) Value(key any) any {
+	return c.parent.Value(key)
 }
 
 func (b *Bot) start(ctx context.Context, webhook bool) {
@@ -37,7 +61,19 @@ func (b *Bot) start(ctx context.Context, webhook bool) {
 
 	runCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	run := &updatesRun{ctx: runCtx, webhook: webhook, done: make(chan struct{})}
+	handlerCtx := runCtx
+	var cancelHandlers context.CancelFunc
+	if b.shutdownGrace > 0 {
+		handlerCtx, cancelHandlers = context.WithCancel(detachedContext{parent: ctx})
+		defer cancelHandlers()
+	}
+
+	run := &updatesRun{
+		ctx:        runCtx,
+		handlerCtx: handlerCtx,
+		webhook:    webhook,
+		done:       make(chan struct{}),
+	}
 	if !b.beginUpdates(run) {
 		return
 	}
@@ -59,12 +95,45 @@ func (b *Bot) start(ctx context.Context, webhook bool) {
 			b.waitUpdates(run, &handlers)
 		}()
 	}
-	workers.Wait()
-	// The last worker may have exited through a user callback. Wake any
-	// producer waiting for a handoff before waiting for running handlers.
-	cancel()
-	polling.Wait()
-	handlers.Wait()
+
+	waitAll := func() {
+		workers.Wait()
+		// The last worker may have exited through a user callback. Wake any
+		// producer waiting for a handoff before waiting for running handlers.
+		cancel()
+		polling.Wait()
+		handlers.Wait()
+	}
+	if b.shutdownGrace <= 0 {
+		waitAll()
+		return
+	}
+
+	allDone := make(chan struct{})
+	go func() {
+		waitAll()
+		close(allDone)
+	}()
+
+	select {
+	case <-allDone:
+		return
+	case <-runCtx.Done():
+	}
+
+	select {
+	case <-allDone:
+		return
+	default:
+	}
+
+	timer := time.NewTimer(b.shutdownGrace)
+	defer timer.Stop()
+	select {
+	case <-allDone:
+	case <-timer.C:
+		cancelHandlers()
+	}
 }
 
 func (b *Bot) beginUpdates(run *updatesRun) bool {
@@ -107,7 +176,7 @@ func (b *Bot) waitUpdates(run *updatesRun, handlers *sync.WaitGroup) {
 			}
 			invoke := func() {
 				defer handlers.Done()
-				handler(run.ctx, b, item.update)
+				handler(run.handlerCtx, b, item.update)
 			}
 			handlers.Add(1)
 			if b.notAsyncHandlers {

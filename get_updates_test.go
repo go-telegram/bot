@@ -743,3 +743,242 @@ func TestBot_StartConfirmsDispatchedUpdatesWhenCanceledWhileQueuing(t *testing.T
 		t.Errorf("last update ID = %d, want 1", got)
 	}
 }
+
+func TestBot_StartShutdownGraceAllowsInFlightOutboundCall(t *testing.T) {
+	type ctxKey struct{}
+	parent := context.WithValue(context.Background(), ctxKey{}, "trace-123")
+	ctx, cancel := context.WithCancel(parent)
+	defer cancel()
+
+	started := make(chan struct{})
+	allowSend := make(chan struct{})
+	secondPollStarted := make(chan struct{})
+	secondPollCanceled := make(chan struct{})
+	sendErrCh := make(chan error, 1)
+	ctxValCh := make(chan any, 1)
+	var pollCalls int32
+
+	b, err := New("xxx", WithSkipGetMe(), WithShutdownGrace(500*time.Millisecond),
+		WithDefaultHandler(func(hCtx context.Context, bot *Bot, _ *models.Update) {
+			ctxValCh <- hCtx.Value(ctxKey{})
+			close(started)
+			<-allowSend
+			_, sendErr := bot.SendMessage(hCtx, &SendMessageParams{ChatID: int64(1), Text: "done"})
+			sendErrCh <- sendErr
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if strings.HasSuffix(req.URL.Path, "/sendMessage") {
+				if err := req.Context().Err(); err != nil {
+					return nil, err
+				}
+				return getUpdatesJSONResponse(`{"ok":true,"result":{"message_id":10}}`), nil
+			}
+			if atomic.AddInt32(&pollCalls, 1) == 1 {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":1}]}`), nil
+			}
+			close(secondPollStarted)
+			<-req.Context().Done()
+			close(secondPollCanceled)
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+
+	waitForUpdateTest(t, started, "handler to start")
+	waitForUpdateTest(t, secondPollStarted, "second poll to start")
+	cancel()
+	waitForUpdateTest(t, secondPollCanceled, "polling request to cancel immediately")
+
+	select {
+	case <-stopped:
+		t.Fatal("Start returned before in-flight handler completed within shutdown grace")
+	case <-time.After(30 * time.Millisecond):
+	}
+
+	close(allowSend)
+	waitForUpdateTest(t, stopped, "Start to return after handler finished")
+
+	if gotErr := waitForUpdateTest(t, sendErrCh, "sendMessage result"); gotErr != nil {
+		t.Fatalf("SendMessage during shutdown grace failed: %v", gotErr)
+	}
+	if gotVal := waitForUpdateTest(t, ctxValCh, "handler context value"); gotVal != "trace-123" {
+		t.Fatalf("handler context value = %v, want trace-123", gotVal)
+	}
+}
+
+func TestBot_StartShutdownGraceCancelsHandlerAfterGrace(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	started := make(chan struct{})
+	handlerExited := make(chan error, 1)
+	var pollCalls int32
+
+	b, err := New("xxx", WithSkipGetMe(), WithShutdownGrace(50*time.Millisecond),
+		WithDefaultHandler(func(hCtx context.Context, _ *Bot, _ *models.Update) {
+			close(started)
+			<-hCtx.Done()
+			handlerExited <- hCtx.Err()
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if atomic.AddInt32(&pollCalls, 1) == 1 {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":1}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+
+	waitForUpdateTest(t, started, "handler to start")
+	cancel()
+
+	select {
+	case err := <-handlerExited:
+		t.Fatalf("handler context canceled before grace period elapsed: %v", err)
+	case <-time.After(15 * time.Millisecond):
+	}
+
+	if gotErr := waitForUpdateTest(t, handlerExited, "handler context to cancel after grace"); gotErr == nil {
+		t.Fatal("expected non-nil context error after grace period")
+	}
+	waitForUpdateTest(t, stopped, "Start to return after grace")
+}
+
+func TestBot_StartShutdownGraceBoundsStuckHandler(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	started := make(chan struct{})
+	release := make(chan struct{})
+	var releaseOnce sync.Once
+	releaseHandler := func() { releaseOnce.Do(func() { close(release) }) }
+	defer releaseHandler()
+	handlerCtxCh := make(chan context.Context, 1)
+	var pollCalls int32
+
+	b, err := New("xxx", WithSkipGetMe(), WithShutdownGrace(50*time.Millisecond),
+		WithDefaultHandler(func(hCtx context.Context, _ *Bot, update *models.Update) {
+			if update.ID == 1 {
+				handlerCtxCh <- hCtx
+				close(started)
+				<-release
+			}
+		}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if atomic.AddInt32(&pollCalls, 1) == 1 {
+				return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":1}]}`), nil
+			}
+			<-req.Context().Done()
+			return nil, req.Context().Err()
+		})))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stopped := make(chan struct{})
+	go func() {
+		defer close(stopped)
+		b.Start(ctx)
+	}()
+
+	waitForUpdateTest(t, started, "stuck handler to start")
+	hCtx := waitForUpdateTest(t, handlerCtxCh, "handler context")
+	cancel()
+
+	waitForUpdateTest(t, stopped, "Start to return after grace timeout even with stuck handler")
+	if hCtx.Err() == nil {
+		t.Fatal("expected handler context to be canceled when shutdown grace expired")
+	}
+
+	// Ensure a subsequent Start run can begin cleanly after the previous run hit grace timeout.
+	ctx2, cancel2 := context.WithCancel(context.Background())
+	stopped2 := make(chan struct{})
+	go func() {
+		defer close(stopped2)
+		b.Start(ctx2)
+	}()
+	cancel2()
+	waitForUpdateTest(t, stopped2, "second Start to return cleanly")
+}
+
+func TestBot_StartShutdownGraceWithNotAsyncHandlers(t *testing.T) {
+	for _, stuck := range []bool{false, true} {
+		name := "completes"
+		if stuck {
+			name = "bounds_stuck"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			started := make(chan struct{})
+			release := make(chan struct{})
+			var releaseOnce sync.Once
+			releaseHandler := func() { releaseOnce.Do(func() { close(release) }) }
+			defer releaseHandler()
+			sendErrCh := make(chan error, 1)
+			var pollCalls int32
+
+			b, err := New("xxx", WithSkipGetMe(), WithNotAsyncHandlers(), WithShutdownGrace(50*time.Millisecond),
+				WithDefaultHandler(func(hCtx context.Context, bot *Bot, _ *models.Update) {
+					close(started)
+					<-release
+					if !stuck {
+						_, sendErr := bot.SendMessage(hCtx, &SendMessageParams{ChatID: int64(1), Text: "sync"})
+						sendErrCh <- sendErr
+					}
+				}),
+				WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+					if strings.HasSuffix(req.URL.Path, "/sendMessage") {
+						if err := req.Context().Err(); err != nil {
+							return nil, err
+						}
+						return getUpdatesJSONResponse(`{"ok":true,"result":{"message_id":11}}`), nil
+					}
+					if atomic.AddInt32(&pollCalls, 1) == 1 {
+						return getUpdatesJSONResponse(`{"ok":true,"result":[{"update_id":1}]}`), nil
+					}
+					<-req.Context().Done()
+					return nil, req.Context().Err()
+				})))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			stopped := make(chan struct{})
+			go func() {
+				defer close(stopped)
+				b.Start(ctx)
+			}()
+
+			waitForUpdateTest(t, started, "sync handler to start")
+			cancel()
+
+			if !stuck {
+				time.Sleep(15 * time.Millisecond)
+				releaseHandler()
+				waitForUpdateTest(t, stopped, "Start to return after sync handler completed")
+				if gotErr := waitForUpdateTest(t, sendErrCh, "sync sendMessage result"); gotErr != nil {
+					t.Fatalf("SendMessage during grace failed: %v", gotErr)
+				}
+			} else {
+				waitForUpdateTest(t, stopped, "Start to return after grace timeout with stuck sync handler")
+			}
+		})
+	}
+}
