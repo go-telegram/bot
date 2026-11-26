@@ -269,6 +269,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `UseTestEnvironment()` - use test environment
 - `WithNotAsyncHandlers()` - allows to run handlers in the main goroutine
 - `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
+- `WithShutdownGrace(d time.Duration)` - sets how long `Start` and `StartWebhook` keep dispatched handlers' context alive and wait for them to drain after cancellation
 
 ## Message.Text and CallbackQuery.Data handlers
 

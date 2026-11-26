@@ -2,6 +2,8 @@ package bot
 
 import (
 	"context"
+	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/go-telegram/bot/models"
@@ -182,5 +184,34 @@ func Test_findHandler_Default(t *testing.T) {
 
 	if !called {
 		t.Fatal("Expected default handler to be called")
+	}
+}
+
+func TestProcessUpdate_AsyncConcurrent(t *testing.T) {
+	const total = 20
+	var count int32
+	var wg sync.WaitGroup
+	wg.Add(total)
+
+	bot := &Bot{
+		defaultHandlerFunc: func(ctx context.Context, bot *Bot, update *models.Update) {
+			defer wg.Done()
+			atomic.AddInt32(&count, 1)
+		},
+	}
+
+	var callers sync.WaitGroup
+	for i := 0; i < total; i++ {
+		callers.Add(1)
+		go func(id int64) {
+			defer callers.Done()
+			bot.ProcessUpdate(context.Background(), &models.Update{ID: id})
+		}(int64(i + 1))
+	}
+	callers.Wait()
+	wg.Wait()
+
+	if got := atomic.LoadInt32(&count); got != total {
+		t.Fatalf("handled %d updates, want %d", got, total)
 	}
 }

@@ -652,3 +652,69 @@ func TestWebhookHandler_RejectsUpdateWhilePolling(t *testing.T) {
 		t.Error("handled a webhook update while polling")
 	}
 }
+
+func TestStartWebhook_ShutdownGraceAllowsInFlightHandler(t *testing.T) {
+	type ctxKey struct{}
+	parent := context.WithValue(context.Background(), ctxKey{}, "wh-trace")
+	ctx, cancel := context.WithCancel(parent)
+	defer cancel()
+
+	started := make(chan struct{})
+	allowFinish := make(chan struct{})
+	var releaseOnce sync.Once
+	releaseHandler := func() { releaseOnce.Do(func() { close(allowFinish) }) }
+	defer releaseHandler()
+	sendErrCh := make(chan error, 1)
+	ctxValCh := make(chan any, 1)
+
+	b, err := New("xxx", WithSkipGetMe(), WithShutdownGrace(500*time.Millisecond),
+		WithErrorsHandler(func(error) {}),
+		WithHTTPClient(time.Second, getUpdatesClientFunc(func(req *http.Request) (*http.Response, error) {
+			if err := req.Context().Err(); err != nil {
+				return nil, err
+			}
+			return getUpdatesJSONResponse(`{"ok":true,"result":{"message_id":20}}`), nil
+		})),
+		WithDefaultHandler(func(hCtx context.Context, bot *Bot, _ *models.Update) {
+			ctxValCh <- hCtx.Value(ctxKey{})
+			close(started)
+			<-allowFinish
+			_, sendErr := bot.SendMessage(hCtx, &SendMessageParams{ChatID: int64(1), Text: "wh-done"})
+			sendErrCh <- sendErr
+		}))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	stopped := startWebhookForTest(t, b, ctx)
+	w := httptest.NewRecorder()
+	b.WebhookHandler()(w, httptest.NewRequest(http.MethodPost, "/", strings.NewReader(`{"update_id":1}`)))
+	if w.Code != http.StatusOK {
+		t.Fatalf("webhook status = %d, want 200", w.Code)
+	}
+
+	waitForUpdateTest(t, started, "webhook handler to start")
+	cancel()
+
+	wAfter := httptest.NewRecorder()
+	b.WebhookHandler()(wAfter, httptest.NewRequest(http.MethodPost, "/", strings.NewReader(`{"update_id":2}`)))
+	if wAfter.Code != http.StatusServiceUnavailable {
+		t.Fatalf("webhook status after cancel = %d, want 503", wAfter.Code)
+	}
+
+	select {
+	case <-stopped:
+		t.Fatal("StartWebhook returned before in-flight handler completed within grace")
+	case <-time.After(30 * time.Millisecond):
+	}
+
+	releaseHandler()
+	waitForUpdateTest(t, stopped, "StartWebhook to return after handler")
+
+	if gotErr := waitForUpdateTest(t, sendErrCh, "webhook sendMessage result"); gotErr != nil {
+		t.Fatalf("SendMessage during webhook shutdown grace failed: %v", gotErr)
+	}
+	if gotVal := waitForUpdateTest(t, ctxValCh, "webhook handler context value"); gotVal != "wh-trace" {
+		t.Fatalf("webhook handler context value = %v, want wh-trace", gotVal)
+	}
+}
